@@ -1,6 +1,7 @@
 package com.potatosaucevfx.whitelistsync2;
 
 import com.potatosaucevfx.whitelistsync2.services.BaseService;
+import com.potatosaucevfx.whitelistsync2.services.MicroServiceThread;
 import com.potatosaucevfx.whitelistsync2.services.SyncThread;
 import java.util.ArrayList;
 import net.minecraft.server.MinecraftServer;
@@ -15,6 +16,12 @@ public class Utilities {
         Thread sync = new Thread(new SyncThread(server, service));
         sync.start();
         WhitelistSync2.logger.info("Sync Thread Started!");
+    }
+    
+    public static void StartMicroServiceThread(MinecraftServer server, BaseService service) {
+        Thread microservice = new Thread(new MicroServiceThread(server, service));
+        microservice.start();
+        WhitelistSync2.logger.info("Micro Service REST Api Thread Started!");
     }
     
     public static String FormatOpUsersOutput(ArrayList<String> names) {
