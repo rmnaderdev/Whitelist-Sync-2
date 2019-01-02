@@ -51,6 +51,8 @@ dependencies {
     compile 'org.xerial:sqlite-jdbc:3.21.0.1'
     // https://mvnrepository.com/artifact/mysql/mysql-connector-java
     compile 'mysql:mysql-connector-java:8.0.8-dmr'
+    // https://mvnrepository.com/artifact/com.sparkjava/spark-core/
+    compile 'com.sparkjava:spark-core:2.8.0'
 }
 
 processResources {
