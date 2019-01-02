@@ -18,7 +18,7 @@ shadowJar {
 }
 
 
-version = "2.0-1.12.2"
+version = "2.0-1.12.2_Beta"
 group = "com.potatosaucevfx.whitelistsync2"
 archivesBaseName = "whitelistsync2"
 
