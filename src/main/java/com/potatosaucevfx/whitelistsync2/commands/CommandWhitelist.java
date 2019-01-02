@@ -38,17 +38,17 @@ public class CommandWhitelist implements ICommand {
     }
 
     @Override
-    public String getName() {
+    public String getCommandName() {
         return "wl";
     }
 
     @Override
-    public String getUsage(ICommandSender sender) {
+    public String getCommandUsage(ICommandSender sender) {
         return USAGE_STRING;
     }
 
     @Override
-    public List<String> getAliases() {
+    public List<String> getCommandAliases() {
         return aliases;
     }
 
@@ -63,7 +63,7 @@ public class CommandWhitelist implements ICommand {
                     //Action for showing list
                     if (args[0].equalsIgnoreCase("list")) {
 
-                        sender.sendMessage(new TextComponentString(Utilities.FormatWhitelistUsersOutput(service.pullWhitelistedNamesFromDatabase(server))));
+                        sender.addChatMessage(new TextComponentString(Utilities.FormatWhitelistUsersOutput(service.pullWhitelistedNamesFromDatabase(server))));
 
                     } // Actions for adding a player to whitelist
                     else if (args[0].equalsIgnoreCase("add")) {
@@ -76,17 +76,17 @@ public class CommandWhitelist implements ICommand {
 
                                 if (service.addPlayerToDatabaseWhitelist(user)) {
                                     server.getPlayerList().addWhitelistedPlayer(user);
-                                    sender.sendMessage(new TextComponentString(user.getName() + " added to the whitelist."));
+                                    sender.addChatMessage(new TextComponentString(user.getName() + " added to the whitelist."));
                                 } else {
-                                    sender.sendMessage(new TextComponentString("Error adding " + user.getName() + " from whitelist!"));
+                                    sender.addChatMessage(new TextComponentString("Error adding " + user.getName() + " from whitelist!"));
                                 }
 
                             } else {
-                                sender.sendMessage(new TextComponentString("User " + args[1] + " not found!"));
+                                sender.addChatMessage(new TextComponentString("User " + args[1] + " not found!"));
                             }
 
                         } else {
-                            sender.sendMessage(new TextComponentString("You must specify a name to add to the whitelist!"));
+                            sender.addChatMessage(new TextComponentString("You must specify a name to add to the whitelist!"));
                         }
                     } // Actions for removing player from whitelist
                     else if (args[0].equalsIgnoreCase("remove")) {
@@ -98,13 +98,13 @@ public class CommandWhitelist implements ICommand {
 
                                 if (service.removePlayerFromDatabaseWhitelist(gameprofile)) {
                                     server.getPlayerList().removePlayerFromWhitelist(gameprofile);
-                                    sender.sendMessage(new TextComponentString(gameprofile.getName() + " removed from the whitelist."));
+                                    sender.addChatMessage(new TextComponentString(gameprofile.getName() + " removed from the whitelist."));
                                 } else {
-                                    sender.sendMessage(new TextComponentString("Error removing " + gameprofile.getName() + " from whitelist!"));
+                                    sender.addChatMessage(new TextComponentString("Error removing " + gameprofile.getName() + " from whitelist!"));
                                 }
 
                             } else {
-                                sender.sendMessage(new TextComponentString("You must specify a valid name to remove from the whitelist!"));
+                                sender.addChatMessage(new TextComponentString("You must specify a valid name to remove from the whitelist!"));
                             }
 
                         }
@@ -113,39 +113,39 @@ public class CommandWhitelist implements ICommand {
                     else if (args[0].equalsIgnoreCase("sync")) {
 
                         if (service.updateLocalWhitelistFromDatabase(server)) {
-                            sender.sendMessage(new TextComponentString("Local up to date with database!"));
+                            sender.addChatMessage(new TextComponentString("Local up to date with database!"));
                         } else {
-                            sender.sendMessage(new TextComponentString("Error syncing local to database!"));
+                            sender.addChatMessage(new TextComponentString("Error syncing local to database!"));
                         }
 
                     } // Sync server to database
                     else if (args[0].equalsIgnoreCase("copyservertodatabase")) {
 
                         if (service.pushLocalWhitelistToDatabase(server)) {
-                            sender.sendMessage(new TextComponentString("Pushed local to database!"));
+                            sender.addChatMessage(new TextComponentString("Pushed local to database!"));
                         } else {
-                            sender.sendMessage(new TextComponentString("Error pushing local to database!"));
+                            sender.addChatMessage(new TextComponentString("Error pushing local to database!"));
                         }
 
                     } else {
-                        sender.sendMessage(new TextComponentString(USAGE_STRING));
+                        sender.addChatMessage(new TextComponentString(USAGE_STRING));
                     }
                 } else {
-                    sender.sendMessage(new TextComponentString(USAGE_STRING));
+                    sender.addChatMessage(new TextComponentString(USAGE_STRING));
                 }
             } else {
-                sender.sendMessage(new TextComponentString(USAGE_STRING));
+                sender.addChatMessage(new TextComponentString(USAGE_STRING));
             }
         }
     }
 
     @Override
     public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
-        return sender.canUseCommand(4, "wl");
+        return sender.canCommandSenderUseCommand(4, "wl");
     }
 
     @Override
-    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
+    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender,
             String[] args, @Nullable BlockPos pos) {
         if (args.length == 1) {
             return CommandBase.getListOfStringsMatchingLastWord(args, "list", "add", "remove", "sync", "copyServerToDatabase");
