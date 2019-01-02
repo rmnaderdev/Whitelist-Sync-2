@@ -82,6 +82,7 @@ public class SqLiteService implements BaseService {
      * Pushes local json whitelist to the database
      *
      * @param server
+     * @return success
      */
     @Override
     public boolean pushLocalWhitelistToDatabase(MinecraftServer server) {
@@ -100,8 +101,11 @@ public class SqLiteService implements BaseService {
             // Loop through local whitelist and insert into database.
             for (int i = 0; i < uuids.size() || i < names.size(); i++) {
                 if ((uuids.get(i) != null) && (names.get(i) != null)) {
-                    String sql = "INSERT OR REPLACE INTO whitelist(uuid, name, whitelisted) VALUES (\'" + uuids.get(i) + "\', \'" + names.get(i) + "\', 1);";
-                    stmt.execute(sql);
+                    PreparedStatement sql = conn1.prepareStatement("INSERT OR REPLACE INTO whitelist(uuid, name, whitelisted) VALUES (?, ?, 1)");
+                    sql.setString(1, uuids.get(i));
+                    sql.setString(2, names.get(i));
+                    sql.executeUpdate();
+
                     records++;
                 }
             }
@@ -122,6 +126,7 @@ public class SqLiteService implements BaseService {
      * Pushes local json op list to the database
      *
      * @param server
+     * @return success
      */
     @Override
     public boolean pushLocalOpListToDatabase(MinecraftServer server) {
@@ -142,7 +147,7 @@ public class SqLiteService implements BaseService {
                 // Loop through ops list and add to DB
                 for (OpUser opUser : opUsers) {
                     try {
-                        PreparedStatement sql = conn1.prepareStatement("INSERT IGNORE INTO " + ConfigHandler.mySQL_DBname + ".op(uuid, name, level, bypassesPlayerLimit, isOp) VALUES (?, ?, ?, ?, true)");
+                        PreparedStatement sql = conn1.prepareStatement("INSERT IGNORE INTO op(uuid, name, level, bypassesPlayerLimit, isOp) VALUES (?, ?, ?, ?, 1)");
                         sql.setString(1, opUser.getUuid());
                         sql.setString(2, opUser.getName());
                         sql.setInt(3, opUser.getLevel());
@@ -240,7 +245,7 @@ public class SqLiteService implements BaseService {
                 // Connect to database.
                 Connection conn = DriverManager.getConnection("jdbc:sqlite:" + ConfigHandler.sqliteDatabasePath);
                 Statement stmt = conn.createStatement();
-                String sql = "SELECT uuid, isOp, FROM op;";
+                String sql = "SELECT uuid, isOp FROM op;";
 
                 // Start time of querry.
                 long startTime = System.currentTimeMillis();
@@ -386,6 +391,7 @@ public class SqLiteService implements BaseService {
      * Method adds player to whitelist in database
      *
      * @param player
+     * @return success
      */
     // TODO: Add some sort of feedback
     @Override
@@ -394,16 +400,18 @@ public class SqLiteService implements BaseService {
         try {
             // Open connection
             Connection conn1 = DriverManager.getConnection("jdbc:sqlite:" + ConfigHandler.sqliteDatabasePath);
-            Statement stmt = conn1.createStatement();
-            String sql = "INSERT OR REPLACE INTO whitelist(uuid, name, whitelisted) VALUES (\'" + player.getId() + "\', \'" + player.getName() + "\', 1);";
+
             // Start time.
             long startTime = System.currentTimeMillis();
-            // Execute statement.
-            stmt.execute(sql);
+
+            PreparedStatement sql = conn1.prepareStatement("INSERT OR REPLACE INTO whitelist(uuid, name, whitelisted) VALUES (?, ?, 1)");
+            sql.setString(1, player.getId().toString());
+            sql.setString(2, player.getName());
+            sql.executeUpdate();
+
             // Time taken.
             long timeTaken = System.currentTimeMillis() - startTime;
             WhitelistSync2.logger.debug("Database Added " + player.getName() + " to whitelist | Took " + timeTaken + "ms");
-            stmt.close();
             conn1.close();
             return true;
 
@@ -417,6 +425,7 @@ public class SqLiteService implements BaseService {
      * Method removes player from whitelist in database
      *
      * @param player
+     * @return success
      */
     // TODO: Add some sort of feedback
     @Override
@@ -424,17 +433,18 @@ public class SqLiteService implements BaseService {
         try {
             // Open connection
             Connection conn1 = DriverManager.getConnection("jdbc:sqlite:" + ConfigHandler.sqliteDatabasePath);
-            Statement stmt = conn1.createStatement();
-            String sql = "INSERT OR REPLACE INTO whitelist(uuid, name, whitelisted) VALUES "
-                    + "(\'" + player.getId() + "\', \'" + player.getName() + "\', 0);";
+
             // Start time.
             long startTime = System.currentTimeMillis();
-            // Execute SQL.
-            stmt.execute(sql);
+
+            PreparedStatement sql = conn1.prepareStatement("INSERT OR REPLACE INTO whitelist(uuid, name, whitelisted) VALUES (?, ?, 0)");
+            sql.setString(1, player.getId().toString());
+            sql.setString(2, player.getName());
+            sql.executeUpdate();
+
             // Time taken
             long timeTaken = System.currentTimeMillis() - startTime;
             WhitelistSync2.logger.debug("Database Removed " + player.getName() + " from whitelist | Took " + timeTaken + "ms");
-            stmt.close();
             conn1.close();
             return true;
 
@@ -448,6 +458,7 @@ public class SqLiteService implements BaseService {
      * Method adds player to op list in database
      *
      * @param player
+     * @return success
      */
     // TODO: Add some sort of feedback
     @Override
@@ -456,7 +467,6 @@ public class SqLiteService implements BaseService {
             ArrayList<OpUser> oppedUsers = OPlistRead.getOppedUsers();
             // Open connection
             Connection conn1 = DriverManager.getConnection("jdbc:sqlite:" + ConfigHandler.sqliteDatabasePath);
-            Statement stmt = conn1.createStatement();
 
             int playerOpLevel = 1;
             int isBypassesPlayerLimit = 1;
@@ -468,16 +478,19 @@ public class SqLiteService implements BaseService {
                 }
             }
 
-            String sql = "INSERT OR REPLACE INTO op(uuid, name, level, isOp, bypassesPlayerLimit) VALUES "
-                    + "(\'" + player.getId() + "\', \'" + player.getName() + "\', " + playerOpLevel + ", 1, " + isBypassesPlayerLimit + ");";
             // Start time.
             long startTime = System.currentTimeMillis();
-            // Execute statement.
-            stmt.execute(sql);
+
+            PreparedStatement sql = conn1.prepareStatement("INSERT OR REPLACE INTO op(uuid, name, level, isOp, bypassesPlayerLimit) VALUES (?, ?, ?, 1, ?)");
+            sql.setString(1, player.getId().toString());
+            sql.setString(2, player.getName());
+            sql.setInt(3, playerOpLevel);
+            sql.setInt(5, isBypassesPlayerLimit);
+            sql.executeUpdate();
+
             // Time taken.
             long timeTaken = System.currentTimeMillis() - startTime;
             WhitelistSync2.logger.debug("Database Added " + player.getName() + " to ops | Took " + timeTaken + "ms");
-            stmt.close();
             conn1.close();
             return true;
 
@@ -491,6 +504,7 @@ public class SqLiteService implements BaseService {
      * Method removes player from op list in database
      *
      * @param player
+     * @return success
      */
     // TODO: Add some sort of feedback
     @Override
@@ -498,16 +512,19 @@ public class SqLiteService implements BaseService {
         try {
             // Open connection
             Connection conn1 = DriverManager.getConnection("jdbc:sqlite:" + ConfigHandler.sqliteDatabasePath);
-            Statement stmt = conn1.createStatement();
-            String sql = "INSERT OR REPLACE INTO op(uuid, name, isOp) VALUES (\'" + player.getId() + "\', \'" + player.getName() + "\', 0);";
+
+            //String sql = "INSERT OR REPLACE INTO op(uuid, name, isOp) VALUES (\'" + player.getId() + "\', \'" + player.getName() + "\', 0);";
             // Start time.
             long startTime = System.currentTimeMillis();
-            // Execute SQL.
-            stmt.execute(sql);
+
+            PreparedStatement sql = conn1.prepareStatement("INSERT OR REPLACE INTO op(uuid, name, isOp) VALUES (?, ?, 0)");
+            sql.setString(1, player.getId().toString());
+            sql.setString(2, player.getName());
+            sql.executeUpdate();
+
             // Time taken
             long timeTaken = System.currentTimeMillis() - startTime;
             WhitelistSync2.logger.debug("Database Removed " + player.getName() + " from ops | Took " + timeTaken + "ms");
-            stmt.close();
             conn1.close();
             return true;
 
@@ -522,6 +539,7 @@ public class SqLiteService implements BaseService {
      * whitelist
      *
      * @param server
+     * @return success
      */
     @Override
     public boolean updateLocalWhitelistFromDatabase(MinecraftServer server) {
@@ -544,13 +562,13 @@ public class SqLiteService implements BaseService {
                     if (!localUuids.contains(uuid)) {
                         try {
                             server.getPlayerList().addWhitelistedPlayer(player);
-                            
-                            if(ConfigHandler.ENABLE_CONSOLE_OUTPUT) {
+
+                            if (ConfigHandler.ENABLE_CONSOLE_OUTPUT) {
                                 WhitelistSync2.logger.info("Added " + name + " to whitelist.");
                             } else {
-                                 WhitelistSync2.logger.debug("Added " + name + " to whitelist.");
+                                WhitelistSync2.logger.debug("Added " + name + " to whitelist.");
                             }
-                            
+
                         } catch (NullPointerException e) {
                             WhitelistSync2.logger.error("Player is null?\n" + e.getMessage());
                         }
@@ -558,8 +576,8 @@ public class SqLiteService implements BaseService {
                 } else {
                     if (localUuids.contains(uuid)) {
                         server.getPlayerList().removePlayerFromWhitelist(player);
-                        
-                        if(ConfigHandler.ENABLE_CONSOLE_OUTPUT) {
+
+                        if (ConfigHandler.ENABLE_CONSOLE_OUTPUT) {
                             WhitelistSync2.logger.info("Removed " + name + " from whitelist.");
                         } else {
                             WhitelistSync2.logger.debug("Removed " + name + " from whitelist.");
@@ -587,6 +605,7 @@ public class SqLiteService implements BaseService {
      * Method pulls op list from database and merges it into the local op list
      *
      * @param server
+     * @return success
      */
     @Override
     public boolean updateLocalOpListFromDatabase(MinecraftServer server) {
@@ -611,13 +630,13 @@ public class SqLiteService implements BaseService {
                     if (!localUuids.contains(uuid)) {
                         try {
                             server.getPlayerList().addOp(player);
-                            
-                            if(ConfigHandler.ENABLE_CONSOLE_OUTPUT) {
+
+                            if (ConfigHandler.ENABLE_CONSOLE_OUTPUT) {
                                 WhitelistSync2.logger.info("Opped " + name + ".");
                             } else {
                                 WhitelistSync2.logger.debug("Opped " + name + ".");
                             }
-                            
+
                         } catch (NullPointerException e) {
                             WhitelistSync2.logger.error("Player is null?\n" + e.getMessage());
                         }
@@ -625,12 +644,12 @@ public class SqLiteService implements BaseService {
                 } else {
                     if (localUuids.contains(uuid)) {
                         server.getPlayerList().removeOp(player);
-                        if(ConfigHandler.ENABLE_CONSOLE_OUTPUT) {
+                        if (ConfigHandler.ENABLE_CONSOLE_OUTPUT) {
                             WhitelistSync2.logger.info("Deopped " + name + ".");
                         } else {
                             WhitelistSync2.logger.debug("Deopped " + name + ".");
                         }
-                        
+
                     }
                 }
                 records++;
@@ -642,7 +661,7 @@ public class SqLiteService implements BaseService {
             stmt.close();
             conn1.close();
             return true;
-            
+
         } catch (SQLException e) {
             WhitelistSync2.logger.error("Error querying whitelisted players from database!\n" + e.getMessage());
             return false;

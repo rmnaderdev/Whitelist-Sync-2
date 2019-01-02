@@ -110,6 +110,7 @@ public class MySqlService implements BaseService {
      * Pushes local json whitelist to the database
      *
      * @param server
+     * @return success
      */
     @Override
     public boolean pushLocalWhitelistToDatabase(MinecraftServer server) {
@@ -153,6 +154,7 @@ public class MySqlService implements BaseService {
      * Pushes local json op list to the database
      *
      * @param server
+     * @return success
      */
     @Override
     public boolean pushLocalOpListToDatabase(MinecraftServer server) {
@@ -367,6 +369,7 @@ public class MySqlService implements BaseService {
      * Method adds player to whitelist in database
      *
      * @param player
+     * @return success
      */
     @Override
     public boolean addPlayerToDatabaseWhitelist(GameProfile player) {
@@ -396,6 +399,7 @@ public class MySqlService implements BaseService {
      * Method removes player from whitelist in database
      *
      * @param player
+     * @return success
      */
     @Override
     public boolean removePlayerFromDatabaseWhitelist(GameProfile player) {
@@ -425,6 +429,7 @@ public class MySqlService implements BaseService {
      * Method adds player to op list in database
      *
      * @param player
+     * @return success
      */
     @Override
     public boolean addPlayerToDatabaseOp(GameProfile player) {
@@ -462,6 +467,7 @@ public class MySqlService implements BaseService {
      * Method removes player from op list in database
      *
      * @param player
+     * @return success
      */
     @Override
     public boolean removePlayerFromDatabaseOp(GameProfile player) {
@@ -492,6 +498,7 @@ public class MySqlService implements BaseService {
      * whitelist
      *
      * @param server
+     * @return success
      */
     @Override
     public boolean updateLocalWhitelistFromDatabase(MinecraftServer server) {
@@ -556,6 +563,7 @@ public class MySqlService implements BaseService {
      * Method pulls op list from database and merges it into the local op list
      *
      * @param server
+     * @return success
      */
     @Override
     public boolean updateLocalOpListFromDatabase(MinecraftServer server) {

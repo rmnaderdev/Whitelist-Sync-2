@@ -58,8 +58,8 @@ public class WhitelistSync2 {
             throw new ConfigErrorException("Please check what WHITELIST_MODE is set in the config"
                     + "and make sure it is set to a supported mode.");
         }
-        
-        
+
+        // TODO: Add config for microservice
         logger.info("Database setup!");
     }
 
