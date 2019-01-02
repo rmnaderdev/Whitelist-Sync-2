@@ -6,7 +6,6 @@ import com.potatosaucevfx.whitelistsync2.commands.CommandWhitelist;
 import com.potatosaucevfx.whitelistsync2.config.ConfigHandler;
 import com.potatosaucevfx.whitelistsync2.exceptions.ConfigErrorException;
 import com.potatosaucevfx.whitelistsync2.services.BaseService;
-import com.potatosaucevfx.whitelistsync2.services.MicroServiceThread;
 import com.potatosaucevfx.whitelistsync2.services.MySqlService;
 import com.potatosaucevfx.whitelistsync2.services.SqLiteService;
 import java.io.File;
@@ -41,7 +40,6 @@ public class WhitelistSync2 {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent e) {
-        logger.info("\n\nHello Minecraft!\n");
         UpdateConfig(e);
     }
 
