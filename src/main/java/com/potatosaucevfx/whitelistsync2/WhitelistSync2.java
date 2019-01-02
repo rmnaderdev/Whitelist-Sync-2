@@ -56,8 +56,7 @@ public class WhitelistSync2 {
             throw new ConfigErrorException("Please check what WHITELIST_MODE is set in the config"
                     + "and make sure it is set to a supported mode.");
         }
-
-        // TODO: Add config for microservice
+        
         logger.info("Database setup!");
     }
 
@@ -76,7 +75,7 @@ public class WhitelistSync2 {
         // Check if whitelisting is enabled.
         if (!event.getServer().getPlayerList().isWhiteListEnabled()) {
             logger.info("Oh no! I see whitelisting isn't enabled in the server properties. "
-                    + "I assume this is not intentional, I'll enable it for you!");
+                    + "I assume this is not intentional, I'll enable it for you! :D");
             event.getServer().getPlayerList().setWhiteListEnabled(true);
         }
 
