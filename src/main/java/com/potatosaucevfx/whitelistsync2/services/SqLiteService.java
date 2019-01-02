@@ -36,9 +36,10 @@ public class SqLiteService implements BaseService {
 
     /**
      * Method to load database on startup.
+     *
      * @return success
      */
-    private Boolean loadDatabase() {
+    private boolean loadDatabase() {
         // If database does not exist.
         if (!databaseFile.exists()) {
             createNewDatabase();
@@ -68,116 +69,112 @@ public class SqLiteService implements BaseService {
                 Statement stmt2 = conn.createStatement();
                 stmt2.execute(sql);
             }
-
+            conn.close();
+            return true;
         } catch (SQLException e) {
             WhitelistSync2.logger.error("Error creating op or whitelist table!\n" + e.getMessage());
             return false;
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException ex) {
-                WhitelistSync2.logger.error("Error closing connection for creating whitelist table!\n" + ex.getMessage());
-            }
         }
-        return true;
+
     }
 
     /**
      * Pushes local json whitelist to the database
+     *
      * @param server
      */
     @Override
-    public void pushLocalWhitelistToDatabase(MinecraftServer server) {
+    public boolean pushLocalWhitelistToDatabase(MinecraftServer server) {
         // Load local whitelist to memory.
         ArrayList<String> uuids = WhitelistRead.getWhitelistUUIDs();
         ArrayList<String> names = WhitelistRead.getWhitelistNames();
 
         // Start job on thread to avoid lag.
-        new Thread(() -> {
-            // Keep track of records.
-            int records = 0;
-            try {
-                // Connect to database.
-                Connection conn1 = DriverManager.getConnection("jdbc:sqlite:" + ConfigHandler.sqliteDatabasePath);
-                Statement stmt = conn1.createStatement();
-                long startTime = System.currentTimeMillis();
-                // Loop through local whitelist and insert into database.
-                for (int i = 0; i < uuids.size() || i < names.size(); i++) {
-                    if ((uuids.get(i) != null) && (names.get(i) != null)) {
-                        String sql = "INSERT OR REPLACE INTO whitelist(uuid, name, whitelisted) VALUES (\'" + uuids.get(i) + "\', \'" + names.get(i) + "\', 1);";
-                        stmt.execute(sql);
-                        records++;
-                    }
+        // Keep track of records.
+        int records = 0;
+        try {
+            // Connect to database.
+            Connection conn1 = DriverManager.getConnection("jdbc:sqlite:" + ConfigHandler.sqliteDatabasePath);
+            Statement stmt = conn1.createStatement();
+            long startTime = System.currentTimeMillis();
+            // Loop through local whitelist and insert into database.
+            for (int i = 0; i < uuids.size() || i < names.size(); i++) {
+                if ((uuids.get(i) != null) && (names.get(i) != null)) {
+                    String sql = "INSERT OR REPLACE INTO whitelist(uuid, name, whitelisted) VALUES (\'" + uuids.get(i) + "\', \'" + names.get(i) + "\', 1);";
+                    stmt.execute(sql);
+                    records++;
                 }
-                // Record time taken.
-                long timeTaken = System.currentTimeMillis() - startTime;
-                WhitelistSync2.logger.debug("Whitelist Table Updated | Took " + timeTaken + "ms | Wrote " + records + " records.");
-                stmt.close();
-                conn1.close();
-                
-            } catch (SQLException e) {
-                WhitelistSync2.logger.error("Failed to update database with local records.\n" + e.getMessage());
             }
-        }).start();
+            // Record time taken.
+            long timeTaken = System.currentTimeMillis() - startTime;
+            WhitelistSync2.logger.debug("Whitelist Table Updated | Took " + timeTaken + "ms | Wrote " + records + " records.");
+            stmt.close();
+            conn1.close();
+
+            return true;
+        } catch (SQLException e) {
+            WhitelistSync2.logger.error("Failed to update database with local records.\n" + e.getMessage());
+            return false;
+        }
     }
 
     /**
      * Pushes local json op list to the database
+     *
      * @param server
      */
     @Override
-    public void pushLocalOpListToDatabase(MinecraftServer server) {
+    public boolean pushLocalOpListToDatabase(MinecraftServer server) {
         // Load local ops to memory.
         ArrayList<OpUser> opUsers = OPlistRead.getOppedUsers();
 
         // Start job on thread to avoid lag.
-        new Thread(() -> {
-            // Keep track of records.
-            int records = 0;
-            try {
-                // Connect to database.
-                Connection conn1 = DriverManager.getConnection("jdbc:sqlite:" + ConfigHandler.sqliteDatabasePath);
+        // Keep track of records.
+        int records = 0;
+        try {
+            // Connect to database.
+            Connection conn1 = DriverManager.getConnection("jdbc:sqlite:" + ConfigHandler.sqliteDatabasePath);
 
-                // If syncing op list
-                if (ConfigHandler.SYNC_OP_LIST) {
-                    records = 0;
-                    long opStartTime = System.currentTimeMillis();
-                    // Loop through ops list and add to DB
-                    for (OpUser opUser : opUsers) {
-                        try {
-                            PreparedStatement sql = conn1.prepareStatement("INSERT IGNORE INTO " + ConfigHandler.mySQL_DBname + ".op(uuid, name, level, bypassesPlayerLimit, isOp) VALUES (?, ?, ?, ?, true)");
-                            sql.setString(1, opUser.getUuid());
-                            sql.setString(2, opUser.getName());
-                            sql.setInt(3, opUser.getLevel());
-                            sql.setInt(4, opUser.isBypassesPlayerLimit() ? 1 : 0);
-                            sql.executeUpdate();
-                            records++;
-                        } catch (ClassCastException e) {
-                            e.printStackTrace();
-                        }
+            // If syncing op list
+            if (ConfigHandler.SYNC_OP_LIST) {
+                records = 0;
+                long opStartTime = System.currentTimeMillis();
+                // Loop through ops list and add to DB
+                for (OpUser opUser : opUsers) {
+                    try {
+                        PreparedStatement sql = conn1.prepareStatement("INSERT IGNORE INTO " + ConfigHandler.mySQL_DBname + ".op(uuid, name, level, bypassesPlayerLimit, isOp) VALUES (?, ?, ?, ?, true)");
+                        sql.setString(1, opUser.getUuid());
+                        sql.setString(2, opUser.getName());
+                        sql.setInt(3, opUser.getLevel());
+                        sql.setInt(4, opUser.isBypassesPlayerLimit() ? 1 : 0);
+                        sql.executeUpdate();
                         records++;
+                    } catch (ClassCastException e) {
+                        e.printStackTrace();
                     }
-                    // Record time taken.
-                    long opTimeTaken = System.currentTimeMillis() - opStartTime;
-                    WhitelistSync2.logger.info("Wrote " + records + " to op table in " + opTimeTaken + "ms.");
-                    WhitelistSync2.logger.debug("Op Table Updated | Took " + opTimeTaken + "ms | Wrote " + records + " records.");
-                } else {
-                    // If op syncing not enabled
-                    WhitelistSync2.logger.error("Op list syncing is currently disabled in your config. "
-                            + "Please enable it and restart the server to use this feature");
+                    records++;
                 }
-                conn1.close();
-            } catch (SQLException e) {
-                WhitelistSync2.logger.error("Failed to update database with local records.\n" + e.getMessage());
+                // Record time taken.
+                long opTimeTaken = System.currentTimeMillis() - opStartTime;
+                WhitelistSync2.logger.info("Wrote " + records + " to op table in " + opTimeTaken + "ms.");
+                WhitelistSync2.logger.debug("Op Table Updated | Took " + opTimeTaken + "ms | Wrote " + records + " records.");
+            } else {
+                // If op syncing not enabled
+                WhitelistSync2.logger.error("Op list syncing is currently disabled in your config. "
+                        + "Please enable it and restart the server to use this feature");
             }
-        }).start();
+            conn1.close();
+            return true;
+
+        } catch (SQLException e) {
+            WhitelistSync2.logger.error("Failed to update database with local records.\n" + e.getMessage());
+            return false;
+        }
     }
 
-    
     /**
      * Pull uuids of whitelisted players from database
+     *
      * @param server
      * @return List of whitelisted player uuids
      */
@@ -224,6 +221,7 @@ public class SqLiteService implements BaseService {
 
     /**
      * Pull uuids of opped players from database
+     *
      * @param server
      * @return List of opped player uuids
      */
@@ -279,9 +277,9 @@ public class SqLiteService implements BaseService {
         }
     }
 
-    
     /**
      * Pull names of whitelisted players from database
+     *
      * @param server
      * @return List of whitelisted players names
      */
@@ -326,9 +324,10 @@ public class SqLiteService implements BaseService {
         }
         return names;
     }
-    
+
     /**
      * Pull names of opped players from database
+     *
      * @param server
      * @return List of opped players names
      */
@@ -382,235 +381,272 @@ public class SqLiteService implements BaseService {
             return new ArrayList<>();
         }
     }
-    
+
     /**
      * Method adds player to whitelist in database
-     * @param player 
+     *
+     * @param player
      */
     // TODO: Add some sort of feedback
     @Override
-    public void addPlayerToDatabaseWhitelist(GameProfile player) {
-        new Thread(() -> {
-            try {
-                // Open connection
-                Connection conn1 = DriverManager.getConnection("jdbc:sqlite:" + ConfigHandler.sqliteDatabasePath);
-                Statement stmt = conn1.createStatement();
-                String sql = "INSERT OR REPLACE INTO whitelist(uuid, name, whitelisted) VALUES (\'" + player.getId() + "\', \'" + player.getName() + "\', 1);";
-                // Start time.
-                long startTime = System.currentTimeMillis();
-                // Execute statement.
-                stmt.execute(sql);
-                // Time taken.
-                long timeTaken = System.currentTimeMillis() - startTime;
-                WhitelistSync2.logger.debug("Database Added " + player.getName() + " to whitelist | Took " + timeTaken + "ms");
-                stmt.close();
-                conn1.close();
-            } catch (SQLException e) {
-                WhitelistSync2.logger.error("Error adding " + player.getName() + " to whitelist database!\n" + e.getMessage());
-            }
-        }).start();
+    public boolean addPlayerToDatabaseWhitelist(GameProfile player) {
+
+        try {
+            // Open connection
+            Connection conn1 = DriverManager.getConnection("jdbc:sqlite:" + ConfigHandler.sqliteDatabasePath);
+            Statement stmt = conn1.createStatement();
+            String sql = "INSERT OR REPLACE INTO whitelist(uuid, name, whitelisted) VALUES (\'" + player.getId() + "\', \'" + player.getName() + "\', 1);";
+            // Start time.
+            long startTime = System.currentTimeMillis();
+            // Execute statement.
+            stmt.execute(sql);
+            // Time taken.
+            long timeTaken = System.currentTimeMillis() - startTime;
+            WhitelistSync2.logger.debug("Database Added " + player.getName() + " to whitelist | Took " + timeTaken + "ms");
+            stmt.close();
+            conn1.close();
+            return true;
+
+        } catch (SQLException e) {
+            WhitelistSync2.logger.error("Error adding " + player.getName() + " to whitelist database!\n" + e.getMessage());
+            return false;
+        }
     }
 
     /**
      * Method removes player from whitelist in database
-     * @param player 
+     *
+     * @param player
      */
     // TODO: Add some sort of feedback
     @Override
-    public void removePlayerFromDatabaseWhitelist(GameProfile player) {
-        new Thread(() -> {
-            try {
-                // Open connection
-                Connection conn1 = DriverManager.getConnection("jdbc:sqlite:" + ConfigHandler.sqliteDatabasePath);
-                Statement stmt = conn1.createStatement();
-                String sql = "INSERT OR REPLACE INTO whitelist(uuid, name, whitelisted) VALUES "
-                        + "(\'" + player.getId() + "\', \'" + player.getName() + "\', 0);";
-                // Start time.
-                long startTime = System.currentTimeMillis();
-                // Execute SQL.
-                stmt.execute(sql);
-                // Time taken
-                long timeTaken = System.currentTimeMillis() - startTime;
-                WhitelistSync2.logger.debug("Database Removed " + player.getName() + " from whitelist | Took " + timeTaken + "ms");
-                stmt.close();
-                conn1.close();
-            } catch (SQLException e) {
-                WhitelistSync2.logger.error("Error removing " + player.getName() + " from whitelist database!\n" + e.getMessage());
-            }
-        }).start();
+    public boolean removePlayerFromDatabaseWhitelist(GameProfile player) {
+        try {
+            // Open connection
+            Connection conn1 = DriverManager.getConnection("jdbc:sqlite:" + ConfigHandler.sqliteDatabasePath);
+            Statement stmt = conn1.createStatement();
+            String sql = "INSERT OR REPLACE INTO whitelist(uuid, name, whitelisted) VALUES "
+                    + "(\'" + player.getId() + "\', \'" + player.getName() + "\', 0);";
+            // Start time.
+            long startTime = System.currentTimeMillis();
+            // Execute SQL.
+            stmt.execute(sql);
+            // Time taken
+            long timeTaken = System.currentTimeMillis() - startTime;
+            WhitelistSync2.logger.debug("Database Removed " + player.getName() + " from whitelist | Took " + timeTaken + "ms");
+            stmt.close();
+            conn1.close();
+            return true;
+
+        } catch (SQLException e) {
+            WhitelistSync2.logger.error("Error removing " + player.getName() + " from whitelist database!\n" + e.getMessage());
+            return false;
+        }
     }
-    
+
     /**
      * Method adds player to op list in database
-     * @param player 
+     *
+     * @param player
      */
     // TODO: Add some sort of feedback
     @Override
-    public void addPlayerToDatabaseOp(GameProfile player) {
-        new Thread(() -> {
-            try {
-                ArrayList<OpUser> oppedUsers = OPlistRead.getOppedUsers();
-                // Open connection
-                Connection conn1 = DriverManager.getConnection("jdbc:sqlite:" + ConfigHandler.sqliteDatabasePath);
-                Statement stmt = conn1.createStatement();
-                
-                int playerOpLevel = 1;
-                int isBypassesPlayerLimit = 1;
-                
-                for (OpUser opUser : oppedUsers) {
-                    if (opUser.getUuid().equalsIgnoreCase(player.getId().toString())) {
-                        playerOpLevel = opUser.getLevel();
-                        isBypassesPlayerLimit = opUser.isBypassesPlayerLimit() ? 1 : 0;
-                    }
+    public boolean addPlayerToDatabaseOp(GameProfile player) {
+        try {
+            ArrayList<OpUser> oppedUsers = OPlistRead.getOppedUsers();
+            // Open connection
+            Connection conn1 = DriverManager.getConnection("jdbc:sqlite:" + ConfigHandler.sqliteDatabasePath);
+            Statement stmt = conn1.createStatement();
+
+            int playerOpLevel = 1;
+            int isBypassesPlayerLimit = 1;
+
+            for (OpUser opUser : oppedUsers) {
+                if (opUser.getUuid().equalsIgnoreCase(player.getId().toString())) {
+                    playerOpLevel = opUser.getLevel();
+                    isBypassesPlayerLimit = opUser.isBypassesPlayerLimit() ? 1 : 0;
                 }
-                
-                String sql = "INSERT OR REPLACE INTO op(uuid, name, level, isOp, bypassesPlayerLimit) VALUES "
-                        + "(\'" + player.getId() + "\', \'" + player.getName() + "\', " + playerOpLevel +  ", 1, " + isBypassesPlayerLimit + ");";
-                // Start time.
-                long startTime = System.currentTimeMillis();
-                // Execute statement.
-                stmt.execute(sql);
-                // Time taken.
-                long timeTaken = System.currentTimeMillis() - startTime;
-                WhitelistSync2.logger.debug("Database Added " + player.getName() + " to ops | Took " + timeTaken + "ms");
-                stmt.close();
-                conn1.close();
-            } catch (SQLException e) {
-                WhitelistSync2.logger.error("Error adding " + player.getName() + " to op database!\n" + e.getMessage());
             }
-        }).start();
+
+            String sql = "INSERT OR REPLACE INTO op(uuid, name, level, isOp, bypassesPlayerLimit) VALUES "
+                    + "(\'" + player.getId() + "\', \'" + player.getName() + "\', " + playerOpLevel + ", 1, " + isBypassesPlayerLimit + ");";
+            // Start time.
+            long startTime = System.currentTimeMillis();
+            // Execute statement.
+            stmt.execute(sql);
+            // Time taken.
+            long timeTaken = System.currentTimeMillis() - startTime;
+            WhitelistSync2.logger.debug("Database Added " + player.getName() + " to ops | Took " + timeTaken + "ms");
+            stmt.close();
+            conn1.close();
+            return true;
+
+        } catch (SQLException e) {
+            WhitelistSync2.logger.error("Error adding " + player.getName() + " to op database!\n" + e.getMessage());
+            return false;
+        }
     }
 
     /**
      * Method removes player from op list in database
-     * @param player 
+     *
+     * @param player
      */
     // TODO: Add some sort of feedback
     @Override
-    public void removePlayerFromDatabaseOp(GameProfile player) {
-        new Thread(() -> {
-            try {
-                // Open connection
-                Connection conn1 = DriverManager.getConnection("jdbc:sqlite:" + ConfigHandler.sqliteDatabasePath);
-                Statement stmt = conn1.createStatement();
-                String sql = "INSERT OR REPLACE INTO op(uuid, name, isOp) VALUES (\'" + player.getId() + "\', \'" + player.getName() + "\', 0);";
-                // Start time.
-                long startTime = System.currentTimeMillis();
-                // Execute SQL.
-                stmt.execute(sql);
-                // Time taken
-                long timeTaken = System.currentTimeMillis() - startTime;
-                WhitelistSync2.logger.debug("Database Removed " + player.getName() + " from ops | Took " + timeTaken + "ms");
-                stmt.close();
-                conn1.close();
-            } catch (SQLException e) {
-                WhitelistSync2.logger.error("Error removing " + player.getName() + " from op database!\n" + e.getMessage());
-            }
-        }).start();
+    public boolean removePlayerFromDatabaseOp(GameProfile player) {
+        try {
+            // Open connection
+            Connection conn1 = DriverManager.getConnection("jdbc:sqlite:" + ConfigHandler.sqliteDatabasePath);
+            Statement stmt = conn1.createStatement();
+            String sql = "INSERT OR REPLACE INTO op(uuid, name, isOp) VALUES (\'" + player.getId() + "\', \'" + player.getName() + "\', 0);";
+            // Start time.
+            long startTime = System.currentTimeMillis();
+            // Execute SQL.
+            stmt.execute(sql);
+            // Time taken
+            long timeTaken = System.currentTimeMillis() - startTime;
+            WhitelistSync2.logger.debug("Database Removed " + player.getName() + " from ops | Took " + timeTaken + "ms");
+            stmt.close();
+            conn1.close();
+            return true;
+
+        } catch (SQLException e) {
+            WhitelistSync2.logger.error("Error removing " + player.getName() + " from op database!\n" + e.getMessage());
+            return false;
+        }
     }
 
     /**
-     * Method pulls whitelist from database and merges it into the local whitelist
-     * @param server 
+     * Method pulls whitelist from database and merges it into the local
+     * whitelist
+     *
+     * @param server
      */
     @Override
-    public void updateLocalWhitelistFromDatabase(MinecraftServer server) {
-        new Thread(() -> {
-            try {
-                int records = 0;
-                Connection conn1 = DriverManager.getConnection("jdbc:sqlite:" + ConfigHandler.sqliteDatabasePath);
-                Statement stmt = conn1.createStatement();
-                String sql = "SELECT name, uuid, whitelisted FROM whitelist;";
-                long startTime = System.currentTimeMillis();
-                stmt.execute(sql);
-                ResultSet rs = stmt.executeQuery(sql);
-                ArrayList<String> localUuids = WhitelistRead.getWhitelistUUIDs();
-                while (rs.next()) {
-                    int whitelisted = rs.getInt("whitelisted");
-                    String uuid = rs.getString("uuid");
-                    String name = rs.getString("name");
-                    GameProfile player = new GameProfile(UUID.fromString(uuid), name);
+    public boolean updateLocalWhitelistFromDatabase(MinecraftServer server) {
+        try {
+            int records = 0;
+            Connection conn1 = DriverManager.getConnection("jdbc:sqlite:" + ConfigHandler.sqliteDatabasePath);
+            Statement stmt = conn1.createStatement();
+            String sql = "SELECT name, uuid, whitelisted FROM whitelist;";
+            long startTime = System.currentTimeMillis();
+            stmt.execute(sql);
+            ResultSet rs = stmt.executeQuery(sql);
+            ArrayList<String> localUuids = WhitelistRead.getWhitelistUUIDs();
+            while (rs.next()) {
+                int whitelisted = rs.getInt("whitelisted");
+                String uuid = rs.getString("uuid");
+                String name = rs.getString("name");
+                GameProfile player = new GameProfile(UUID.fromString(uuid), name);
 
-                    if (whitelisted == 1) {
-                        if (!localUuids.contains(uuid)) {
-                            try {
-                                server.getPlayerList().addWhitelistedPlayer(player);
-                            } catch (NullPointerException e) {
-                                WhitelistSync2.logger.error("Player is null?\n" + e.getMessage());
+                if (whitelisted == 1) {
+                    if (!localUuids.contains(uuid)) {
+                        try {
+                            server.getPlayerList().addWhitelistedPlayer(player);
+                            
+                            if(ConfigHandler.ENABLE_CONSOLE_OUTPUT) {
+                                WhitelistSync2.logger.info("Added " + name + " to whitelist.");
+                            } else {
+                                 WhitelistSync2.logger.debug("Added " + name + " to whitelist.");
                             }
-                        }
-                    } else {
-                        WhitelistSync2.logger.debug(uuid + " is NOT whitelisted.");
-                        if (localUuids.contains(uuid)) {
-                            server.getPlayerList().removePlayerFromWhitelist(player);
-                            WhitelistSync2.logger.info("Removed player " + name);
+                            
+                        } catch (NullPointerException e) {
+                            WhitelistSync2.logger.error("Player is null?\n" + e.getMessage());
                         }
                     }
-                    records++;
+                } else {
+                    if (localUuids.contains(uuid)) {
+                        server.getPlayerList().removePlayerFromWhitelist(player);
+                        
+                        if(ConfigHandler.ENABLE_CONSOLE_OUTPUT) {
+                            WhitelistSync2.logger.info("Removed " + name + " from whitelist.");
+                        } else {
+                            WhitelistSync2.logger.debug("Removed " + name + " from whitelist.");
+                        }
+                    }
                 }
-                long timeTaken = System.currentTimeMillis() - startTime;
-                WhitelistSync2.logger.debug("Whitelist Table Pulled | Took " + timeTaken + "ms | Wrote " + records + " records.");
-                //WhitelistSync2.logger.info("Local whitelist.json up to date!");
-
-                stmt.close();
-                conn1.close();
-            } catch (SQLException e) {
-                WhitelistSync2.logger.error("Error querying whitelisted players from database!\n" + e.getMessage());
+                records++;
             }
-        }).start();
+            long timeTaken = System.currentTimeMillis() - startTime;
+            WhitelistSync2.logger.debug("Whitelist Table Pulled | Took " + timeTaken + "ms | Wrote " + records + " records.");
+            //WhitelistSync2.logger.info("Local whitelist.json up to date!");
+
+            stmt.close();
+            conn1.close();
+            return true;
+
+        } catch (SQLException e) {
+            WhitelistSync2.logger.error("Error querying whitelisted players from database!\n" + e.getMessage());
+            return false;
+
+        }
     }
-    
+
     /**
      * Method pulls op list from database and merges it into the local op list
-     * @param server 
+     *
+     * @param server
      */
     @Override
-    public void updateLocalOpListFromDatabase(MinecraftServer server) {
-        new Thread(() -> {
-            try {
-                int records = 0;
-                Connection conn1 = DriverManager.getConnection("jdbc:sqlite:" + ConfigHandler.sqliteDatabasePath);
-                Statement stmt = conn1.createStatement();
-                String sql = "SELECT name, uuid, isOp FROM op;";
-                long startTime = System.currentTimeMillis();
-                stmt.execute(sql);
-                ResultSet rs = stmt.executeQuery(sql);
-                ArrayList<String> localUuids = OPlistRead.getOpsUUIDs();
-                while (rs.next()) {
-                    
-                    String uuid = rs.getString("uuid");
-                    String name = rs.getString("name");
-                    int opped = rs.getInt("isOp");
-                    
-                    GameProfile player = new GameProfile(UUID.fromString(uuid), name);
+    public boolean updateLocalOpListFromDatabase(MinecraftServer server) {
+        try {
+            int records = 0;
+            Connection conn1 = DriverManager.getConnection("jdbc:sqlite:" + ConfigHandler.sqliteDatabasePath);
+            Statement stmt = conn1.createStatement();
+            String sql = "SELECT name, uuid, isOp FROM op;";
+            long startTime = System.currentTimeMillis();
+            stmt.execute(sql);
+            ResultSet rs = stmt.executeQuery(sql);
+            ArrayList<String> localUuids = OPlistRead.getOpsUUIDs();
+            while (rs.next()) {
 
-                    if (opped == 1) {
-                        if (!localUuids.contains(uuid)) {
-                            try {
-                                server.getPlayerList().addOp(player);
-                            } catch (NullPointerException e) {
-                                WhitelistSync2.logger.error("Player is null?\n" + e.getMessage());
+                String uuid = rs.getString("uuid");
+                String name = rs.getString("name");
+                int opped = rs.getInt("isOp");
+
+                GameProfile player = new GameProfile(UUID.fromString(uuid), name);
+
+                if (opped == 1) {
+                    if (!localUuids.contains(uuid)) {
+                        try {
+                            server.getPlayerList().addOp(player);
+                            
+                            if(ConfigHandler.ENABLE_CONSOLE_OUTPUT) {
+                                WhitelistSync2.logger.info("Opped " + name + ".");
+                            } else {
+                                WhitelistSync2.logger.debug("Opped " + name + ".");
                             }
-                        }
-                    } else {
-                        WhitelistSync2.logger.debug(uuid + " is NOT opped.");
-                        if (localUuids.contains(uuid)) {
-                            server.getPlayerList().removeOp(player);
-                            WhitelistSync2.logger.debug("Removed player " + name);
+                            
+                        } catch (NullPointerException e) {
+                            WhitelistSync2.logger.error("Player is null?\n" + e.getMessage());
                         }
                     }
-                    records++;
+                } else {
+                    if (localUuids.contains(uuid)) {
+                        server.getPlayerList().removeOp(player);
+                        if(ConfigHandler.ENABLE_CONSOLE_OUTPUT) {
+                            WhitelistSync2.logger.info("Deopped " + name + ".");
+                        } else {
+                            WhitelistSync2.logger.debug("Deopped " + name + ".");
+                        }
+                        
+                    }
                 }
-                long timeTaken = System.currentTimeMillis() - startTime;
-                WhitelistSync2.logger.debug("Op Table Pulled | Took " + timeTaken + "ms | Wrote " + records + " records.");
-                //WhitelistSync2.logger.info("Local ops.json up to date!");
-
-                stmt.close();
-                conn1.close();
-            } catch (SQLException e) {
-                WhitelistSync2.logger.error("Error querying whitelisted players from database!\n" + e.getMessage());
+                records++;
             }
-        }).start();
+            long timeTaken = System.currentTimeMillis() - startTime;
+            WhitelistSync2.logger.debug("Op Table Pulled | Took " + timeTaken + "ms | Wrote " + records + " records.");
+            //WhitelistSync2.logger.info("Local ops.json up to date!");
+
+            stmt.close();
+            conn1.close();
+            return true;
+            
+        } catch (SQLException e) {
+            WhitelistSync2.logger.error("Error querying whitelisted players from database!\n" + e.getMessage());
+            return false;
+        }
     }
 
     /**

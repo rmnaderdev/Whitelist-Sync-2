@@ -21,6 +21,7 @@ public class ConfigHandler {
     // General settings
     public static String WHITELIST_MODE = "SQLITE"; // SQLITE or MYSQL, use mode finals above.
     public static boolean SYNC_OP_LIST = false; // Sync ops list.
+    public static boolean ENABLE_CONSOLE_OUTPUT = false; // Logs remote sync changes to console.
 
     // sqlite config
     public static String sqliteDatabasePath = "./whitelist.db";
@@ -63,6 +64,9 @@ public class ConfigHandler {
 
         SYNC_OP_LIST = cfg.getBoolean("Sync OPs list to database", CATEGORY_GENERAL, SYNC_OP_LIST, "Option on wheather to sync the server's op list to the database.");
 
+        ENABLE_CONSOLE_OUTPUT = cfg.getBoolean("Log Remote Updates", CATEGORY_GENERAL, ENABLE_CONSOLE_OUTPUT, 
+                "Option on wheather to output whitelist/op changes triggered by other servers. This will show when a new user is opped or whitelisted on anther connected sever.");
+        
         // Sqlite settings
         cfg.addCustomCategoryComment(SQLITE_CATEGORY, "Sqlite configuration (To enable "
                 + "Sqlitee, refer to the mode setting in the general configuration).");

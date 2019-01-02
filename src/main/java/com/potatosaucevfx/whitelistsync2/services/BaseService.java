@@ -11,10 +11,10 @@ import net.minecraft.server.MinecraftServer;
 public interface BaseService {
     
     // Pushed local whitelist to database
-    public void pushLocalWhitelistToDatabase(MinecraftServer server);
+    public boolean pushLocalWhitelistToDatabase(MinecraftServer server);
     
     // Pushed local op list to database
-    public void pushLocalOpListToDatabase(MinecraftServer server);
+    public boolean pushLocalOpListToDatabase(MinecraftServer server);
 
     // Gets ArrayList of uuids whitelisted in database.
     public ArrayList<String> pullWhitelistedUuidsFromDatabase(MinecraftServer server);
@@ -29,20 +29,20 @@ public interface BaseService {
     public ArrayList<String> pullOppedNamesFromDatabase(MinecraftServer server);
 
     // Adds player to database whitelist.
-    public void addPlayerToDatabaseWhitelist(GameProfile player);
+    public boolean addPlayerToDatabaseWhitelist(GameProfile player);
 
     // Adds op player to database.
-    public void addPlayerToDatabaseOp(GameProfile player);
+    public boolean addPlayerToDatabaseOp(GameProfile player);
 
     // Removes player from database.
-    public void removePlayerFromDatabaseWhitelist(GameProfile player);
+    public boolean removePlayerFromDatabaseWhitelist(GameProfile player);
 
     // Removes op player from database.
-    public void removePlayerFromDatabaseOp(GameProfile player);
+    public boolean removePlayerFromDatabaseOp(GameProfile player);
 
     // Copies whitelist from database to server.
-    public void updateLocalWhitelistFromDatabase(MinecraftServer server);
+    public boolean updateLocalWhitelistFromDatabase(MinecraftServer server);
 
     // Copies op list from database to server.
-    public void updateLocalOpListFromDatabase(MinecraftServer server);
+    public boolean updateLocalOpListFromDatabase(MinecraftServer server);
 }

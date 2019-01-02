@@ -57,52 +57,83 @@ public class CommandWhitelist implements ICommand {
         World world = sender.getEntityWorld();
         if (world.isRemote) {
             WhitelistSync2.logger.error("I don't run on client-side!");
-        } 
-        else {
+        } else {
             if (args.length > 0) {
                 if (args.length > 0) {
                     //Action for showing list
                     if (args[0].equalsIgnoreCase("list")) {
-                        
+
                         sender.sendMessage(new TextComponentString(Utilities.FormatWhitelistUsersOutput(service.pullWhitelistedNamesFromDatabase(server))));
-                    
+
                     } // Actions for adding a player to whitelist
                     else if (args[0].equalsIgnoreCase("add")) {
+
                         if (args.length > 1) {
-                            server.getPlayerList().addWhitelistedPlayer(server.getPlayerProfileCache().getGameProfileForUsername(args[1]));
-                            service.addPlayerToDatabaseWhitelist(server.getPlayerProfileCache().getGameProfileForUsername(args[1]));
-                            sender.sendMessage(new TextComponentString(args[1] + " added to the whitelist."));
+
+                            GameProfile user = server.getPlayerProfileCache().getGameProfileForUsername(args[1]);
+
+                            if (user != null) {
+
+                                if (service.addPlayerToDatabaseWhitelist(user)) {
+                                    server.getPlayerList().addWhitelistedPlayer(user);
+                                    sender.sendMessage(new TextComponentString(user.getName() + " added to the whitelist."));
+                                } else {
+                                    sender.sendMessage(new TextComponentString("Error adding " + user.getName() + " from whitelist!"));
+                                }
+
+                            } else {
+                                sender.sendMessage(new TextComponentString("User " + args[1] + " not found!"));
+                            }
+
                         } else {
                             sender.sendMessage(new TextComponentString("You must specify a name to add to the whitelist!"));
                         }
                     } // Actions for removing player from whitelist
                     else if (args[0].equalsIgnoreCase("remove")) {
+
                         if (args.length > 1) {
+
                             GameProfile gameprofile = server.getPlayerList().getWhitelistedPlayers().getByName(args[1]);
                             if (gameprofile != null) {
-                                server.getPlayerList().removePlayerFromWhitelist(gameprofile);
-                                service.removePlayerFromDatabaseWhitelist(gameprofile);
-                                sender.sendMessage(new TextComponentString(args[1] + " removed from the whitelist."));
+
+                                if (service.removePlayerFromDatabaseWhitelist(gameprofile)) {
+                                    server.getPlayerList().removePlayerFromWhitelist(gameprofile);
+                                    sender.sendMessage(new TextComponentString(gameprofile.getName() + " removed from the whitelist."));
+                                } else {
+                                    sender.sendMessage(new TextComponentString("Error removing " + gameprofile.getName() + " from whitelist!"));
+                                }
+
                             } else {
                                 sender.sendMessage(new TextComponentString("You must specify a valid name to remove from the whitelist!"));
                             }
+
                         }
+
                     } // Sync Database to server
                     else if (args[0].equalsIgnoreCase("sync")) {
-                        service.updateLocalWhitelistFromDatabase(server); // TODO: Add feedback
+
+                        if (service.updateLocalWhitelistFromDatabase(server)) {
+                            sender.sendMessage(new TextComponentString("Local up to date with database!"));
+                        } else {
+                            sender.sendMessage(new TextComponentString("Error syncing local to database!"));
+                        }
+
                     } // Sync server to database
                     else if (args[0].equalsIgnoreCase("copyservertodatabase")) {
-                        service.pushLocalWhitelistToDatabase(server); // TODO: Add feedback
-                    } 
-                    else {
+
+                        if (service.pushLocalWhitelistToDatabase(server)) {
+                            sender.sendMessage(new TextComponentString("Pushed local to database!"));
+                        } else {
+                            sender.sendMessage(new TextComponentString("Error pushing local to database!"));
+                        }
+
+                    } else {
                         sender.sendMessage(new TextComponentString(USAGE_STRING));
                     }
-                } 
-                else {
+                } else {
                     sender.sendMessage(new TextComponentString(USAGE_STRING));
                 }
-            } 
-            else {
+            } else {
                 sender.sendMessage(new TextComponentString(USAGE_STRING));
             }
         }

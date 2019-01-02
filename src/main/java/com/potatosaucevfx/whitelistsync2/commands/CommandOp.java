@@ -25,7 +25,7 @@ public class CommandOp implements ICommand {
 
     private final ArrayList aliases;
 
-    private final String USAGE_STRING = "/wlop <list|add|remove|sync|copyServerToDatabase>";
+    private final String USAGE_STRING = "/wlop <list|op|deop|sync|copyServerToDatabase>";
 
     private final BaseService service;
 
@@ -65,15 +65,21 @@ public class CommandOp implements ICommand {
                         sender.sendMessage(new TextComponentString(Utilities.FormatOpUsersOutput(service.pullOppedNamesFromDatabase(server))));
 
                     } // Actions for adding a player to whitelist
-                    else if (args[0].equalsIgnoreCase("add")) {
+                    else if (args[0].equalsIgnoreCase("op")) {
+
                         if (args.length > 1) {
 
                             GameProfile player = server.getPlayerProfileCache().getGameProfileForUsername(args[1]);
 
                             if (player != null) {
-                                server.getPlayerList().addOp(player);
-                                service.addPlayerToDatabaseOp(server.getPlayerProfileCache().getGameProfileForUsername(args[1]));
-                                sender.sendMessage(new TextComponentString(args[1] + " opped!"));
+
+                                if (service.addPlayerToDatabaseOp(player)) {
+                                    server.getPlayerList().addOp(player);
+                                    sender.sendMessage(new TextComponentString(player.getName() + " opped!"));
+                                } else {
+                                    sender.sendMessage(new TextComponentString("Error opping " + player.getName() + "!"));
+                                }
+
                             } else {
                                 sender.sendMessage(new TextComponentString("User " + args[1] + " not found!"));
                             }
@@ -81,26 +87,49 @@ public class CommandOp implements ICommand {
                         } else {
                             sender.sendMessage(new TextComponentString("You must specify a name to op!"));
                         }
+
                     } // Actions for removing player from whitelist
-                    else if (args[0].equalsIgnoreCase("remove")) {
+                    else if (args[0].equalsIgnoreCase("deop")) {
+
                         if (args.length > 1) {
+
                             GameProfile gameprofile = server.getPlayerList().getOppedPlayers().getGameProfileFromName(args[1]);
+
                             if (gameprofile != null) {
-                                server.getPlayerList().removeOp(gameprofile);
-                                service.removePlayerFromDatabaseOp(gameprofile);
-                                sender.sendMessage(new TextComponentString(args[1] + " de-opped!"));
+
+                                if (service.removePlayerFromDatabaseOp(gameprofile)) {
+                                    server.getPlayerList().removeOp(gameprofile);
+                                    sender.sendMessage(new TextComponentString(gameprofile.getName() + " de-opped!"));
+                                } else {
+                                    sender.sendMessage(new TextComponentString("Error de-opping " + gameprofile.getName() + "!"));
+                                }
+
                             } else {
-                                sender.sendMessage(new TextComponentString("You must specify a valid name to deop!"));
+                                sender.sendMessage(new TextComponentString("User " + args[1] + " not found!"));
                             }
+
+                        } else {
+                            sender.sendMessage(new TextComponentString("You must specify a valid name to deop!"));
                         }
-                    }
-                    else if (args[0].equalsIgnoreCase("sync")) {
-                        service.updateLocalOpListFromDatabase(server);
+
+                    } else if (args[0].equalsIgnoreCase("sync")) {
+
+                        if (service.updateLocalOpListFromDatabase(server)) {
+                            sender.sendMessage(new TextComponentString("Local up to date with database!"));
+                        } else {
+                            sender.sendMessage(new TextComponentString("Error syncing local to database!"));
+                        }
+
                     } // Sync server to database
                     else if (args[0].equalsIgnoreCase("copyservertodatabase")) {
-                        service.pushLocalOpListToDatabase(server);
-                    } 
-                    else {
+
+                        if (service.pushLocalOpListToDatabase(server)) {
+                            sender.sendMessage(new TextComponentString("Pushed local to database!"));
+                        } else {
+                            sender.sendMessage(new TextComponentString("Error pushing local to database!"));
+                        }
+
+                    } else {
                         sender.sendMessage(new TextComponentString(USAGE_STRING));
                     }
                 } else {
