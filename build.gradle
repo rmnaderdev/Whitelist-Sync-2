@@ -4,7 +4,7 @@ buildscript {
         maven { url = "http://files.minecraftforge.net/maven" }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
     }
 }
@@ -18,7 +18,7 @@ shadowJar {
 }
 
 
-version = "2.0-1.12.2_Beta"
+version = "2.0-1.10.2-beta"
 group = "com.potatosaucevfx.whitelistsync2"
 archivesBaseName = "whitelistsync2"
 
@@ -29,15 +29,15 @@ compileJava {
 }
 
 minecraft {
-    // version = "1.10.2-12.18.3.2511" // 1.10.2
-    // version = "1.11.2-13.20.1.2588" // 1.11.2
-    version = "1.12.2-14.23.5.2768" // 1.12.2
+    version = "1.10.2-12.18.3.2185" // 1.10.2
+    // version = "1.11.2-13.20.1.2386" // 1.11.2
+    // version = "1.12.2-14.23.5.2768" // 1.12.2
     runDir = "run"
 
 
-    // mappings = "snapshot_20161111" // 1.10.2
+    mappings = "snapshot_20161111" // 1.10.2
     // mappings = "snapshot_20161220" // 1.11.2
-    mappings = "snapshot_20171003" // 1.12.2
+    // mappings = "snapshot_20171003" // 1.12.2
 }
 
 repositories {

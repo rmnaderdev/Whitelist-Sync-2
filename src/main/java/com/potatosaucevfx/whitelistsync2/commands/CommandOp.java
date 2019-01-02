@@ -37,17 +37,17 @@ public class CommandOp implements ICommand {
     }
 
     @Override
-    public String getName() {
+    public String getCommandName() {
         return "wlop";
     }
 
     @Override
-    public String getUsage(ICommandSender sender) {
+    public String getCommandUsage(ICommandSender sender) {
         return USAGE_STRING;
     }
 
     @Override
-    public List<String> getAliases() {
+    public List<String> getCommandAliases() {
         return aliases;
     }
 
@@ -62,7 +62,7 @@ public class CommandOp implements ICommand {
                     //Action for showing list
                     if (args[0].equalsIgnoreCase("list")) {
 
-                        sender.sendMessage(new TextComponentString(Utilities.FormatOpUsersOutput(service.pullOppedNamesFromDatabase(server))));
+                        sender.addChatMessage(new TextComponentString(Utilities.FormatOpUsersOutput(service.pullOppedNamesFromDatabase(server))));
 
                     } // Actions for adding a player to whitelist
                     else if (args[0].equalsIgnoreCase("op")) {
@@ -75,17 +75,17 @@ public class CommandOp implements ICommand {
 
                                 if (service.addPlayerToDatabaseOp(player)) {
                                     server.getPlayerList().addOp(player);
-                                    sender.sendMessage(new TextComponentString(player.getName() + " opped!"));
+                                    sender.addChatMessage(new TextComponentString(player.getName() + " opped!"));
                                 } else {
-                                    sender.sendMessage(new TextComponentString("Error opping " + player.getName() + "!"));
+                                    sender.addChatMessage(new TextComponentString("Error opping " + player.getName() + "!"));
                                 }
 
                             } else {
-                                sender.sendMessage(new TextComponentString("User " + args[1] + " not found!"));
+                                sender.addChatMessage(new TextComponentString("User " + args[1] + " not found!"));
                             }
 
                         } else {
-                            sender.sendMessage(new TextComponentString("You must specify a name to op!"));
+                            sender.addChatMessage(new TextComponentString("You must specify a name to op!"));
                         }
 
                     } // Actions for removing player from whitelist
@@ -99,55 +99,55 @@ public class CommandOp implements ICommand {
 
                                 if (service.removePlayerFromDatabaseOp(gameprofile)) {
                                     server.getPlayerList().removeOp(gameprofile);
-                                    sender.sendMessage(new TextComponentString(gameprofile.getName() + " de-opped!"));
+                                    sender.addChatMessage(new TextComponentString(gameprofile.getName() + " de-opped!"));
                                 } else {
-                                    sender.sendMessage(new TextComponentString("Error de-opping " + gameprofile.getName() + "!"));
+                                    sender.addChatMessage(new TextComponentString("Error de-opping " + gameprofile.getName() + "!"));
                                 }
 
                             } else {
-                                sender.sendMessage(new TextComponentString("User " + args[1] + " not found!"));
+                                sender.addChatMessage(new TextComponentString("User " + args[1] + " not found!"));
                             }
 
                         } else {
-                            sender.sendMessage(new TextComponentString("You must specify a valid name to deop!"));
+                            sender.addChatMessage(new TextComponentString("You must specify a valid name to deop!"));
                         }
 
                     } else if (args[0].equalsIgnoreCase("sync")) {
 
                         if (service.updateLocalOpListFromDatabase(server)) {
-                            sender.sendMessage(new TextComponentString("Local up to date with database!"));
+                            sender.addChatMessage(new TextComponentString("Local up to date with database!"));
                         } else {
-                            sender.sendMessage(new TextComponentString("Error syncing local to database!"));
+                            sender.addChatMessage(new TextComponentString("Error syncing local to database!"));
                         }
 
                     } // Sync server to database
                     else if (args[0].equalsIgnoreCase("copyservertodatabase")) {
 
                         if (service.pushLocalOpListToDatabase(server)) {
-                            sender.sendMessage(new TextComponentString("Pushed local to database!"));
+                            sender.addChatMessage(new TextComponentString("Pushed local to database!"));
                         } else {
-                            sender.sendMessage(new TextComponentString("Error pushing local to database!"));
+                            sender.addChatMessage(new TextComponentString("Error pushing local to database!"));
                         }
 
                     } else {
-                        sender.sendMessage(new TextComponentString(USAGE_STRING));
+                        sender.addChatMessage(new TextComponentString(USAGE_STRING));
                     }
                 } else {
-                    sender.sendMessage(new TextComponentString(USAGE_STRING));
+                    sender.addChatMessage(new TextComponentString(USAGE_STRING));
                 }
             } else {
-                sender.sendMessage(new TextComponentString("Whitelist Sync Op management is not enabled. You must enable it in the config."));
+                sender.addChatMessage(new TextComponentString("Whitelist Sync Op management is not enabled. You must enable it in the config."));
             }
         }
     }
 
     @Override
     public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
-        return sender.canUseCommand(4, "wlop");
+        return sender.canCommandSenderUseCommand(4, "wlop");
     }
 
     @Override
-    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
+    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender,
             String[] args,
             @Nullable BlockPos pos) {
         if (args.length == 1) {

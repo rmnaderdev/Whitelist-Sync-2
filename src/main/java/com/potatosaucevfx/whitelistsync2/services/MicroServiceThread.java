@@ -9,7 +9,6 @@ import com.potatosaucevfx.whitelistsync2.models.StatusResponse;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.text.TextComponentString;
 import static spark.Spark.*;
 
 /**
@@ -65,11 +64,11 @@ public class MicroServiceThread implements Runnable {
             if (req.queryParams("apikey").equals(API_KEY)) {
 
                 List<String> uuids = new ArrayList<>();
-                for (GameProfile player : server.getOnlinePlayerProfiles()) {
+                for (GameProfile player : server.getPlayerList().getAllProfiles()) {
                     uuids.add(player.getId().toString());
                 }
 
-                return new Gson().toJson(new JsonResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(server.getPlayerList().getOnlinePlayerNames())));
+                return new Gson().toJson(new JsonResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(server.getPlayerList().getAllProfiles())));
             } else {
                 return new Gson().toJson(new JsonResponse(StatusResponse.ERROR, "Invalid API Key"));
             }
@@ -81,7 +80,7 @@ public class MicroServiceThread implements Runnable {
             if (req.queryParams("apikey").equals(API_KEY)) {
 
                 List<String> uuids = new ArrayList<>();
-                for (GameProfile player : server.getOnlinePlayerProfiles()) {
+                for (GameProfile player : server.getPlayerList().getAllProfiles()) {
                     uuids.add(player.getId().toString());
                 }
                 return new Gson().toJson(new JsonResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(uuids.toArray())));
