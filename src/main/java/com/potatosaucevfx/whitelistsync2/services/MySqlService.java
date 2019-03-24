@@ -31,7 +31,7 @@ public class MySqlService implements BaseService {
     private String password;
 
     public MySqlService() {
-        this.url = "jdbc:mysql://" + ConfigHandler.mySQL_IP + ":" + ConfigHandler.mySQL_PORT + "/";
+        this.url = "jdbc:mysql://" + ConfigHandler.mySQL_IP + ":" + ConfigHandler.mySQL_PORT + "/?serverTimezone=UTC";
         this.username = ConfigHandler.mySQL_Username;
         this.password = ConfigHandler.mySQL_Password;
 
