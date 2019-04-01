@@ -30,7 +30,7 @@ public class WhitelistRead {
 
     // Get whitelisted usernames as a string array list
     public static ArrayList getWhitelistNames() {
-        ArrayList<String> names = new ArrayList<String>();
+        ArrayList<String> names = new ArrayList<>();
         // WOAH ITS A LAMBDA EXPRESSION!!! CRAZY COMPLEX STUFF GOIN ON RIGHT HERE!!! :D
         getWhitelistJson().forEach(emp -> parseToList(emp.getAsJsonObject(), names, "name"));
         return names;
@@ -38,11 +38,11 @@ public class WhitelistRead {
 
     // Get Arraylist of whitelisted users on server.
     public static ArrayList<WhitelistUser> getWhitelistUsers() {
-        ArrayList<WhitelistUser> users = new ArrayList<WhitelistUser>();
+        ArrayList<WhitelistUser> users = new ArrayList<>();
         // HOLY SHIT.. ANOTHER LAMBDA EXPRESSION!!!!
         getWhitelistJson().forEach((user) -> {
-            String uuid = ((JsonObject) user).get("uuid").toString();
-            String name = ((JsonObject) user).get("name").toString();
+            String uuid = ((JsonObject) user).get("uuid").getAsString();
+            String name = ((JsonObject) user).get("name").getAsString();
             users.add(new WhitelistUser(uuid, name));
         });
         return users;
@@ -55,13 +55,18 @@ public class WhitelistRead {
     private static JsonArray getWhitelistJson() {
         JsonArray whitelist = null;
         try {
+            
+            
             whitelist = (JsonArray) parser.parse(new FileReader(WhitelistSync2.SERVER_FILEPATH + "/whitelist.json"));
+            WhitelistSync2.logger.debug("getWhitelistJson returned an array of " + whitelist.size() + " entries.");
+            
+            
         } catch (FileNotFoundException e) {
             WhitelistSync2.logger.error("Whitelist.json file not found! :O\n" + e.getMessage());
         } catch (JsonParseException e) {
             WhitelistSync2.logger.error("Whitelist.json parse error!! D:\n" + e.getMessage());
         }
-        WhitelistSync2.logger.debug("getWhitelistJson returned an array of " + whitelist.size() + " entries.");
+        
         return whitelist;
     }
     

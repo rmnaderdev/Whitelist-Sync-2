@@ -31,7 +31,19 @@ public class MySqlService implements BaseService {
     private String password;
 
     public MySqlService() {
-        this.url = "jdbc:mysql://" + ConfigHandler.mySQL_IP + ":" + ConfigHandler.mySQL_PORT + "/?serverTimezone=UTC";
+        
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
+        } catch (ClassNotFoundException ex) {
+            WhitelistSync2.logger.error("Failed to connect to the mySQL database! mysql-connector library missing!\n" + ex.getMessage());
+        } catch (InstantiationException ex) {
+            WhitelistSync2.logger.error("Failed to connect to the mySQL database! Failed to instantiate library!\n" + ex.getMessage());
+        } catch (IllegalAccessException ex) {
+            WhitelistSync2.logger.error("Failed to connect to the mySQL database! mysql-connector library missing!\n" + ex.getMessage());
+        }
+        
+                
+        this.url = "jdbc:mysql://" + ConfigHandler.mySQL_IP + ":" + ConfigHandler.mySQL_PORT + "/?serverTimezone=UTC&autoReconnect=true";
         this.username = ConfigHandler.mySQL_Username;
         this.password = ConfigHandler.mySQL_Password;
 
@@ -456,6 +468,9 @@ public class MySqlService implements BaseService {
             // Time taken.
             long timeTaken = System.currentTimeMillis() - startTime;
             WhitelistSync2.logger.debug("Op Database Added " + player.getName() + " | Took " + timeTaken + "ms");
+            
+            addPlayerToDatabaseWhitelist(player);   // Whitelist player too
+            
             return true;
         } catch (SQLException e) {
             WhitelistSync2.logger.error("Error adding " + player.getName() + " to op database!\n" + e.getMessage());
@@ -472,14 +487,23 @@ public class MySqlService implements BaseService {
     @Override
     public boolean removePlayerFromDatabaseOp(GameProfile player) {
         try {
+            ArrayList<OpUser> oppedUsers = OPlistRead.getOppedUsers();
             // Start time.
             long startTime = System.currentTimeMillis();
             // Open connection
             Connection conn1 = getConnection();
-            String sql = "REPLACE INTO " + ConfigHandler.mySQL_DBname + ".op(uuid, name, isOp) VALUES (?, ?, false)";
+            String sql = "REPLACE INTO " + ConfigHandler.mySQL_DBname + ".op(uuid, name, level, isOp, bypassesPlayerLimit) VALUES (?, ?, ?, false, ?)";
             PreparedStatement stmt = conn1.prepareStatement(sql);
             stmt.setString(1, String.valueOf(player.getId()));
             stmt.setString(2, player.getName());
+            
+            for (OpUser opUser : oppedUsers) {
+                if (opUser.getUuid().equalsIgnoreCase(player.getId().toString())) {
+                    stmt.setInt(3, opUser.getLevel());
+                    stmt.setInt(4, opUser.isBypassesPlayerLimit() ? 1 : 0);
+                }
+            }
+            
             // Execute statement.
             stmt.execute();
             // Time taken.

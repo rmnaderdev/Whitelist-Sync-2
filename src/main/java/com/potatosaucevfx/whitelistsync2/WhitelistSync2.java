@@ -85,11 +85,6 @@ public class WhitelistSync2 {
         logger.info("Starting Sync Thread...");
         Utilities.StartSyncThread(event.getServer(), whitelistService);
 
-        if (ConfigHandler.ENABLE_MICRO_SERVICE) {
-            logger.info("Starting Micro Service REST Api Thread...");
-            Utilities.StartMicroServiceThread(event.getServer(), whitelistService);
-        }
-
         logger.info("----------------------------------------------");
         logger.info("----------------------------------------------");
         logger.info("----------------------------------------------");

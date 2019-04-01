@@ -26,7 +26,7 @@ Installation:
 
 Just download this mod and add it to your mods folder. :)
 Run your server and setup the config (whitelistsync.cfg).
-NOTE: Be sure to make the database path the same for all of the servers you want to link together!
+NOTE: Be sure to make the sqlite database path the same for all of the servers you want to link together!
 When the server runs it is going to make a new database. If you want to push your current server whitelist to the database use "/wl copyWhiteListToDatabase" then you can start all of your other server and they will sync to the database.
  
 

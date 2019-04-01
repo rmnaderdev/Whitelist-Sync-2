@@ -48,5 +48,12 @@ public class OpUser {
     public boolean isIsOp() {
         return isOp;
     }
+
+    @Override
+    public String toString() {
+        return "OpUser{" + "isOp=" + isOp + ", uuid=" + uuid + ", name=" + name + ", level=" + level + ", bypassesPlayerLimit=" + bypassesPlayerLimit + '}';
+    }
+    
+    
     
 }

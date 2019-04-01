@@ -485,7 +485,7 @@ public class SqLiteService implements BaseService {
             sql.setString(1, player.getId().toString());
             sql.setString(2, player.getName());
             sql.setInt(3, playerOpLevel);
-            sql.setInt(5, isBypassesPlayerLimit);
+            sql.setInt(4, isBypassesPlayerLimit);
             sql.executeUpdate();
 
             // Time taken.
