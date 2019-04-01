@@ -20,7 +20,7 @@ plugins {
 apply plugin: 'net.minecraftforge.gradle.forge'
 
 
-version = "2.0.2-1.12.2_Beta"
+version = "2.1-1.12.2"
 group = "com.potatosaucevfx.whitelistsync2"
 archivesBaseName = "whitelistsync2"
 

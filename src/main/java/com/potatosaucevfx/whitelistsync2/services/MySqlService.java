@@ -468,6 +468,9 @@ public class MySqlService implements BaseService {
             // Time taken.
             long timeTaken = System.currentTimeMillis() - startTime;
             WhitelistSync2.logger.debug("Op Database Added " + player.getName() + " | Took " + timeTaken + "ms");
+            
+            addPlayerToDatabaseWhitelist(player);   // Whitelist player too
+            
             return true;
         } catch (SQLException e) {
             WhitelistSync2.logger.error("Error adding " + player.getName() + " to op database!\n" + e.getMessage());

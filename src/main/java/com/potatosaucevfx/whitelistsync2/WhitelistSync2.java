@@ -28,7 +28,7 @@ import org.apache.logging.log4j.Logger;
 public class WhitelistSync2 {
 
     public static final String MODID = "whitelistsync2";
-    public static final String VERSION = "2.0.2-1.12.2_Beta"; // Change gradle build config too!
+    public static final String VERSION = "2.1-1.12.2"; // Change gradle build config too!
     public static String SERVER_FILEPATH;
     public static Configuration config;
 
