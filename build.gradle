@@ -14,6 +14,7 @@ buildscript {
 
 plugins {
     id 'com.github.johnrengelman.shadow' version '1.2.4'
+    id 'java'
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
@@ -47,25 +48,20 @@ dependencies {
     // https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple
     compile 'com.googlecode.json-simple:json-simple:1.1.1'
     // https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
-    compile 'org.xerial:sqlite-jdbc:3.21.0.1'
+    runtime 'org.xerial:sqlite-jdbc:3.21.0.1'
     // https://mvnrepository.com/artifact/mysql/mysql-connector-java
-    compile 'mysql:mysql-connector-java:8.0.8-dmr'
-    // https://mvnrepository.com/artifact/com.sparkjava/spark-core/
-    compile 'com.sparkjava:spark-core:2.8.0'
+    runtime 'mysql:mysql-connector-java:8.0.13'
 }
 
 shadowJar {
+    classifier = 'shadow'
+    version = null
+    
     dependencies {
-        include(dependency('com.googlecode.json-simple:json-simple:1.1.1'))
-        include(dependency('org.xerial:sqlite-jdbc:3.21.0.1'))
-        include(dependency('mysql:mysql-connector-java:8.0.8-dmr'))
-        include(dependency('com.sparkjava:spark-core:2.8.0'))
+        include(dependency('com.googlecode.json-simple:json-simple'))
+        include(dependency('org.xerial:sqlite-jdbc'))
+        include(dependency('mysql:mysql-connector-java'))
     }
-
-    // Relocate fluent-hc to prevent conflicts with other mods that include it
-    relocate 'com.mysql.jdbc', 'com.potatosaucevfx.repack.com.mysql.jdbc'
-
-    classifier '' // Replace the default JAR
 }
 
 reobf {

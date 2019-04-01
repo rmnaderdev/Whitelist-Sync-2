@@ -31,7 +31,19 @@ public class MySqlService implements BaseService {
     private String password;
 
     public MySqlService() {
-        this.url = "jdbc:mysql://" + ConfigHandler.mySQL_IP + ":" + ConfigHandler.mySQL_PORT + "/?serverTimezone=UTC";
+        
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
+        } catch (ClassNotFoundException ex) {
+            WhitelistSync2.logger.error("Failed to connect to the mySQL database! mysql-connector library missing!\n" + ex.getMessage());
+        } catch (InstantiationException ex) {
+            WhitelistSync2.logger.error("Failed to connect to the mySQL database! Failed to instantiate library!\n" + ex.getMessage());
+        } catch (IllegalAccessException ex) {
+            WhitelistSync2.logger.error("Failed to connect to the mySQL database! mysql-connector library missing!\n" + ex.getMessage());
+        }
+        
+                
+        this.url = "jdbc:mysql://" + ConfigHandler.mySQL_IP + ":" + ConfigHandler.mySQL_PORT + "/?serverTimezone=UTC&autoReconnect=true";
         this.username = ConfigHandler.mySQL_Username;
         this.password = ConfigHandler.mySQL_Password;
 
