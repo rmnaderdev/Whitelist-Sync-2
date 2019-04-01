@@ -1,25 +1,25 @@
 buildscript {
     repositories {
         jcenter()
-        maven { url = "http://files.minecraftforge.net/maven" }
+        maven { 
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
     }
     dependencies {
         //classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'      // 1.11.2
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'    // 1.12.2
-        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
     }
 }
-apply plugin: 'net.minecraftforge.gradle.forge'
-apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'java'
 
-// Configure the shadow jar task
-shadowJar {
-
+plugins {
+    id 'com.github.johnrengelman.shadow' version '1.2.4'
 }
 
+apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "2.0.1-1.10.2_Beta"
+
+version = "2.0.2-1.12.2_Beta"
 group = "com.potatosaucevfx.whitelistsync2"
 archivesBaseName = "whitelistsync2"
 
@@ -54,6 +54,24 @@ dependencies {
     compile 'com.sparkjava:spark-core:2.8.0'
 }
 
+shadowJar {
+    dependencies {
+        include(dependency('com.googlecode.json-simple:json-simple:1.1.1'))
+        include(dependency('org.xerial:sqlite-jdbc:3.21.0.1'))
+        include(dependency('mysql:mysql-connector-java:8.0.8-dmr'))
+        include(dependency('com.sparkjava:spark-core:2.8.0'))
+    }
+
+    // Relocate fluent-hc to prevent conflicts with other mods that include it
+    relocate 'com.mysql.jdbc', 'com.potatosaucevfx.repack.com.mysql.jdbc'
+
+    classifier '' // Replace the default JAR
+}
+
+reobf {
+    shadowJar {} // Reobfuscate the shadowed JAR
+}
+
 processResources {
     // this will ensure that this task is redone when the versions change.
     inputs.property "version", project.version
@@ -73,5 +91,6 @@ processResources {
     }
 }
 
-reobf { shadowJar { mappingType = "SEARGE" } }
-tasks.reobfShadowJar.mustRunAfter shadowJar
+artifacts {
+    archives shadowJar
+}
