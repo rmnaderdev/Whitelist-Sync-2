@@ -24,7 +24,7 @@ public class OPlistRead {
     public static ArrayList getOpsUUIDs() {
         ArrayList<String> uuids = new ArrayList<>();
         // OMG ITS A LAMBDA EXPRESSION!!! :D
-        getWhitelistJson().forEach(emp -> parseToList(emp.getAsJsonObject(), uuids, "uuid"));
+        getOplistJson().forEach(emp -> parseToList(emp.getAsJsonObject(), uuids, "uuid"));
         return uuids;
     }
 
@@ -32,7 +32,7 @@ public class OPlistRead {
     public static ArrayList getOpsNames() {
         ArrayList<String> names = new ArrayList<>();
         // WOAH ITS A LAMBDA EXPRESSION!!! CRAZY COMPLEX STUFF GOIN ON RIGHT HERE!!! :D
-        getWhitelistJson().forEach(emp -> parseToList(emp.getAsJsonObject(), names, "name"));
+        getOplistJson().forEach(emp -> parseToList(emp.getAsJsonObject(), names, "name"));
         return names;
     }
 
@@ -40,12 +40,14 @@ public class OPlistRead {
     public static ArrayList<OpUser> getOppedUsers() {
         ArrayList<OpUser> users = new ArrayList<>();
         // HOLY SHIT.. ANOTHER LAMBDA EXPRESSION!!!!
-        getWhitelistJson().forEach((user) -> {
-            String uuid = ((JsonObject) user).get("uuid").toString();
-            String name = ((JsonObject) user).get("name").toString();
-            int level = Integer.parseInt(((JsonObject) user).get("level").toString());
-            boolean bypassesPlayerLimit = Boolean.parseBoolean(((JsonObject) user).get("level").toString());
-
+        getOplistJson().forEach((user) -> {
+            String uuid = ((JsonObject) user).get("uuid").getAsString();
+            String name = ((JsonObject) user).get("name").getAsString();
+            int level = Integer.parseInt(((JsonObject) user).get("level").getAsString());
+            boolean bypassesPlayerLimit = Boolean.parseBoolean(((JsonObject) user).get("level").getAsString());
+            
+            WhitelistSync2.logger.info(uuid);
+            
             users.add(new OpUser(uuid, name, level, bypassesPlayerLimit, true));
         });
         return users;
@@ -55,16 +57,19 @@ public class OPlistRead {
         list.add(oplist.get(key).getAsString());
     }
 
-    private static JsonArray getWhitelistJson() {
+    private static JsonArray getOplistJson() {
         JsonArray oplist = null;
         try {
             oplist = (JsonArray) parser.parse(new FileReader(WhitelistSync2.SERVER_FILEPATH + "/ops.json"));
+            
+            WhitelistSync2.logger.debug("getOplistJson returned an array of " + oplist.size() + " entries.");
+            
         } catch (FileNotFoundException e) {
             WhitelistSync2.logger.error("ops.json file not found! :O\n" + e.getMessage());
         } catch (JsonParseException e) {
             WhitelistSync2.logger.error("ops.json parse error!! D:\n" + e.getMessage());
         }
-        WhitelistSync2.logger.debug("getWhitelistJson returned an array of " + oplist.size() + " entries.");
+        
         return oplist;
     }
     

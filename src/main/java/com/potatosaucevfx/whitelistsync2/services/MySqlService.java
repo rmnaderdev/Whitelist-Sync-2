@@ -484,14 +484,23 @@ public class MySqlService implements BaseService {
     @Override
     public boolean removePlayerFromDatabaseOp(GameProfile player) {
         try {
+            ArrayList<OpUser> oppedUsers = OPlistRead.getOppedUsers();
             // Start time.
             long startTime = System.currentTimeMillis();
             // Open connection
             Connection conn1 = getConnection();
-            String sql = "REPLACE INTO " + ConfigHandler.mySQL_DBname + ".op(uuid, name, isOp) VALUES (?, ?, false)";
+            String sql = "REPLACE INTO " + ConfigHandler.mySQL_DBname + ".op(uuid, name, level, isOp, bypassesPlayerLimit) VALUES (?, ?, ?, false, ?)";
             PreparedStatement stmt = conn1.prepareStatement(sql);
             stmt.setString(1, String.valueOf(player.getId()));
             stmt.setString(2, player.getName());
+            
+            for (OpUser opUser : oppedUsers) {
+                if (opUser.getUuid().equalsIgnoreCase(player.getId().toString())) {
+                    stmt.setInt(3, opUser.getLevel());
+                    stmt.setInt(4, opUser.isBypassesPlayerLimit() ? 1 : 0);
+                }
+            }
+            
             // Execute statement.
             stmt.execute();
             // Time taken.
