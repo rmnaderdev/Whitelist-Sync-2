@@ -13,7 +13,6 @@ public class ConfigHandler {
     // Custom Categories
     private final static String MYSQL_CATEGORY = "mySQL";
     private final static String SQLITE_CATEGORY = "sqlite";
-    private final static String MICRO_SERVICE_CATEGORY = "microservices";
 
     // Modes
     public static final String MODE_MYSQL = "MYSQL";
@@ -23,11 +22,6 @@ public class ConfigHandler {
     public static String WHITELIST_MODE = "SQLITE"; // SQLITE or MYSQL, use mode finals above.
     public static boolean SYNC_OP_LIST = false; // Sync ops list.
     public static boolean ENABLE_CONSOLE_OUTPUT = false; // Logs remote sync changes to console.
-    
-    // Micro service settings
-    public static boolean ENABLE_MICRO_SERVICE = false;
-    public static String API_KEY = "3c3e9197-546b-4eef-b32b-eba32ff679e2";
-    public static int API_PORT = 8888;
 
     // sqlite config
     public static String sqliteDatabasePath = "./whitelist.db";
@@ -72,19 +66,6 @@ public class ConfigHandler {
 
         ENABLE_CONSOLE_OUTPUT = cfg.getBoolean("Log Remote Updates", CATEGORY_GENERAL, ENABLE_CONSOLE_OUTPUT, 
                 "Option on wheather to output whitelist/op changes triggered by other servers. This will show when a new user is opped or whitelisted on anther connected sever.");
-        
-        // Micro Service settings
-        cfg.addCustomCategoryComment(MICRO_SERVICE_CATEGORY, "Micro Service REST API Configuration (MAKE SURE YOU CHANGE THE API KEY!).");
-        ENABLE_MICRO_SERVICE = cfg.getBoolean("Enable Micro Service REST API", MICRO_SERVICE_CATEGORY, ENABLE_MICRO_SERVICE, 
-                "Enable micro service REST API which allows you to whitelist and op players as well as get some information about the server using REST calls."
-                        + "You only need one of these enabled per server group. All servers with the same database will be affected by changes from REST calls.");
-        
-        API_PORT = cfg.getInt("API Port", MICRO_SERVICE_CATEGORY, API_PORT, 1, 65000,
-                "Network Port", "Port you want you listener to run on. MUST be DIFFERENT than your MC server port.");
-        
-        API_KEY = cfg.getString("API Key", MICRO_SERVICE_CATEGORY, API_KEY,
-                "This should be a unique key used to authenticate REST calls to the listener. KEEP THIS KEY SECRET AND LONG!!");
-        
         
         // Sqlite settings
         cfg.addCustomCategoryComment(SQLITE_CATEGORY, "Sqlite configuration (To enable "
