@@ -46,8 +46,6 @@ public class OPlistRead {
             int level = Integer.parseInt(((JsonObject) user).get("level").getAsString());
             boolean bypassesPlayerLimit = Boolean.parseBoolean(((JsonObject) user).get("level").getAsString());
             
-            WhitelistSync2.logger.info(uuid);
-            
             users.add(new OpUser(uuid, name, level, bypassesPlayerLimit, true));
         });
         return users;
