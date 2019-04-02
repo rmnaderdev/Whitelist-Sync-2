@@ -1,0 +1,536 @@
+[21:24:58] [main/DEBUG] [FML/]: Injecting tracing printstreams for STDOUT/STDERR.
+[21:24:58] [main/INFO] [FML/]: Forge Mod Loader version 13.20.1.2386 for Minecraft 1.11.2 loading
+[21:24:58] [main/INFO] [FML/]: Java is Java HotSpot(TM) 64-Bit Server VM, version 1.8.0_201, running on Windows 10:amd64:10.0, installed at C:\Program Files\Java\jre1.8.0_201
+[21:24:58] [main/DEBUG] [FML/]: Java classpath at launch is forge-1.11.2-13.20.1.2386-universal.jar
+[21:24:58] [main/DEBUG] [FML/]: Java library path at launch is C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Program Files\Python\;C:\Program Files\Python\Scripts;C:\Program Files (x86)\Common Files\Intel\Shared Libraries\redist\intel64_win\compiler;C:\Program Files (x86)\Common Files\Intel\Shared Libraries\redist\intel64\compiler;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Intel\iCLS Client\;C:\Program Files\Intel\iCLS Client\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files\dotnet\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\130\Tools\Binn\;C:\Program Files (x86)\Microsoft SQL Server\140\Tools\Binn\;C:\Program Files\Microsoft SQL Server\140\Tools\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files (x86)\Microsoft SQL Server\Client SDK\ODBC\130\Tools\Binn\;C:\Program Files (x86)\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files (x86)\Microsoft SQL Server\140\Tools\Binn\ManagementStudio\;C:\Program Files\PuTTY\;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\SQribe;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files (x86)\Microsoft SQL Server\110\DTS\Binn\;C:\Program Files (x86)\Microsoft SQL Server\120\DTS\Binn\;C:\Program Files (x86)\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files (x86)\Microsoft SQL Server\150\DTS\Binn\;C:\Users\RJ\AppData\Local\Microsoft\WindowsApps;;C:\Users\RJ\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\RJ\AppData\Roaming\npm;C:\Users\RJ\.dotnet\tools;C:\Program Files\Python;.
+[21:24:58] [main/DEBUG] [FML/]: Enabling runtime deobfuscation
+[21:24:58] [main/DEBUG] [FML/]: Instantiating coremod class FMLCorePlugin
+[21:24:58] [main/DEBUG] [FML/]: Added access transformer class net.minecraftforge.fml.common.asm.transformers.AccessTransformer to enqueued access transformers
+[21:24:58] [main/DEBUG] [FML/]: Enqueued coremod FMLCorePlugin
+[21:24:58] [main/DEBUG] [FML/]: Instantiating coremod class FMLForgePlugin
+[21:24:58] [main/DEBUG] [FML/]: Enqueued coremod FMLForgePlugin
+[21:24:58] [main/DEBUG] [FML/]: All fundamental core mods are successfully located
+[21:24:58] [main/DEBUG] [FML/]: Attempting to load commandline specified mods, relative to C:\Users\RJ\gitPersonal\Whitelist-Sync-2\ForgeTestServers\1.11.2\.
+[21:24:58] [main/DEBUG] [FML/]: Discovering coremods
+[21:24:59] [main/DEBUG] [FML/]: Examining for coremod candidacy whitelistsync2-2.1-1.11.2-all.jar
+[21:24:59] [main/DEBUG] [FML/]: Not found coremod data in whitelistsync2-2.1-1.11.2-all.jar
+[21:24:59] [main/INFO] [LaunchWrapper/]: Loading tweak class name net.minecraftforge.fml.common.launcher.FMLInjectionAndSortingTweaker
+[21:24:59] [main/INFO] [LaunchWrapper/]: Loading tweak class name net.minecraftforge.fml.common.launcher.FMLDeobfTweaker
+[21:24:59] [main/INFO] [LaunchWrapper/]: Calling tweak class net.minecraftforge.fml.common.launcher.FMLInjectionAndSortingTweaker
+[21:24:59] [main/INFO] [LaunchWrapper/]: Calling tweak class net.minecraftforge.fml.common.launcher.FMLInjectionAndSortingTweaker
+[21:24:59] [main/INFO] [LaunchWrapper/]: Calling tweak class net.minecraftforge.fml.relauncher.CoreModManager$FMLPluginWrapper
+[21:24:59] [main/DEBUG] [FML/]: Injecting coremod FMLCorePlugin \{net.minecraftforge.fml.relauncher.FMLCorePlugin\} class transformers
+[21:24:59] [main/TRACE] [FML/]: Registering transformer net.minecraftforge.fml.common.asm.transformers.BlamingTransformer
+[21:24:59] [main/TRACE] [FML/]: Registering transformer net.minecraftforge.fml.common.asm.transformers.SideTransformer
+[21:24:59] [main/TRACE] [FML/]: Registering transformer net.minecraftforge.fml.common.asm.transformers.EventSubscriptionTransformer
+[21:24:59] [main/TRACE] [FML/]: Registering transformer net.minecraftforge.fml.common.asm.transformers.EventSubscriberTransformer
+[21:24:59] [main/DEBUG] [FML/]: Injection complete
+[21:24:59] [main/DEBUG] [FML/]: Running coremod plugin for FMLCorePlugin \{net.minecraftforge.fml.relauncher.FMLCorePlugin\}
+[21:24:59] [main/DEBUG] [FML/]: Running coremod plugin FMLCorePlugin
+[21:25:01] [main/DEBUG] [FML/]: Injecting tracing printstreams for STDOUT/STDERR.
+[21:25:01] [main/DEBUG] [FML/]: Read 985 binary patches
+[21:25:01] [main/DEBUG] [FML/]: Loading deobfuscation resource /deobfuscation_data-1.11.2.lzma with 33539 records
+[21:25:01] [main/INFO] [FML/]: Found valid fingerprint for Minecraft Forge. Certificate fingerprint e3c3d50c7c986df74c645c0ac54639741c90a557
+[21:25:01] [main/DEBUG] [FML/]: Coremod plugin class FMLCorePlugin run successfully
+[21:25:01] [main/INFO] [LaunchWrapper/]: Calling tweak class net.minecraftforge.fml.relauncher.CoreModManager$FMLPluginWrapper
+[21:25:01] [main/DEBUG] [FML/]: Injecting coremod FMLForgePlugin \{net.minecraftforge.classloading.FMLForgePlugin\} class transformers
+[21:25:01] [main/DEBUG] [FML/]: Injection complete
+[21:25:01] [main/DEBUG] [FML/]: Running coremod plugin for FMLForgePlugin \{net.minecraftforge.classloading.FMLForgePlugin\}
+[21:25:01] [main/DEBUG] [FML/]: Running coremod plugin FMLForgePlugin
+[21:25:01] [main/DEBUG] [FML/]: Coremod plugin class FMLForgePlugin run successfully
+[21:25:01] [main/INFO] [LaunchWrapper/]: Calling tweak class net.minecraftforge.fml.common.launcher.FMLDeobfTweaker
+[21:25:01] [main/DEBUG] [FML/]: Loaded 203 rules from AccessTransformer config file forge_at.cfg
+[21:25:01] [main/DEBUG] [FML/]: Validating minecraft
+[21:25:01] [main/DEBUG] [FML/]: Minecraft validated, launching...
+[21:25:01] [main/INFO] [LaunchWrapper/]: Loading tweak class name net.minecraftforge.fml.common.launcher.TerminalTweaker
+[21:25:01] [main/INFO] [LaunchWrapper/]: Calling tweak class net.minecraftforge.fml.common.launcher.TerminalTweaker
+[21:25:01] [main/INFO] [LaunchWrapper/]: Launching wrapped minecraft {net.minecraft.server.MinecraftServer}
+[21:25:03] [main/DEBUG] [FML/]: Creating vanilla freeze snapshot
+[21:25:03] [main/DEBUG] [FML/]: Vanilla freeze snapshot created
+[21:25:03] [Server thread/INFO] [FML/]: MinecraftForge v13.20.1.2386 Initialized
+[21:25:03] [Server thread/INFO] [FML/]: Replaced 232 ore recipes
+[21:25:03] [Server thread/DEBUG] [FML/]: File C:\Users\RJ\gitPersonal\Whitelist-Sync-2\ForgeTestServers\1.11.2\config\injectedDependencies.json not found. No dependencies injected
+[21:25:03] [Server thread/DEBUG] [FML/]: Building injected Mod Containers [net.minecraftforge.fml.common.FMLContainer, net.minecraftforge.common.ForgeModContainer]
+[21:25:04] [Server thread/DEBUG] [FML/]: Attempting to load mods contained in the minecraft jar file and associated classes
+[21:25:04] [Server thread/DEBUG] [FML/]: Minecraft is a file at C:\Users\RJ\gitPersonal\Whitelist-Sync-2\ForgeTestServers\1.11.2\forge-1.11.2-13.20.1.2386-universal.jar, loading
+[21:25:04] [Server thread/DEBUG] [FML/]: Minecraft jar mods loaded successfully
+[21:25:04] [Server thread/INFO] [FML/]: Found 0 mods from the command line. Injecting into mod discoverer
+[21:25:04] [Server thread/INFO] [FML/]: Searching C:\Users\RJ\gitPersonal\Whitelist-Sync-2\ForgeTestServers\1.11.2\mods for mods
+[21:25:04] [Server thread/DEBUG] [FML/]: Found a candidate zip or jar file whitelistsync2-2.1-1.11.2-all.jar
+[21:25:04] [Server thread/DEBUG] [FML/]: Examining file forge-1.11.2-13.20.1.2386-universal.jar for potential mods
+[21:25:04] [Server thread/DEBUG] [FML/]: The mod container forge-1.11.2-13.20.1.2386-universal.jar appears to be missing an mcmod.info file
+[21:25:04] [Server thread/DEBUG] [FML/]: Examining file whitelistsync2-2.1-1.11.2-all.jar for potential mods
+[21:25:04] [Server thread/TRACE] [FML/]: Located mcmod.info file in file whitelistsync2-2.1-1.11.2-all.jar
+[21:25:04] [Server thread/DEBUG] [FML/]: Identified a mod of type Lnet/minecraftforge/fml/common/Mod; (com.potatosaucevfx.whitelistsync2.WhitelistSync2) - loading
+[21:25:04] [Server thread/TRACE] [whitelistsync2/]: Parsed dependency info : [] [] []
+[21:25:04] [Server thread/INFO] [FML/]: Forge Mod Loader has identified 5 mods to load
+[21:25:04] [Server thread/TRACE] [FML/]: Received a system property request ''
+[21:25:04] [Server thread/TRACE] [FML/]: System property request managing the state of 0 mods
+[21:25:04] [Server thread/DEBUG] [FML/]: After merging, found state information for 0 mods
+[21:25:04] [Server thread/WARN] [FML/]: Missing English translation for minecraft: minecraft.jar (The system cannot find the file specified)
+java.io.FileNotFoundException: minecraft.jar (The system cannot find the file specified)
+	at java.util.zip.ZipFile.open(Native Method) ~[?:1.8.0_201]
+	at java.util.zip.ZipFile.<init>(Unknown Source) ~[?:1.8.0_201]
+	at java.util.zip.ZipFile.<init>(Unknown Source) ~[?:1.8.0_201]
+	at java.util.zip.ZipFile.<init>(Unknown Source) ~[?:1.8.0_201]
+	at net.minecraftforge.fml.server.FMLServerHandler.addModAsResource(FMLServerHandler.java:258) [FMLServerHandler.class:?]
+	at net.minecraftforge.fml.common.FMLCommonHandler.addModToResourcePack(FMLCommonHandler.java:539) [FMLCommonHandler.class:?]
+	at net.minecraftforge.fml.common.LoadController.buildModList(LoadController.java:130) [LoadController.class:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_201]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source) ~[?:1.8.0_201]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[?:1.8.0_201]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[?:1.8.0_201]
+	at com.google.common.eventbus.EventSubscriber.handleEvent(EventSubscriber.java:74) [minecraft_server.1.11.2.jar:?]
+	at com.google.common.eventbus.SynchronizedEventSubscriber.handleEvent(SynchronizedEventSubscriber.java:47) [minecraft_server.1.11.2.jar:?]
+	at com.google.common.eventbus.EventBus.dispatch(EventBus.java:322) [minecraft_server.1.11.2.jar:?]
+	at com.google.common.eventbus.EventBus.dispatchQueuedEvents(EventBus.java:304) [minecraft_server.1.11.2.jar:?]
+	at com.google.common.eventbus.EventBus.post(EventBus.java:275) [minecraft_server.1.11.2.jar:?]
+	at net.minecraftforge.fml.common.LoadController.distributeStateMessage(LoadController.java:338) [LoadController.class:?]
+	at net.minecraftforge.fml.common.Loader.loadMods(Loader.java:557) [Loader.class:?]
+	at net.minecraftforge.fml.server.FMLServerHandler.beginServerLoading(FMLServerHandler.java:99) [FMLServerHandler.class:?]
+	at net.minecraftforge.fml.common.FMLCommonHandler.onServerStart(FMLCommonHandler.java:332) [FMLCommonHandler.class:?]
+	at net.minecraft.server.dedicated.DedicatedServer.func_71197_b(DedicatedServer.java:121) [lh.class:?]
+	at net.minecraft.server.MinecraftServer.run(MinecraftServer.java:442) [MinecraftServer.class:?]
+	at java.lang.Thread.run(Unknown Source) [?:1.8.0_201]
+[21:25:04] [Server thread/WARN] [FML/]: Missing English translation for mcp: minecraft.jar (The system cannot find the file specified)
+java.io.FileNotFoundException: minecraft.jar (The system cannot find the file specified)
+	at java.util.zip.ZipFile.open(Native Method) ~[?:1.8.0_201]
+	at java.util.zip.ZipFile.<init>(Unknown Source) ~[?:1.8.0_201]
+	at java.util.zip.ZipFile.<init>(Unknown Source) ~[?:1.8.0_201]
+	at java.util.zip.ZipFile.<init>(Unknown Source) ~[?:1.8.0_201]
+	at net.minecraftforge.fml.server.FMLServerHandler.addModAsResource(FMLServerHandler.java:258) [FMLServerHandler.class:?]
+	at net.minecraftforge.fml.common.FMLCommonHandler.addModToResourcePack(FMLCommonHandler.java:539) [FMLCommonHandler.class:?]
+	at net.minecraftforge.fml.common.LoadController.buildModList(LoadController.java:130) [LoadController.class:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_201]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source) ~[?:1.8.0_201]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[?:1.8.0_201]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[?:1.8.0_201]
+	at com.google.common.eventbus.EventSubscriber.handleEvent(EventSubscriber.java:74) [minecraft_server.1.11.2.jar:?]
+	at com.google.common.eventbus.SynchronizedEventSubscriber.handleEvent(SynchronizedEventSubscriber.java:47) [minecraft_server.1.11.2.jar:?]
+	at com.google.common.eventbus.EventBus.dispatch(EventBus.java:322) [minecraft_server.1.11.2.jar:?]
+	at com.google.common.eventbus.EventBus.dispatchQueuedEvents(EventBus.java:304) [minecraft_server.1.11.2.jar:?]
+	at com.google.common.eventbus.EventBus.post(EventBus.java:275) [minecraft_server.1.11.2.jar:?]
+	at net.minecraftforge.fml.common.LoadController.distributeStateMessage(LoadController.java:338) [LoadController.class:?]
+	at net.minecraftforge.fml.common.Loader.loadMods(Loader.java:557) [Loader.class:?]
+	at net.minecraftforge.fml.server.FMLServerHandler.beginServerLoading(FMLServerHandler.java:99) [FMLServerHandler.class:?]
+	at net.minecraftforge.fml.common.FMLCommonHandler.onServerStart(FMLCommonHandler.java:332) [FMLCommonHandler.class:?]
+	at net.minecraft.server.dedicated.DedicatedServer.func_71197_b(DedicatedServer.java:121) [lh.class:?]
+	at net.minecraft.server.MinecraftServer.run(MinecraftServer.java:442) [MinecraftServer.class:?]
+	at java.lang.Thread.run(Unknown Source) [?:1.8.0_201]
+[21:25:04] [Server thread/WARN] [FML/]: Missing English translation for FML: assets/fml/lang/en_us.lang
+java.io.FileNotFoundException: assets/fml/lang/en_us.lang
+	at net.minecraftforge.fml.server.FMLServerHandler.addModAsResource(FMLServerHandler.java:261) [FMLServerHandler.class:?]
+	at net.minecraftforge.fml.common.FMLCommonHandler.addModToResourcePack(FMLCommonHandler.java:539) [FMLCommonHandler.class:?]
+	at net.minecraftforge.fml.common.LoadController.buildModList(LoadController.java:130) [LoadController.class:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_201]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source) ~[?:1.8.0_201]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[?:1.8.0_201]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[?:1.8.0_201]
+	at com.google.common.eventbus.EventSubscriber.handleEvent(EventSubscriber.java:74) [minecraft_server.1.11.2.jar:?]
+	at com.google.common.eventbus.SynchronizedEventSubscriber.handleEvent(SynchronizedEventSubscriber.java:47) [minecraft_server.1.11.2.jar:?]
+	at com.google.common.eventbus.EventBus.dispatch(EventBus.java:322) [minecraft_server.1.11.2.jar:?]
+	at com.google.common.eventbus.EventBus.dispatchQueuedEvents(EventBus.java:304) [minecraft_server.1.11.2.jar:?]
+	at com.google.common.eventbus.EventBus.post(EventBus.java:275) [minecraft_server.1.11.2.jar:?]
+	at net.minecraftforge.fml.common.LoadController.distributeStateMessage(LoadController.java:338) [LoadController.class:?]
+	at net.minecraftforge.fml.common.Loader.loadMods(Loader.java:557) [Loader.class:?]
+	at net.minecraftforge.fml.server.FMLServerHandler.beginServerLoading(FMLServerHandler.java:99) [FMLServerHandler.class:?]
+	at net.minecraftforge.fml.common.FMLCommonHandler.onServerStart(FMLCommonHandler.java:332) [FMLCommonHandler.class:?]
+	at net.minecraft.server.dedicated.DedicatedServer.func_71197_b(DedicatedServer.java:121) [lh.class:?]
+	at net.minecraft.server.MinecraftServer.run(MinecraftServer.java:442) [MinecraftServer.class:?]
+	at java.lang.Thread.run(Unknown Source) [?:1.8.0_201]
+[21:25:04] [Server thread/DEBUG] [whitelistsync2/]: Enabling mod whitelistsync2
+[21:25:04] [Server thread/WARN] [FML/]: Missing English translation for whitelistsync2: assets/whitelistsync2/lang/en_us.lang
+java.io.FileNotFoundException: assets/whitelistsync2/lang/en_us.lang
+	at net.minecraftforge.fml.server.FMLServerHandler.addModAsResource(FMLServerHandler.java:261) [FMLServerHandler.class:?]
+	at net.minecraftforge.fml.common.FMLCommonHandler.addModToResourcePack(FMLCommonHandler.java:539) [FMLCommonHandler.class:?]
+	at net.minecraftforge.fml.common.LoadController.buildModList(LoadController.java:130) [LoadController.class:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_201]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source) ~[?:1.8.0_201]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[?:1.8.0_201]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[?:1.8.0_201]
+	at com.google.common.eventbus.EventSubscriber.handleEvent(EventSubscriber.java:74) [minecraft_server.1.11.2.jar:?]
+	at com.google.common.eventbus.SynchronizedEventSubscriber.handleEvent(SynchronizedEventSubscriber.java:47) [minecraft_server.1.11.2.jar:?]
+	at com.google.common.eventbus.EventBus.dispatch(EventBus.java:322) [minecraft_server.1.11.2.jar:?]
+	at com.google.common.eventbus.EventBus.dispatchQueuedEvents(EventBus.java:304) [minecraft_server.1.11.2.jar:?]
+	at com.google.common.eventbus.EventBus.post(EventBus.java:275) [minecraft_server.1.11.2.jar:?]
+	at net.minecraftforge.fml.common.LoadController.distributeStateMessage(LoadController.java:338) [LoadController.class:?]
+	at net.minecraftforge.fml.common.Loader.loadMods(Loader.java:557) [Loader.class:?]
+	at net.minecraftforge.fml.server.FMLServerHandler.beginServerLoading(FMLServerHandler.java:99) [FMLServerHandler.class:?]
+	at net.minecraftforge.fml.common.FMLCommonHandler.onServerStart(FMLCommonHandler.java:332) [FMLCommonHandler.class:?]
+	at net.minecraft.server.dedicated.DedicatedServer.func_71197_b(DedicatedServer.java:121) [lh.class:?]
+	at net.minecraft.server.MinecraftServer.run(MinecraftServer.java:442) [MinecraftServer.class:?]
+	at java.lang.Thread.run(Unknown Source) [?:1.8.0_201]
+[21:25:04] [Server thread/TRACE] [FML/]: Verifying mod requirements are satisfied
+[21:25:04] [Server thread/TRACE] [FML/]: All mod requirements are satisfied
+[21:25:04] [Server thread/TRACE] [FML/]: Sorting mods into an ordered list
+[21:25:04] [Server thread/TRACE] [FML/]: Mod sorting completed successfully
+[21:25:04] [Server thread/DEBUG] [FML/]: Mod sorting data
+[21:25:04] [Server thread/DEBUG] [FML/]: 	whitelistsync2(Whitelist Sync 2.0:2.1-1.12.2): whitelistsync2-2.1-1.11.2-all.jar ()
+[21:25:04] [Server thread/DEBUG] [FML/]: Loading @Config anotation data
+[21:25:04] [Server thread/TRACE] [minecraft/minecraft]: Sending event FMLConstructionEvent to mod minecraft
+[21:25:04] [Server thread/TRACE] [minecraft/minecraft]: Sent event FMLConstructionEvent to mod minecraft
+[21:25:04] [Server thread/DEBUG] [FML/]: Bar Step: Construction - Minecraft took 0.001s
+[21:25:04] [Server thread/TRACE] [mcp/mcp]: Sending event FMLConstructionEvent to mod mcp
+[21:25:04] [Server thread/TRACE] [mcp/mcp]: Sent event FMLConstructionEvent to mod mcp
+[21:25:04] [Server thread/DEBUG] [FML/]: Bar Step: Construction - Minecraft Coder Pack took 0.001s
+[21:25:04] [Server thread/TRACE] [FML/FML]: Sending event FMLConstructionEvent to mod FML
+[21:25:04] [Server thread/TRACE] [FML/FML]: Mod FML is using network checker : Invoking method checkModLists
+[21:25:04] [Server thread/TRACE] [FML/FML]: Testing mod FML to verify it accepts its own version in a remote connection
+[21:25:04] [Server thread/TRACE] [FML/FML]: The mod FML accepts its own version (8.0.99.99)
+[21:25:04] [Server thread/INFO] [FML/FML]: Attempting connection with missing mods [minecraft, mcp, FML, forge, whitelistsync2] at CLIENT
+[21:25:04] [Server thread/INFO] [FML/FML]: Attempting connection with missing mods [minecraft, mcp, FML, forge, whitelistsync2] at SERVER
+[21:25:04] [Server thread/TRACE] [FML/FML]: Sent event FMLConstructionEvent to mod FML
+[21:25:04] [Server thread/DEBUG] [FML/]: Bar Step: Construction - Forge Mod Loader took 0.179s
+[21:25:04] [Server thread/TRACE] [forge/forge]: Sending event FMLConstructionEvent to mod forge
+[21:25:04] [Server thread/DEBUG] [forge/forge]: Preloading CrashReport Classes
+[21:25:04] [Server thread/DEBUG] [forge/forge]: 	net/minecraftforge/fml/client/SplashProgress$1
+[21:25:04] [Server thread/DEBUG] [forge/forge]: 	net/minecraftforge/fml/common/FMLCommonHandler$1
+[21:25:04] [Server thread/DEBUG] [forge/forge]: 	net/minecraftforge/fml/common/Loader$3
+[21:25:04] [Server thread/TRACE] [FML/forge]: Mod forge is using network checker : No network checking performed
+[21:25:04] [Server thread/TRACE] [FML/forge]: Testing mod forge to verify it accepts its own version in a remote connection
+[21:25:04] [Server thread/TRACE] [FML/forge]: The mod forge accepts its own version (13.20.1.2386)
+[21:25:04] [Server thread/DEBUG] [FML/forge]: Attempting to inject @Config classes into forge for type INSTANCE
+[21:25:04] [Server thread/TRACE] [forge/forge]: Sent event FMLConstructionEvent to mod forge
+[21:25:04] [Server thread/DEBUG] [FML/]: Bar Step: Construction - Minecraft Forge took 0.008s
+[21:25:04] [Server thread/TRACE] [whitelistsync2/whitelistsync2]: Sending event FMLConstructionEvent to mod whitelistsync2
+[21:25:04] [Server thread/TRACE] [FML/whitelistsync2]: Mod whitelistsync2 is using network checker : No network checking performed
+[21:25:04] [Server thread/TRACE] [FML/whitelistsync2]: Testing mod whitelistsync2 to verify it accepts its own version in a remote connection
+[21:25:04] [Server thread/TRACE] [FML/whitelistsync2]: The mod whitelistsync2 accepts its own version (2.1-1.12.2)
+[21:25:04] [Server thread/DEBUG] [FML/whitelistsync2]: Attempting to inject @SidedProxy classes into whitelistsync2
+[21:25:04] [Server thread/DEBUG] [FML/whitelistsync2]: Attempting to inject @EventBusSubscriber classes into the eventbus for whitelistsync2
+[21:25:04] [Server thread/DEBUG] [FML/whitelistsync2]: Attempting to inject @Config classes into whitelistsync2 for type INSTANCE
+[21:25:04] [Server thread/TRACE] [whitelistsync2/whitelistsync2]: Sent event FMLConstructionEvent to mod whitelistsync2
+[21:25:04] [Server thread/DEBUG] [FML/]: Bar Step: Construction - Whitelist Sync 2.0 took 0.015s
+[21:25:04] [Server thread/DEBUG] [FML/]: Bar Finished: Construction took 0.204s
+[21:25:04] [Server thread/DEBUG] [FML/]: Mod signature data
+[21:25:04] [Server thread/DEBUG] [FML/]:  	Valid Signatures:
+[21:25:04] [Server thread/DEBUG] [FML/]: 		(e3c3d50c7c986df74c645c0ac54639741c90a557) FML	(Forge Mod Loader	8.0.99.99)	forge-1.11.2-13.20.1.2386-universal.jar
+[21:25:04] [Server thread/DEBUG] [FML/]: 		(e3c3d50c7c986df74c645c0ac54639741c90a557) forge	(Minecraft Forge	13.20.1.2386)	forge-1.11.2-13.20.1.2386-universal.jar
+[21:25:04] [Server thread/DEBUG] [FML/]:  	Missing Signatures:
+[21:25:04] [Server thread/DEBUG] [FML/]: 		minecraft	(Minecraft	1.11.2)	minecraft.jar
+[21:25:04] [Server thread/DEBUG] [FML/]: 		mcp	(Minecraft Coder Pack	9.19)	minecraft.jar
+[21:25:04] [Server thread/DEBUG] [FML/]: 		whitelistsync2	(Whitelist Sync 2.0	2.1-1.12.2)	whitelistsync2-2.1-1.11.2-all.jar
+[21:25:04] [Server thread/INFO] [FML/]: Processing ObjectHolder annotations
+[21:25:04] [Server thread/INFO] [FML/]: Found 445 ObjectHolder annotations
+[21:25:04] [Server thread/INFO] [FML/]: Identifying ItemStackHolder annotations
+[21:25:04] [Server thread/INFO] [FML/]: Found 0 ItemStackHolder annotations
+[21:25:04] [Server thread/INFO] [FML/]: Applying holder lookups
+[21:25:04] [Server thread/INFO] [FML/]: Holder lookups applied
+[21:25:04] [Server thread/INFO] [FML/]: Applying holder lookups
+[21:25:04] [Server thread/INFO] [FML/]: Holder lookups applied
+[21:25:04] [Server thread/INFO] [FML/]: Applying holder lookups
+[21:25:04] [Server thread/INFO] [FML/]: Holder lookups applied
+[21:25:04] [Server thread/TRACE] [minecraft/minecraft]: Sending event FMLPreInitializationEvent to mod minecraft
+[21:25:04] [Server thread/TRACE] [minecraft/minecraft]: Sent event FMLPreInitializationEvent to mod minecraft
+[21:25:04] [Server thread/DEBUG] [FML/]: Bar Step: PreInitialization - Minecraft took 0.000s
+[21:25:04] [Server thread/TRACE] [mcp/mcp]: Sending event FMLPreInitializationEvent to mod mcp
+[21:25:04] [Server thread/TRACE] [mcp/mcp]: Sent event FMLPreInitializationEvent to mod mcp
+[21:25:04] [Server thread/DEBUG] [FML/]: Bar Step: PreInitialization - Minecraft Coder Pack took 0.000s
+[21:25:04] [Server thread/TRACE] [FML/FML]: Sending event FMLPreInitializationEvent to mod FML
+[21:25:04] [Server thread/TRACE] [FML/FML]: Sent event FMLPreInitializationEvent to mod FML
+[21:25:04] [Server thread/DEBUG] [FML/]: Bar Step: PreInitialization - Forge Mod Loader took 0.000s
+[21:25:04] [Server thread/TRACE] [forge/forge]: Sending event FMLPreInitializationEvent to mod forge
+[21:25:04] [Server thread/INFO] [FML/forge]: Configured a dormant chunk cache size of 0
+[21:25:04] [Server thread/TRACE] [forge/forge]: Sent event FMLPreInitializationEvent to mod forge
+[21:25:04] [Server thread/DEBUG] [FML/]: Bar Step: PreInitialization - Minecraft Forge took 0.047s
+[21:25:04] [Server thread/TRACE] [whitelistsync2/whitelistsync2]: Sending event FMLPreInitializationEvent to mod whitelistsync2
+[21:25:04] [Forge Version Check/INFO] [ForgeVersionCheck/forge]: [forge] Starting version check at http://files.minecraftforge.net/maven/net/minecraftforge/forge/promotions_slim.json
+[21:25:04] [Server thread/TRACE] [whitelistsync2/whitelistsync2]: Sent event FMLPreInitializationEvent to mod whitelistsync2
+[21:25:04] [Server thread/DEBUG] [FML/]: Bar Step: PreInitialization - Whitelist Sync 2.0 took 0.003s
+[21:25:04] [Server thread/DEBUG] [FML/]: Bar Finished: PreInitialization took 0.051s
+[21:25:04] [Server thread/INFO] [FML/]: Applying holder lookups
+[21:25:04] [Server thread/INFO] [FML/]: Holder lookups applied
+[21:25:04] [Server thread/INFO] [FML/]: Injecting itemstacks
+[21:25:04] [Server thread/INFO] [FML/]: Itemstack injection complete
+[21:25:05] [Forge Version Check/DEBUG] [ForgeVersionCheck/forge]: [forge] Received version check data:
+{
+  "homepage": "http://files.minecraftforge.net/maven/net/minecraftforge/forge/",
+  "promos": {
+    "1.1-latest": "1.3.2.6",
+    "1.10-latest": "12.18.0.2000",
+    "1.10.2-latest": "12.18.3.2511",
+    "1.10.2-recommended": "12.18.3.2185",
+    "1.11-latest": "13.19.1.2199",
+    "1.11-recommended": "13.19.1.2189",
+    "1.11.2-latest": "13.20.1.2588",
+    "1.11.2-recommended": "13.20.1.2386",
+    "1.12-latest": "14.21.1.2443",
+    "1.12-recommended": "14.21.1.2387",
+    "1.12.1-latest": "14.22.1.2485",
+    "1.12.1-recommended": "14.22.1.2478",
+    "1.12.2-latest": "14.23.5.2824",
+    "1.12.2-recommended": "14.23.5.2768",
+    "1.13.2-latest": "25.0.107",
+    "1.5.2-latest": "7.8.1.738",
+    "1.5.2-recommended": "7.8.1.737",
+    "1.6.1-latest": "8.9.0.775",
+    "1.6.2-latest": "9.10.1.871",
+    "1.6.2-recommended": "9.10.1.871",
+    "1.6.3-latest": "9.11.0.878",
+    "1.6.4-latest": "9.11.1.1345",
+    "1.6.4-recommended": "9.11.1.1345",
+    "1.7.10-latest": "10.13.4.1614",
+    "1.7.10-latest-1.7.10": "10.13.2.1343",
+    "1.7.10-recommended": "10.13.4.1558",
+    "1.7.2-latest": "10.12.2.1147",
+    "1.7.2-recommended": "10.12.2.1121",
+    "1.8-latest": "11.14.4.1577",
+    "1.8-recommended": "11.14.4.1563",
+    "1.8.8-latest": "11.15.0.1655",
+    "1.8.9-latest": "11.15.1.2318",
+    "1.8.9-recommended": "11.15.1.1722",
+    "1.9-latest": "12.16.0.1942",
+    "1.9-recommended": "12.16.1.1887",
+    "1.9.4-latest": "12.17.0.2051",
+    "1.9.4-recommended": "12.17.0.1976",
+    "latest-1.7.10": "10.13.2.1343",
+    "recommended": "14.23.5.2768"
+  }
+}
+[21:25:05] [Forge Version Check/INFO] [ForgeVersionCheck/forge]: [forge] Found status: UP_TO_DATE Target: null
+[21:25:05] [Server thread/TRACE] [minecraft/minecraft]: Sending event FMLInitializationEvent to mod minecraft
+[21:25:05] [Server thread/TRACE] [minecraft/minecraft]: Sent event FMLInitializationEvent to mod minecraft
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Step: Initialization - Minecraft took 0.000s
+[21:25:05] [Server thread/TRACE] [mcp/mcp]: Sending event FMLInitializationEvent to mod mcp
+[21:25:05] [Server thread/TRACE] [mcp/mcp]: Sent event FMLInitializationEvent to mod mcp
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Step: Initialization - Minecraft Coder Pack took 0.000s
+[21:25:05] [Server thread/TRACE] [FML/FML]: Sending event FMLInitializationEvent to mod FML
+[21:25:05] [Server thread/TRACE] [FML/FML]: Sent event FMLInitializationEvent to mod FML
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Step: Initialization - Forge Mod Loader took 0.000s
+[21:25:05] [Server thread/TRACE] [forge/forge]: Sending event FMLInitializationEvent to mod forge
+[21:25:05] [Server thread/TRACE] [forge/forge]: Sent event FMLInitializationEvent to mod forge
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Step: Initialization - Minecraft Forge took 0.000s
+[21:25:05] [Server thread/TRACE] [whitelistsync2/whitelistsync2]: Sending event FMLInitializationEvent to mod whitelistsync2
+[21:25:05] [Server thread/INFO] [whitelistsync2/whitelistsync2]: Hello again Minecraft
+[21:25:05] [Server thread/INFO] [whitelistsync2/whitelistsync2]: Setting up databases...
+[21:25:05] [Server thread/INFO] [whitelistsync2/whitelistsync2]: OP Sync is ENABLED!
+[21:25:05] [Server thread/INFO] [whitelistsync2/whitelistsync2]: Loaded mySQL database!
+[21:25:05] [Server thread/INFO] [whitelistsync2/whitelistsync2]: Database setup!
+[21:25:05] [Server thread/TRACE] [whitelistsync2/whitelistsync2]: Sent event FMLInitializationEvent to mod whitelistsync2
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Step: Initialization - Whitelist Sync 2.0 took 0.624s
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Finished: Initialization took 0.625s
+[21:25:05] [Server thread/TRACE] [FML/]: Attempting to deliver 0 IMC messages to mod minecraft
+[21:25:05] [Server thread/TRACE] [minecraft/minecraft]: Sending event IMCEvent to mod minecraft
+[21:25:05] [Server thread/TRACE] [minecraft/minecraft]: Sent event IMCEvent to mod minecraft
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Step: InterModComms$IMC - Minecraft took 0.003s
+[21:25:05] [Server thread/TRACE] [FML/]: Attempting to deliver 0 IMC messages to mod mcp
+[21:25:05] [Server thread/TRACE] [mcp/mcp]: Sending event IMCEvent to mod mcp
+[21:25:05] [Server thread/TRACE] [mcp/mcp]: Sent event IMCEvent to mod mcp
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Step: InterModComms$IMC - Minecraft Coder Pack took 0.000s
+[21:25:05] [Server thread/TRACE] [FML/]: Attempting to deliver 0 IMC messages to mod FML
+[21:25:05] [Server thread/TRACE] [FML/FML]: Sending event IMCEvent to mod FML
+[21:25:05] [Server thread/TRACE] [FML/FML]: Sent event IMCEvent to mod FML
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Step: InterModComms$IMC - Forge Mod Loader took 0.000s
+[21:25:05] [Server thread/TRACE] [FML/]: Attempting to deliver 0 IMC messages to mod forge
+[21:25:05] [Server thread/TRACE] [forge/forge]: Sending event IMCEvent to mod forge
+[21:25:05] [Server thread/TRACE] [forge/forge]: Sent event IMCEvent to mod forge
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Step: InterModComms$IMC - Minecraft Forge took 0.000s
+[21:25:05] [Server thread/TRACE] [FML/]: Attempting to deliver 0 IMC messages to mod whitelistsync2
+[21:25:05] [Server thread/TRACE] [whitelistsync2/whitelistsync2]: Sending event IMCEvent to mod whitelistsync2
+[21:25:05] [Server thread/TRACE] [whitelistsync2/whitelistsync2]: Sent event IMCEvent to mod whitelistsync2
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Step: InterModComms$IMC - Whitelist Sync 2.0 took 0.000s
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Finished: InterModComms$IMC took 0.003s
+[21:25:05] [Server thread/INFO] [FML/]: Injecting itemstacks
+[21:25:05] [Server thread/INFO] [FML/]: Itemstack injection complete
+[21:25:05] [Server thread/TRACE] [minecraft/minecraft]: Sending event FMLPostInitializationEvent to mod minecraft
+[21:25:05] [Server thread/TRACE] [minecraft/minecraft]: Sent event FMLPostInitializationEvent to mod minecraft
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Step: PostInitialization - Minecraft took 0.000s
+[21:25:05] [Server thread/TRACE] [mcp/mcp]: Sending event FMLPostInitializationEvent to mod mcp
+[21:25:05] [Server thread/TRACE] [mcp/mcp]: Sent event FMLPostInitializationEvent to mod mcp
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Step: PostInitialization - Minecraft Coder Pack took 0.000s
+[21:25:05] [Server thread/TRACE] [FML/FML]: Sending event FMLPostInitializationEvent to mod FML
+[21:25:05] [Server thread/TRACE] [FML/FML]: Sent event FMLPostInitializationEvent to mod FML
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Step: PostInitialization - Forge Mod Loader took 0.000s
+[21:25:05] [Server thread/TRACE] [forge/forge]: Sending event FMLPostInitializationEvent to mod forge
+[21:25:05] [Server thread/TRACE] [forge/forge]: Sent event FMLPostInitializationEvent to mod forge
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Step: PostInitialization - Minecraft Forge took 0.006s
+[21:25:05] [Server thread/TRACE] [whitelistsync2/whitelistsync2]: Sending event FMLPostInitializationEvent to mod whitelistsync2
+[21:25:05] [Server thread/TRACE] [whitelistsync2/whitelistsync2]: Sent event FMLPostInitializationEvent to mod whitelistsync2
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Step: PostInitialization - Whitelist Sync 2.0 took 0.000s
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Finished: PostInitialization took 0.007s
+[21:25:05] [Server thread/TRACE] [minecraft/minecraft]: Sending event FMLLoadCompleteEvent to mod minecraft
+[21:25:05] [Server thread/TRACE] [minecraft/minecraft]: Sent event FMLLoadCompleteEvent to mod minecraft
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Step: LoadComplete - Minecraft took 0.000s
+[21:25:05] [Server thread/TRACE] [mcp/mcp]: Sending event FMLLoadCompleteEvent to mod mcp
+[21:25:05] [Server thread/TRACE] [mcp/mcp]: Sent event FMLLoadCompleteEvent to mod mcp
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Step: LoadComplete - Minecraft Coder Pack took 0.000s
+[21:25:05] [Server thread/TRACE] [FML/FML]: Sending event FMLLoadCompleteEvent to mod FML
+[21:25:05] [Server thread/TRACE] [FML/FML]: Sent event FMLLoadCompleteEvent to mod FML
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Step: LoadComplete - Forge Mod Loader took 0.000s
+[21:25:05] [Server thread/TRACE] [forge/forge]: Sending event FMLLoadCompleteEvent to mod forge
+[21:25:05] [Server thread/DEBUG] [FML/forge]: Forge RecipeSorter Baking:
+[21:25:05] [Server thread/DEBUG] [FML/forge]:   16: RecipeEntry("Before", UNKNOWN, )
+[21:25:05] [Server thread/DEBUG] [FML/forge]:   15: RecipeEntry("minecraft:shaped", SHAPED, net.minecraft.item.crafting.ShapedRecipes) Before: minecraft:shapeless
+[21:25:05] [Server thread/DEBUG] [FML/forge]:   14: RecipeEntry("forge:shapedore", SHAPED, net.minecraftforge.oredict.ShapedOreRecipe) Before: minecraft:shapeless After: minecraft:shaped
+[21:25:05] [Server thread/DEBUG] [FML/forge]:   13: RecipeEntry("minecraft:mapextending", SHAPED, net.minecraft.item.crafting.RecipesMapExtending) Before: minecraft:shapeless After: minecraft:shaped
+[21:25:05] [Server thread/DEBUG] [FML/forge]:   12: RecipeEntry("minecraft:shapeless", SHAPELESS, net.minecraft.item.crafting.ShapelessRecipes) After: minecraft:shaped
+[21:25:05] [Server thread/DEBUG] [FML/forge]:   11: RecipeEntry("minecraft:repair", SHAPELESS, net.minecraft.item.crafting.RecipeRepairItem) After: minecraft:shapeless
+[21:25:05] [Server thread/DEBUG] [FML/forge]:   10: RecipeEntry("minecraft:shield_deco", SHAPELESS, net.minecraft.item.crafting.ShieldRecipes$Decoration) After: minecraft:shapeless
+[21:25:05] [Server thread/DEBUG] [FML/forge]:   9: RecipeEntry("minecraft:armordyes", SHAPELESS, net.minecraft.item.crafting.RecipesArmorDyes) After: minecraft:shapeless
+[21:25:05] [Server thread/DEBUG] [FML/forge]:   8: RecipeEntry("minecraft:fireworks", SHAPELESS, net.minecraft.item.crafting.RecipeFireworks) After: minecraft:shapeless
+[21:25:05] [Server thread/DEBUG] [FML/forge]:   7: RecipeEntry("minecraft:pattern_dupe", SHAPELESS, net.minecraft.item.crafting.RecipesBanners$RecipeDuplicatePattern) After: minecraft:shapeless
+[21:25:05] [Server thread/DEBUG] [FML/forge]:   6: RecipeEntry("minecraft:tippedarrow", SHAPELESS, net.minecraft.item.crafting.RecipeTippedArrow) After: minecraft:shapeless
+[21:25:05] [Server thread/DEBUG] [FML/forge]:   5: RecipeEntry("minecraft:mapcloning", SHAPELESS, net.minecraft.item.crafting.RecipesMapCloning) After: minecraft:shapeless
+[21:25:05] [Server thread/DEBUG] [FML/forge]:   4: RecipeEntry("forge:shapelessore", SHAPELESS, net.minecraftforge.oredict.ShapelessOreRecipe) After: minecraft:shapeless
+[21:25:05] [Server thread/DEBUG] [FML/forge]:   3: RecipeEntry("minecraft:pattern_add", SHAPELESS, net.minecraft.item.crafting.RecipesBanners$RecipeAddPattern) After: minecraft:shapeless
+[21:25:05] [Server thread/DEBUG] [FML/forge]:   2: RecipeEntry("minecraft:bookcloning", SHAPELESS, net.minecraft.item.crafting.RecipeBookCloning) After: minecraft:shapeless
+[21:25:05] [Server thread/DEBUG] [FML/forge]:   1: RecipeEntry("After", UNKNOWN, )
+[21:25:05] [Server thread/DEBUG] [FML/forge]: Sorting recipes
+[21:25:05] [Server thread/TRACE] [forge/forge]: Sent event FMLLoadCompleteEvent to mod forge
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Step: LoadComplete - Minecraft Forge took 0.005s
+[21:25:05] [Server thread/TRACE] [whitelistsync2/whitelistsync2]: Sending event FMLLoadCompleteEvent to mod whitelistsync2
+[21:25:05] [Server thread/TRACE] [whitelistsync2/whitelistsync2]: Sent event FMLLoadCompleteEvent to mod whitelistsync2
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Step: LoadComplete - Whitelist Sync 2.0 took 0.000s
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Finished: LoadComplete took 0.006s
+[21:25:05] [Server thread/DEBUG] [FML/]: Freezing block and item id maps
+[21:25:05] [Server thread/INFO] [FML/]: Forge Mod Loader has successfully loaded 5 mods
+[21:25:05] [Server thread/TRACE] [minecraft/minecraft]: Sending event FMLServerAboutToStartEvent to mod minecraft
+[21:25:05] [Server thread/TRACE] [minecraft/minecraft]: Sent event FMLServerAboutToStartEvent to mod minecraft
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Step: ServerAboutToStart - Minecraft took 0.000s
+[21:25:05] [Server thread/TRACE] [mcp/mcp]: Sending event FMLServerAboutToStartEvent to mod mcp
+[21:25:05] [Server thread/TRACE] [mcp/mcp]: Sent event FMLServerAboutToStartEvent to mod mcp
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Step: ServerAboutToStart - Minecraft Coder Pack took 0.000s
+[21:25:05] [Server thread/TRACE] [FML/FML]: Sending event FMLServerAboutToStartEvent to mod FML
+[21:25:05] [Server thread/TRACE] [FML/FML]: Sent event FMLServerAboutToStartEvent to mod FML
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Step: ServerAboutToStart - Forge Mod Loader took 0.000s
+[21:25:05] [Server thread/TRACE] [forge/forge]: Sending event FMLServerAboutToStartEvent to mod forge
+[21:25:05] [Server thread/TRACE] [forge/forge]: Sent event FMLServerAboutToStartEvent to mod forge
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Step: ServerAboutToStart - Minecraft Forge took 0.000s
+[21:25:05] [Server thread/TRACE] [whitelistsync2/whitelistsync2]: Sending event FMLServerAboutToStartEvent to mod whitelistsync2
+[21:25:05] [Server thread/TRACE] [whitelistsync2/whitelistsync2]: Sent event FMLServerAboutToStartEvent to mod whitelistsync2
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Step: ServerAboutToStart - Whitelist Sync 2.0 took 0.000s
+[21:25:05] [Server thread/DEBUG] [FML/]: Bar Finished: ServerAboutToStart took 0.001s
+[21:25:06] [Server thread/INFO] [FML/]: Loading dimension 0 (world) (net.minecraft.server.dedicated.DedicatedServer@44c056bb)
+[21:25:06] [Server thread/INFO] [FML/]: Loading dimension 1 (world) (net.minecraft.server.dedicated.DedicatedServer@44c056bb)
+[21:25:06] [Server thread/INFO] [FML/]: Loading dimension -1 (world) (net.minecraft.server.dedicated.DedicatedServer@44c056bb)
+[21:25:12] [Server thread/TRACE] [minecraft/minecraft]: Sending event FMLServerStartingEvent to mod minecraft
+[21:25:12] [Server thread/TRACE] [minecraft/minecraft]: Sent event FMLServerStartingEvent to mod minecraft
+[21:25:12] [Server thread/DEBUG] [FML/]: Bar Step: ServerStarting - Minecraft took 0.000s
+[21:25:12] [Server thread/TRACE] [mcp/mcp]: Sending event FMLServerStartingEvent to mod mcp
+[21:25:12] [Server thread/TRACE] [mcp/mcp]: Sent event FMLServerStartingEvent to mod mcp
+[21:25:12] [Server thread/DEBUG] [FML/]: Bar Step: ServerStarting - Minecraft Coder Pack took 0.000s
+[21:25:12] [Server thread/TRACE] [FML/FML]: Sending event FMLServerStartingEvent to mod FML
+[21:25:12] [Server thread/TRACE] [FML/FML]: Sent event FMLServerStartingEvent to mod FML
+[21:25:12] [Server thread/DEBUG] [FML/]: Bar Step: ServerStarting - Forge Mod Loader took 0.000s
+[21:25:12] [Server thread/TRACE] [forge/forge]: Sending event FMLServerStartingEvent to mod forge
+[21:25:12] [Server thread/TRACE] [forge/forge]: Sent event FMLServerStartingEvent to mod forge
+[21:25:12] [Server thread/DEBUG] [FML/]: Bar Step: ServerStarting - Minecraft Forge took 0.002s
+[21:25:12] [Server thread/TRACE] [whitelistsync2/whitelistsync2]: Sending event FMLServerStartingEvent to mod whitelistsync2
+[21:25:12] [Server thread/INFO] [whitelistsync2/whitelistsync2]: ----------------------------------------------
+[21:25:12] [Server thread/INFO] [whitelistsync2/whitelistsync2]: ---------------WHITELIST SYNC 2---------------
+[21:25:12] [Server thread/INFO] [whitelistsync2/whitelistsync2]: ----------------------------------------------
+[21:25:12] [Server thread/INFO] [whitelistsync2/whitelistsync2]: Loading Commands
+[21:25:12] [Server thread/INFO] [whitelistsync2/whitelistsync2]: Starting Sync Thread...
+[21:25:12] [Server thread/INFO] [whitelistsync2/whitelistsync2]: Sync Thread Started!
+[21:25:12] [Server thread/INFO] [whitelistsync2/whitelistsync2]: ----------------------------------------------
+[21:25:12] [Server thread/INFO] [whitelistsync2/whitelistsync2]: ----------------------------------------------
+[21:25:12] [Server thread/INFO] [whitelistsync2/whitelistsync2]: ----------------------------------------------
+[21:25:12] [Server thread/TRACE] [whitelistsync2/whitelistsync2]: Sent event FMLServerStartingEvent to mod whitelistsync2
+[21:25:12] [Server thread/DEBUG] [FML/]: Bar Step: ServerStarting - Whitelist Sync 2.0 took 0.011s
+[21:25:12] [Server thread/DEBUG] [FML/]: Bar Finished: ServerStarting took 0.013s
+[21:25:12] [Server thread/TRACE] [minecraft/minecraft]: Sending event FMLServerStartedEvent to mod minecraft
+[21:25:12] [Server thread/TRACE] [minecraft/minecraft]: Sent event FMLServerStartedEvent to mod minecraft
+[21:25:12] [Server thread/DEBUG] [FML/]: Bar Step: ServerStarted - Minecraft took 0.000s
+[21:25:12] [Server thread/TRACE] [mcp/mcp]: Sending event FMLServerStartedEvent to mod mcp
+[21:25:12] [Server thread/TRACE] [mcp/mcp]: Sent event FMLServerStartedEvent to mod mcp
+[21:25:12] [Server thread/DEBUG] [FML/]: Bar Step: ServerStarted - Minecraft Coder Pack took 0.000s
+[21:25:12] [Server thread/TRACE] [FML/FML]: Sending event FMLServerStartedEvent to mod FML
+[21:25:12] [Server thread/TRACE] [FML/FML]: Sent event FMLServerStartedEvent to mod FML
+[21:25:12] [Server thread/DEBUG] [FML/]: Bar Step: ServerStarted - Forge Mod Loader took 0.000s
+[21:25:12] [Server thread/TRACE] [forge/forge]: Sending event FMLServerStartedEvent to mod forge
+[21:25:12] [Server thread/TRACE] [forge/forge]: Sent event FMLServerStartedEvent to mod forge
+[21:25:12] [Server thread/DEBUG] [FML/]: Bar Step: ServerStarted - Minecraft Forge took 0.000s
+[21:25:12] [Server thread/TRACE] [whitelistsync2/whitelistsync2]: Sending event FMLServerStartedEvent to mod whitelistsync2
+[21:25:12] [Server thread/TRACE] [whitelistsync2/whitelistsync2]: Sent event FMLServerStartedEvent to mod whitelistsync2
+[21:25:12] [Server thread/DEBUG] [FML/]: Bar Step: ServerStarted - Whitelist Sync 2.0 took 0.000s
+[21:25:12] [Server thread/DEBUG] [FML/]: Bar Finished: ServerStarted took 0.001s
+[21:25:12] [Thread-30/DEBUG] [whitelistsync2/whitelistsync2]: getWhitelistJson returned an array of 0 entries.
+[21:25:12] [Thread-30/INFO] [whitelistsync2/whitelistsync2]: Added potato to whitelist.
+[21:25:12] [Thread-30/INFO] [whitelistsync2/whitelistsync2]: Added Dan to whitelist.
+[21:25:12] [Thread-30/DEBUG] [whitelistsync2/whitelistsync2]: Whitelist Table Pulled | Took 21ms | Wrote 3 records.
+[21:25:12] [Thread-30/DEBUG] [whitelistsync2/whitelistsync2]: getOplistJson returned an array of 0 entries.
+[21:25:12] [Thread-30/INFO] [whitelistsync2/whitelistsync2]: Opped potato.
+[21:25:12] [Thread-30/DEBUG] [whitelistsync2/whitelistsync2]: Ops Table Pulled | Took 4ms | Wrote 2 records.
+[21:25:18] [Server thread/DEBUG] [whitelistsync2/]: Whitelist Database Pulled | Took 0ms | Read 3 records.
+[21:25:22] [Thread-30/DEBUG] [whitelistsync2/whitelistsync2]: getWhitelistJson returned an array of 2 entries.
+[21:25:22] [Thread-30/DEBUG] [whitelistsync2/whitelistsync2]: Whitelist Table Pulled | Took 2ms | Wrote 3 records.
+[21:25:22] [Thread-30/DEBUG] [whitelistsync2/whitelistsync2]: getOplistJson returned an array of 1 entries.
+[21:25:22] [Thread-30/DEBUG] [whitelistsync2/whitelistsync2]: Ops Table Pulled | Took 0ms | Wrote 2 records.
+[21:25:32] [Thread-30/DEBUG] [whitelistsync2/whitelistsync2]: getWhitelistJson returned an array of 2 entries.
+[21:25:32] [Thread-30/DEBUG] [whitelistsync2/whitelistsync2]: Whitelist Table Pulled | Took 1ms | Wrote 3 records.
+[21:25:32] [Thread-30/DEBUG] [whitelistsync2/whitelistsync2]: getOplistJson returned an array of 1 entries.
+[21:25:32] [Thread-30/DEBUG] [whitelistsync2/whitelistsync2]: Ops Table Pulled | Took 0ms | Wrote 2 records.
+[21:25:42] [Thread-30/DEBUG] [whitelistsync2/whitelistsync2]: getWhitelistJson returned an array of 2 entries.
+[21:25:42] [Thread-30/DEBUG] [whitelistsync2/whitelistsync2]: Whitelist Table Pulled | Took 1ms | Wrote 3 records.
+[21:25:42] [Thread-30/DEBUG] [whitelistsync2/whitelistsync2]: getOplistJson returned an array of 1 entries.
+[21:25:42] [Thread-30/DEBUG] [whitelistsync2/whitelistsync2]: Ops Table Pulled | Took 1ms | Wrote 2 records.
+[21:25:52] [Thread-30/DEBUG] [whitelistsync2/whitelistsync2]: getWhitelistJson returned an array of 2 entries.
+[21:25:52] [Thread-30/DEBUG] [whitelistsync2/whitelistsync2]: Whitelist Table Pulled | Took 3ms | Wrote 3 records.
+[21:25:52] [Thread-30/DEBUG] [whitelistsync2/whitelistsync2]: getOplistJson returned an array of 1 entries.
+[21:25:52] [Thread-30/DEBUG] [whitelistsync2/whitelistsync2]: Ops Table Pulled | Took 3ms | Wrote 2 records.
+[21:25:52] [Server thread/DEBUG] [whitelistsync2/]: Op Database Pulled | Took 1ms | Read 2 records.
+[21:25:57] [Server thread/DEBUG] [FML/]: Gathering id map for writing to world save world
+[21:25:58] [Server thread/DEBUG] [whitelistsync2/]: Op Database Added Dan | Took 99ms
+[21:25:58] [Server thread/DEBUG] [whitelistsync2/]: Database Added Dan | Took 3ms
+[21:26:02] [Thread-30/DEBUG] [whitelistsync2/whitelistsync2]: getWhitelistJson returned an array of 2 entries.
+[21:26:02] [Thread-30/DEBUG] [whitelistsync2/whitelistsync2]: Whitelist Table Pulled | Took 1ms | Wrote 3 records.
+[21:26:02] [Thread-30/DEBUG] [whitelistsync2/whitelistsync2]: getOplistJson returned an array of 2 entries.
+[21:26:02] [Thread-30/DEBUG] [whitelistsync2/whitelistsync2]: Ops Table Pulled | Took 0ms | Wrote 2 records.
+[21:26:02] [Server thread/DEBUG] [whitelistsync2/]: getOplistJson returned an array of 2 entries.
+[21:26:02] [Server thread/DEBUG] [whitelistsync2/]: Op Database Removed Dan | Took 20ms
+[21:26:09] [Server thread/TRACE] [minecraft/minecraft]: Sending event FMLServerStoppingEvent to mod minecraft
+[21:26:09] [Server thread/TRACE] [minecraft/minecraft]: Sent event FMLServerStoppingEvent to mod minecraft
+[21:26:09] [Server thread/DEBUG] [FML/]: Bar Step: ServerStopping - Minecraft took 0.000s
+[21:26:09] [Server thread/TRACE] [mcp/mcp]: Sending event FMLServerStoppingEvent to mod mcp
+[21:26:09] [Server thread/TRACE] [mcp/mcp]: Sent event FMLServerStoppingEvent to mod mcp
+[21:26:09] [Server thread/DEBUG] [FML/]: Bar Step: ServerStopping - Minecraft Coder Pack took 0.000s
+[21:26:09] [Server thread/TRACE] [FML/FML]: Sending event FMLServerStoppingEvent to mod FML
+[21:26:09] [Server thread/TRACE] [FML/FML]: Sent event FMLServerStoppingEvent to mod FML
+[21:26:09] [Server thread/DEBUG] [FML/]: Bar Step: ServerStopping - Forge Mod Loader took 0.000s
+[21:26:09] [Server thread/TRACE] [forge/forge]: Sending event FMLServerStoppingEvent to mod forge
+[21:26:09] [Server thread/TRACE] [forge/forge]: Sent event FMLServerStoppingEvent to mod forge
+[21:26:09] [Server thread/DEBUG] [FML/]: Bar Step: ServerStopping - Minecraft Forge took 0.000s
+[21:26:09] [Server thread/TRACE] [whitelistsync2/whitelistsync2]: Sending event FMLServerStoppingEvent to mod whitelistsync2
+[21:26:09] [Server thread/TRACE] [whitelistsync2/whitelistsync2]: Sent event FMLServerStoppingEvent to mod whitelistsync2
+[21:26:09] [Server thread/DEBUG] [FML/]: Bar Step: ServerStopping - Whitelist Sync 2.0 took 0.000s
+[21:26:09] [Server thread/DEBUG] [FML/]: Bar Finished: ServerStopping took 0.001s
+[21:26:09] [Server thread/DEBUG] [FML/]: Gathering id map for writing to world save world
+[21:26:09] [Server thread/INFO] [FML/]: Unloading dimension 0
+[21:26:09] [Server thread/INFO] [FML/]: Unloading dimension -1
+[21:26:09] [Server thread/INFO] [FML/]: Unloading dimension 1
+[21:26:09] [Server thread/DEBUG] [FML/]: Reverting to frozen data state.
+[21:26:09] [Server thread/TRACE] [minecraft/minecraft]: Sending event FMLModIdMappingEvent to mod minecraft
+[21:26:09] [Server thread/TRACE] [minecraft/minecraft]: Sent event FMLModIdMappingEvent to mod minecraft
+[21:26:09] [Server thread/DEBUG] [FML/]: Bar Step: ModIdMapping - Minecraft took 0.000s
+[21:26:09] [Server thread/TRACE] [mcp/mcp]: Sending event FMLModIdMappingEvent to mod mcp
+[21:26:09] [Server thread/TRACE] [mcp/mcp]: Sent event FMLModIdMappingEvent to mod mcp
+[21:26:09] [Server thread/DEBUG] [FML/]: Bar Step: ModIdMapping - Minecraft Coder Pack took 0.000s
+[21:26:09] [Server thread/TRACE] [FML/FML]: Sending event FMLModIdMappingEvent to mod FML
+[21:26:09] [Server thread/TRACE] [FML/FML]: Sent event FMLModIdMappingEvent to mod FML
+[21:26:09] [Server thread/DEBUG] [FML/]: Bar Step: ModIdMapping - Forge Mod Loader took 0.000s
+[21:26:09] [Server thread/TRACE] [forge/forge]: Sending event FMLModIdMappingEvent to mod forge
+[21:26:09] [Server thread/TRACE] [forge/forge]: Sent event FMLModIdMappingEvent to mod forge
+[21:26:09] [Server thread/DEBUG] [FML/]: Bar Step: ModIdMapping - Minecraft Forge took 0.011s
+[21:26:09] [Server thread/TRACE] [whitelistsync2/whitelistsync2]: Sending event FMLModIdMappingEvent to mod whitelistsync2
+[21:26:09] [Server thread/TRACE] [whitelistsync2/whitelistsync2]: Sent event FMLModIdMappingEvent to mod whitelistsync2
+[21:26:09] [Server thread/DEBUG] [FML/]: Bar Step: ModIdMapping - Whitelist Sync 2.0 took 0.000s
+[21:26:09] [Server thread/DEBUG] [FML/]: Bar Finished: ModIdMapping took 0.012s
+[21:26:09] [Server thread/INFO] [FML/]: Applying holder lookups
+[21:26:09] [Server thread/INFO] [FML/]: Holder lookups applied
+[21:26:09] [Server thread/DEBUG] [FML/]: Frozen state restored.
+[21:26:09] [Server thread/TRACE] [minecraft/minecraft]: Sending event FMLServerStoppedEvent to mod minecraft
+[21:26:09] [Server thread/TRACE] [minecraft/minecraft]: Sent event FMLServerStoppedEvent to mod minecraft
+[21:26:09] [Server thread/DEBUG] [FML/]: Bar Step: ServerStopped - Minecraft took 0.000s
+[21:26:09] [Server thread/TRACE] [mcp/mcp]: Sending event FMLServerStoppedEvent to mod mcp
+[21:26:09] [Server thread/TRACE] [mcp/mcp]: Sent event FMLServerStoppedEvent to mod mcp
+[21:26:09] [Server thread/DEBUG] [FML/]: Bar Step: ServerStopped - Minecraft Coder Pack took 0.000s
+[21:26:09] [Server thread/TRACE] [FML/FML]: Sending event FMLServerStoppedEvent to mod FML
+[21:26:09] [Server thread/TRACE] [FML/FML]: Sent event FMLServerStoppedEvent to mod FML
+[21:26:09] [Server thread/DEBUG] [FML/]: Bar Step: ServerStopped - Forge Mod Loader took 0.000s
+[21:26:09] [Server thread/TRACE] [forge/forge]: Sending event FMLServerStoppedEvent to mod forge
+[21:26:09] [Server thread/TRACE] [forge/forge]: Sent event FMLServerStoppedEvent to mod forge
+[21:26:09] [Server thread/DEBUG] [FML/]: Bar Step: ServerStopped - Minecraft Forge took 0.000s
+[21:26:09] [Server thread/TRACE] [whitelistsync2/whitelistsync2]: Sending event FMLServerStoppedEvent to mod whitelistsync2
+[21:26:09] [Server thread/TRACE] [whitelistsync2/whitelistsync2]: Sent event FMLServerStoppedEvent to mod whitelistsync2
+[21:26:09] [Server thread/DEBUG] [FML/]: Bar Step: ServerStopped - Whitelist Sync 2.0 took 0.000s
+[21:26:09] [Server thread/DEBUG] [FML/]: Bar Finished: ServerStopped took 0.001s

@@ -1,0 +1,74 @@
+[21:25:03] [Server thread/INFO]: Starting minecraft server version 1.11.2
+[21:25:04] [Server thread/INFO]: Loading properties
+[21:25:04] [Server thread/INFO]: Default game type: SURVIVAL
+[21:25:04] [Server thread/INFO]: Generating keypair
+[21:25:05] [Server thread/INFO]: Starting Minecraft server on *:25565
+[21:25:05] [Server thread/INFO]: Using default channel type
+[21:25:05] [Server thread/WARN]: Failed to load user banlist: 
+java.io.FileNotFoundException: banned-players.json (The system cannot find the file specified)
+	at java.io.FileInputStream.open0(Native Method) ~[?:1.8.0_201]
+	at java.io.FileInputStream.open(Unknown Source) ~[?:1.8.0_201]
+	at java.io.FileInputStream.<init>(Unknown Source) ~[?:1.8.0_201]
+	at com.google.common.io.Files.newReader(Files.java:86) ~[minecraft_server.1.11.2.jar:?]
+	at net.minecraft.server.management.UserList.func_152679_g(SourceFile:136) ~[mx.class:?]
+	at net.minecraft.server.dedicated.DedicatedPlayerList.func_187246_z(SourceFile:99) [lg.class:?]
+	at net.minecraft.server.dedicated.DedicatedPlayerList.<init>(SourceFile:25) [lg.class:?]
+	at net.minecraft.server.dedicated.DedicatedServer.func_71197_b(DedicatedServer.java:216) [lh.class:?]
+	at net.minecraft.server.MinecraftServer.run(MinecraftServer.java:442) [MinecraftServer.class:?]
+	at java.lang.Thread.run(Unknown Source) [?:1.8.0_201]
+[21:25:05] [Server thread/WARN]: Failed to load ip banlist: 
+java.io.FileNotFoundException: banned-ips.json (The system cannot find the file specified)
+	at java.io.FileInputStream.open0(Native Method) ~[?:1.8.0_201]
+	at java.io.FileInputStream.open(Unknown Source) ~[?:1.8.0_201]
+	at java.io.FileInputStream.<init>(Unknown Source) ~[?:1.8.0_201]
+	at com.google.common.io.Files.newReader(Files.java:86) ~[minecraft_server.1.11.2.jar:?]
+	at net.minecraft.server.management.UserList.func_152679_g(SourceFile:136) ~[mx.class:?]
+	at net.minecraft.server.dedicated.DedicatedPlayerList.func_187249_y(SourceFile:91) [lg.class:?]
+	at net.minecraft.server.dedicated.DedicatedPlayerList.<init>(SourceFile:27) [lg.class:?]
+	at net.minecraft.server.dedicated.DedicatedServer.func_71197_b(DedicatedServer.java:216) [lh.class:?]
+	at net.minecraft.server.MinecraftServer.run(MinecraftServer.java:442) [MinecraftServer.class:?]
+	at java.lang.Thread.run(Unknown Source) [?:1.8.0_201]
+[21:25:05] [Server thread/WARN]: Failed to load operators list: 
+java.io.FileNotFoundException: ops.json (The system cannot find the file specified)
+	at java.io.FileInputStream.open0(Native Method) ~[?:1.8.0_201]
+	at java.io.FileInputStream.open(Unknown Source) ~[?:1.8.0_201]
+	at java.io.FileInputStream.<init>(Unknown Source) ~[?:1.8.0_201]
+	at com.google.common.io.Files.newReader(Files.java:86) ~[minecraft_server.1.11.2.jar:?]
+	at net.minecraft.server.management.UserList.func_152679_g(SourceFile:136) ~[mx.class:?]
+	at net.minecraft.server.dedicated.DedicatedPlayerList.func_72417_t(SourceFile:107) [lg.class:?]
+	at net.minecraft.server.dedicated.DedicatedPlayerList.<init>(SourceFile:29) [lg.class:?]
+	at net.minecraft.server.dedicated.DedicatedServer.func_71197_b(DedicatedServer.java:216) [lh.class:?]
+	at net.minecraft.server.MinecraftServer.run(MinecraftServer.java:442) [MinecraftServer.class:?]
+	at java.lang.Thread.run(Unknown Source) [?:1.8.0_201]
+[21:25:05] [Server thread/WARN]: Failed to load white-list: 
+java.io.FileNotFoundException: whitelist.json (The system cannot find the file specified)
+	at java.io.FileInputStream.open0(Native Method) ~[?:1.8.0_201]
+	at java.io.FileInputStream.open(Unknown Source) ~[?:1.8.0_201]
+	at java.io.FileInputStream.<init>(Unknown Source) ~[?:1.8.0_201]
+	at com.google.common.io.Files.newReader(Files.java:86) ~[minecraft_server.1.11.2.jar:?]
+	at net.minecraft.server.management.UserList.func_152679_g(SourceFile:136) ~[mx.class:?]
+	at net.minecraft.server.dedicated.DedicatedPlayerList.func_72418_v(SourceFile:123) [lg.class:?]
+	at net.minecraft.server.dedicated.DedicatedPlayerList.<init>(SourceFile:30) [lg.class:?]
+	at net.minecraft.server.dedicated.DedicatedServer.func_71197_b(DedicatedServer.java:216) [lh.class:?]
+	at net.minecraft.server.MinecraftServer.run(MinecraftServer.java:442) [MinecraftServer.class:?]
+	at java.lang.Thread.run(Unknown Source) [?:1.8.0_201]
+[21:25:05] [Server thread/INFO]: Preparing level "world"
+[21:25:06] [Server thread/INFO]: Preparing start region for level 0
+[21:25:07] [Server thread/INFO]: Preparing spawn area: 15%
+[21:25:08] [Server thread/INFO]: Preparing spawn area: 33%
+[21:25:09] [Server thread/INFO]: Preparing spawn area: 50%
+[21:25:10] [Server thread/INFO]: Preparing spawn area: 70%
+[21:25:11] [Server thread/INFO]: Preparing spawn area: 92%
+[21:25:12] [Server thread/INFO]: Done (6.263s)! For help, type "help" or "?"
+[21:25:18] [Server thread/INFO]: potato, Dan
+[21:25:52] [Server thread/INFO]: potato
+[21:25:55] [Server thread/INFO]: /wlop <list|op|deop|sync|copyServerToDatabase>
+[21:25:58] [Server thread/INFO]: Dan opped!
+[21:26:02] [Server thread/INFO]: Dan de-opped!
+[21:26:09] [Server thread/INFO]: Stopping the server
+[21:26:09] [Server thread/INFO]: Stopping server
+[21:26:09] [Server thread/INFO]: Saving players
+[21:26:09] [Server thread/INFO]: Saving worlds
+[21:26:09] [Server thread/INFO]: Saving chunks for level 'world'/Overworld
+[21:26:09] [Server thread/INFO]: Saving chunks for level 'world'/Nether
+[21:26:09] [Server thread/INFO]: Saving chunks for level 'world'/The End
