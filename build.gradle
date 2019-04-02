@@ -31,7 +31,7 @@ compileJava {
 }
 
 minecraft {
-    // version = "1.11.2-13.20.1.2588" // 1.11.2
+    //version = "1.11.2-13.20.1.2588" // 1.11.2
     version = "1.12.2-14.23.5.2768" // 1.12.2
     runDir = "run"
 
@@ -54,8 +54,8 @@ dependencies {
 }
 
 shadowJar {
-    classifier = 'shadow'
-    version = null
+    classifier = 'all'
+    version = project.version
     
     dependencies {
         include(dependency('com.googlecode.json-simple:json-simple'))
