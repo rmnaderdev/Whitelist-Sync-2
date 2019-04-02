@@ -220,7 +220,7 @@ public class MySqlService implements BaseService {
     @Override
     public ArrayList<String> pullWhitelistedUuidsFromDatabase(MinecraftServer server) {
         // ArrayList for uuids.
-        ArrayList<String> uuids = new ArrayList<String>();
+        ArrayList<String> uuids = new ArrayList<>();
 
         try {
             // Keep track of records.
@@ -446,7 +446,6 @@ public class MySqlService implements BaseService {
     @Override
     public boolean addPlayerToDatabaseOp(GameProfile player) {
         try {
-            ArrayList<OpUser> oppedUsers = OPlistRead.getOppedUsers();
             // Start time.
             long startTime = System.currentTimeMillis();
             // Open connection
@@ -455,13 +454,8 @@ public class MySqlService implements BaseService {
             PreparedStatement stmt = conn1.prepareStatement(sql);
             stmt.setString(1, String.valueOf(player.getId()));
             stmt.setString(2, player.getName());
-
-            for (OpUser opUser : oppedUsers) {
-                if (opUser.getUuid().equalsIgnoreCase(player.getId().toString())) {
-                    stmt.setInt(3, opUser.getLevel());
-                    stmt.setInt(4, opUser.isBypassesPlayerLimit() ? 1 : 0);
-                }
-            }
+            stmt.setInt(3, 4);
+            stmt.setInt(4, 1);
 
             // Execute statement.
             stmt.execute();
