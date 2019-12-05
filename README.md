@@ -1,7 +1,7 @@
 # Whitelist Sync 2
 Server Side Mod to sync all of your forge server whitelists to a single database (Currently supports SQLite or mySQL servers).
 
-SEE https://minecraft.curseforge.com/projects/whitelist-sync
+SEE https://www.curseforge.com/minecraft/mc-mods/whitelistsync2
 
 [3/11/19] I am planning on fixing the issues in the beta version and in the previous version as soon as I can. I am a college student and work a part time SW dev job so those take my priority since I need money to pay the bills. Donations are appreciated and allow me to spend more time on this project. Otherwise I will make changes when I can. Thank you for understanding. :)
 
