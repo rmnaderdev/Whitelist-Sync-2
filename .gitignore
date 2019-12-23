@@ -1,16 +1,5 @@
-# gradle
-.gradle
-build/
-
-# Ignore Gradle GUI config
-gradle-app.setting
-
-# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
-!gradle-wrapper.jar
-
 # eclipse
 bin
-eclipse
 *.launch
 .settings
 .metadata
@@ -24,7 +13,13 @@ out
 *.iml
 .idea
 
+# gradle
+build
+.gradle
 
 # other
+eclipse
 run
-/.nb-gradle/
+
+# Files from Forge MDK
+forge*changelog.txt
