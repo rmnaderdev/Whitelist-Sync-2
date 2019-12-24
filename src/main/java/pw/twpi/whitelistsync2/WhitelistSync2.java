@@ -74,13 +74,16 @@ public class WhitelistSync2
         // Check if whitelisting is enabled.
         if (!event.getServer().getPlayerList().isWhiteListEnabled()) {
             LOGGER.info("Oh no! I see whitelisting isn't enabled in the server properties. "
-                    + "I assume this is not intentional, I'll enable it for you! :D");
+                    + "I assume this is not intentional, I'll enable it for you!");
             event.getServer().getPlayerList().setWhiteListEnabled(true);
         }
 
         LOGGER.info("Registering commands...");
         WhitelistCommands.register(event.getCommandDispatcher());
-        OpCommands.register(event.getCommandDispatcher());
+
+        if(Config.SYNC_OP_LIST.get()) {
+            OpCommands.register(event.getCommandDispatcher());
+        }
 
         LOGGER.info("Starting Sync Thread...");
         StartSyncThread(event.getServer(), whitelistService);

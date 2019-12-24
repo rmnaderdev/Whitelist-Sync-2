@@ -5,16 +5,24 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.util.text.StringTextComponent;
+import pw.twpi.whitelistsync2.WhitelistSync2;
 
 public class CommandSync implements Command<CommandSource> {
-    private static final CommandList CMD = new CommandList();
+    // !!!!!!!!!!!!!!Make sure you change this to this class!!!!!!!!!!!!!!
+    private static final CommandSync CMD = new CommandSync();
 
     // Name of the command
     private static final String commandName = "sync";
-    private static final int permissionLevel = 0;
+    private static final int permissionLevel = 4;
+
+    // Errors
+    private static final SimpleCommandExceptionType DB_ERROR
+            = new SimpleCommandExceptionType(new StringTextComponent("Error syncing op database, please check console for details."));
+
 
     // Initial command "checks"
     public static ArgumentBuilder<CommandSource, ?> register(CommandDispatcher<CommandSource> dispatcher) {
@@ -26,7 +34,11 @@ public class CommandSync implements Command<CommandSource> {
     // Command action
     @Override
     public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
-        context.getSource().sendFeedback(new StringTextComponent("Hello world!"), false);
+        if(WhitelistSync2.whitelistService.updateLocalOpListFromDatabase(context.getSource().getServer())) {
+            context.getSource().sendFeedback(new StringTextComponent("Local op list up to date with database."), false);
+        } else {
+            throw DB_ERROR.create();
+        }
         return 0;
     }
 }
