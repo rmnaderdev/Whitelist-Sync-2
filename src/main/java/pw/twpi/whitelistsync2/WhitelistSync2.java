@@ -38,28 +38,8 @@ public class WhitelistSync2
     public WhitelistSync2() {
         // Register config
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SERVER_CONFIG);
-
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-
         MinecraftForge.EVENT_BUS.register(this);
         LOGGER.info("Hello from Whitelist Sync 2!");
-    }
-
-    private void setup(final FMLCommonSetupEvent event)
-    {
-        LOGGER.info("Hello again Minecraft");
-        LOGGER.info("Setting up databases...");
-
-        if (Config.DATABASE_MODE.get() == Config.DatabaseMode.SQLITE) {
-            whitelistService = new SqLiteService();
-        } else if (Config.DATABASE_MODE.get() == Config.DatabaseMode.MYSQL) {
-            whitelistService = new MySqlService();
-        } else {
-            throw new RuntimeException("Please check what WHITELIST_MODE is set in the config"
-                    + "and make sure it is set to a supported mode.");
-        }
-
-        LOGGER.info("Database setup!");
     }
 
     @SubscribeEvent
@@ -74,6 +54,18 @@ public class WhitelistSync2
         LOGGER.info("----------------------------------------------");
         LOGGER.info("---------------WHITELIST SYNC 2---------------");
         LOGGER.info("----------------------------------------------");
+
+        LOGGER.info("Setting up databases...");
+        if (Config.DATABASE_MODE.get() == Config.DatabaseMode.SQLITE) {
+            whitelistService = new SqLiteService();
+        } else if (Config.DATABASE_MODE.get() == Config.DatabaseMode.MYSQL) {
+            whitelistService = new MySqlService();
+        } else {
+            throw new RuntimeException("Please check what WHITELIST_MODE is set in the config"
+                    + "and make sure it is set to a supported mode.");
+        }
+        LOGGER.info("Database setup!");
+
 
         // Check if whitelisting is enabled.
         if (!event.getServer().getPlayerList().isWhiteListEnabled()) {

@@ -39,7 +39,6 @@ public class SqLiteService implements BaseService {
             WhitelistSync2.LOGGER.error("Failed to init sqlite connector. Is the library missing?");
         }
 
-
         loadDatabase();
     }
 
@@ -687,7 +686,8 @@ public class SqLiteService implements BaseService {
                 WhitelistSync2.LOGGER.info("A new database \"" + Config.SQLITE_DATABASE_PATH.get() + "\" has been created.");
             }
         } catch (SQLException e) {
-            WhitelistSync2.LOGGER.error("Error creating non-existing database!\n" + e.getMessage());
+            // When in doubt, crash the server! FU%#!!
+            throw new RuntimeException("Error creating non-existing database!\n" + e.getMessage());
         }
     }
 
