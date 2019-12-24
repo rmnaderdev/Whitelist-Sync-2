@@ -148,7 +148,7 @@ public class SqLiteService implements BaseService {
                 // Loop through ops list and add to DB
                 for (OpUser opUser : opUsers) {
                     try {
-                        PreparedStatement sql = conn1.prepareStatement("INSERT IGNORE INTO op(uuid, name, level, bypassesPlayerLimit, isOp) VALUES (?, ?, ?, ?, 1)");
+                        PreparedStatement sql = conn1.prepareStatement("INSERT OR REPLACE INTO op(uuid, name, level, bypassesPlayerLimit, isOp) VALUES (?, ?, ?, ?, 1)");
                         sql.setString(1, opUser.getUuid());
                         sql.setString(2, opUser.getName());
                         sql.setInt(3, opUser.getLevel());
@@ -158,7 +158,6 @@ public class SqLiteService implements BaseService {
                     } catch (ClassCastException e) {
                         e.printStackTrace();
                     }
-                    records++;
                 }
                 // Record time taken.
                 long opTimeTaken = System.currentTimeMillis() - opStartTime;
