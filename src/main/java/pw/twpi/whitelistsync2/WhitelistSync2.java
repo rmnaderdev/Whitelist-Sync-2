@@ -1,7 +1,13 @@
 package pw.twpi.whitelistsync2;
 
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.ParseResults;
+import com.mojang.brigadier.context.CommandContextBuilder;
+import com.mojang.brigadier.tree.CommandNode;
+import net.minecraft.command.CommandSource;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -31,14 +37,9 @@ public class WhitelistSync2
 
     public WhitelistSync2() {
         // Register config
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.COMMON_CONFIG);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SERVER_CONFIG);
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-
-        // Load config
-        Config.loadConfig(Config.COMMON_CONFIG, FMLPaths.CONFIGDIR.get().resolve("whitelistSync.toml"));
-
-
 
         MinecraftForge.EVENT_BUS.register(this);
         LOGGER.info("Hello from Whitelist Sync 2!");
@@ -63,6 +64,9 @@ public class WhitelistSync2
 
     @SubscribeEvent
     public void onServerStarting(FMLServerStartingEvent event) {
+        // Load config
+        Config.loadConfig(Config.SERVER_CONFIG, FMLPaths.CONFIGDIR.get().resolve("whitelistSync.toml"));
+
 
         // Server filepath
         SERVER_FILEPATH = event.getServer().getDataDirectory().getPath();
@@ -78,15 +82,18 @@ public class WhitelistSync2
             event.getServer().getPlayerList().setWhiteListEnabled(true);
         }
 
+        LOGGER.info("Starting Sync Thread...");
+        StartSyncThread(event.getServer(), whitelistService);
+
         LOGGER.info("Registering commands...");
         WhitelistCommands.register(event.getCommandDispatcher());
 
         if(Config.SYNC_OP_LIST.get()) {
+            LOGGER.info("OP Sync is enabled");
             OpCommands.register(event.getCommandDispatcher());
+        } else {
+            LOGGER.info("OP Sync is disabled");
         }
-
-        LOGGER.info("Starting Sync Thread...");
-        StartSyncThread(event.getServer(), whitelistService);
 
         LOGGER.info("----------------------------------------------");
         LOGGER.info("----------------------------------------------");

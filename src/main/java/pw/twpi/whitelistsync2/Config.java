@@ -26,11 +26,14 @@ public class Config {
     public static final String CATEGORY_MYSQL = "mySQL";
     public static final String CATEGORY_SQLITE = "sqlite";
 
-    private static final ForgeConfigSpec.Builder COMMON_BUILDER
+    private static final ForgeConfigSpec.Builder SERVER_BUILDER
             = new ForgeConfigSpec.Builder();
 
     // Only one common config
-    public static ForgeConfigSpec COMMON_CONFIG;
+    public static ForgeConfigSpec SERVER_CONFIG;
+
+
+
 
     // General Settings
     public static ForgeConfigSpec.EnumValue<DatabaseMode> DATABASE_MODE;
@@ -54,68 +57,68 @@ public class Config {
 
     static {
         // General Settings
-        COMMON_BUILDER.comment("General configuration").push(CATEGORY_GENERAL);
+        SERVER_BUILDER.comment("General configuration").push(CATEGORY_GENERAL);
         setupGeneralConfig();
-        COMMON_BUILDER.pop();
+        SERVER_BUILDER.pop();
 
 
         // MYSQL Config
-        COMMON_BUILDER.comment(
+        SERVER_BUILDER.comment(
                 "MySQL configuration (To enable " +
                         "mySQL, refer to the mode setting in the general configuration)."
         ).push(CATEGORY_MYSQL);
         setupMySQLConfig();
-        COMMON_BUILDER.pop();
+        SERVER_BUILDER.pop();
 
 
         // SQLITE Config
-        COMMON_BUILDER.comment(
+        SERVER_BUILDER.comment(
                 "Sqlite configuration (To enable Sqlite, " +
                         "refer to the mode setting in the general configuration)."
         ).push(CATEGORY_SQLITE);
         setupSqliteConfig();
-        COMMON_BUILDER.pop();
+        SERVER_BUILDER.pop();
 
-        COMMON_CONFIG = COMMON_BUILDER.build();
+        SERVER_CONFIG = SERVER_BUILDER.build();
     }
 
     private static void setupGeneralConfig() {
-        DATABASE_MODE = COMMON_BUILDER.comment("Mode for the database.")
+        DATABASE_MODE = SERVER_BUILDER.comment("Mode for the database.")
                 .defineEnum("databaseMode", DatabaseMode.SQLITE);
-        SYNC_OP_LIST = COMMON_BUILDER.comment("Option on wheather to sync the server's op list to the database.")
+        SYNC_OP_LIST = SERVER_BUILDER.comment("Option on whether to sync the server's op list to the database.")
                 .define("syncOpList", false);
-        ENABLE_DEBUG_LOGGING = COMMON_BUILDER.comment("Option on wheather to output whitelist/op changes triggered by other servers. " +
+        ENABLE_DEBUG_LOGGING = SERVER_BUILDER.comment("Option on whether to output whitelist/op changes triggered by other servers. " +
                 "This will show when a new user is opped or whitelisted on anther connected sever.")
                 .define("enableDebugLogging", false);
     }
 
     private static void setupMySQLConfig() {
-        MYSQL_SYNC_TIMER = COMMON_BUILDER.comment("Time Interval in seconds for when the server " +
+        MYSQL_SYNC_TIMER = SERVER_BUILDER.comment("Time Interval in seconds for when the server " +
                 "polls the whitelist changes from the mySQL database. " +
                 "(Warning! Time lower than 5 sec may effect performace.)")
                 .defineInRange("mysqlSyncTimer", 60, 1, Integer.MAX_VALUE);
-        MYSQL_DB_NAME = COMMON_BUILDER.comment("Name for your mySQL database (No spaces!).")
+        MYSQL_DB_NAME = SERVER_BUILDER.comment("Name for your mySQL database (No spaces!).")
                 .define("mysqlDbName", "WhitelistSync");
-        MYSQL_IP = COMMON_BUILDER.comment("IP for your mySQL server.")
+        MYSQL_IP = SERVER_BUILDER.comment("IP for your mySQL server.")
                 .define("mysqlIp", "localhost");
-        MYSQL_PORT = COMMON_BUILDER.comment("Port for your mySQL server.")
+        MYSQL_PORT = SERVER_BUILDER.comment("Port for your mySQL server.")
                 .defineInRange("mysqlPort", 3306, 1, 65535);
-        MYSQL_USERNAME = COMMON_BUILDER.comment("Username for your mySQL server.")
+        MYSQL_USERNAME = SERVER_BUILDER.comment("Username for your mySQL server.")
                 .define("mysqlUsername", "root");
-        MYSQL_PASSWORD = COMMON_BUILDER.comment("Password for your mySQL server.")
+        MYSQL_PASSWORD = SERVER_BUILDER.comment("Password for your mySQL server.")
                 .define("mysqlPassword", "password");
     }
 
     private static void setupSqliteConfig() {
-        SQLITE_SYNC_MODE = COMMON_BUILDER.comment("Mode for how the database updates.")
+        SQLITE_SYNC_MODE = SERVER_BUILDER.comment("Mode for how the database updates.")
                 .defineEnum("sqliteSyncMode", SyncMode.INTERVAL);
-        SQLITE_DATABASE_PATH = COMMON_BUILDER.comment("Insert System Path for your SQLite database file. " +
+        SQLITE_DATABASE_PATH = SERVER_BUILDER.comment("Insert System Path for your SQLite database file. " +
                 "This should be the same for all your servers you want to sync!")
                 .define("sqliteDatabasePath", "./whitelistSync.db");
-        SQLITE_SERVER_SYNC_TIMER = COMMON_BUILDER.comment("Time Interval in seconds for when the server " +
+        SQLITE_SERVER_SYNC_TIMER = SERVER_BUILDER.comment("Time Interval in seconds for when the server " +
                 "polls the whitelist changes from the database. (Only used in INTERVAL Sqlite Mode!)")
                 .defineInRange("sqliteServerSyncTimer", 60, 1, Integer.MAX_VALUE);
-        SQLITE_SERVER_LISTENER_TIMER = COMMON_BUILDER.comment("Time Interval in seconds for when the server checks " +
+        SQLITE_SERVER_LISTENER_TIMER = SERVER_BUILDER.comment("Time Interval in seconds for when the server checks " +
                 "for database changes (Only used in Database Update Sqlite Mode!)")
                 .defineInRange("sqliteServerListenerTimer", 10, 1, Integer.MAX_VALUE);
 
