@@ -32,6 +32,14 @@ public class SqLiteService implements BaseService {
     public SqLiteService() {
         WhitelistSync2.LOGGER.info("Setting up the SQLITE service...");
         this.databaseFile = new File(Config.SQLITE_DATABASE_PATH.get());
+
+        try {
+            Class.forName("org.sqlite.JDBC").newInstance();
+        } catch (Exception ex) {
+            WhitelistSync2.LOGGER.error("Failed to init sqlite connector. Is the library missing?");
+        }
+
+
         loadDatabase();
     }
 

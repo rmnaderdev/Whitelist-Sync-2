@@ -36,12 +36,8 @@ public class MySqlService implements BaseService {
         
         try {
             Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
-        } catch (ClassNotFoundException ex) {
-            WhitelistSync2.LOGGER.error("Failed to connect to the mySQL database! mysql-connector library missing!\n" + ex.getMessage());
-        } catch (InstantiationException ex) {
-            WhitelistSync2.LOGGER.error("Failed to connect to the mySQL database! Failed to instantiate library!\n" + ex.getMessage());
-        } catch (IllegalAccessException ex) {
-            WhitelistSync2.LOGGER.error("Failed to connect to the mySQL database! mysql-connector library missing!\n" + ex.getMessage());
+        } catch (Exception ex) {
+            WhitelistSync2.LOGGER.error("Failed to init mysql-connector. Is the library missing?");
         }
         
         this.databaseName = Config.MYSQL_DB_NAME.get();
