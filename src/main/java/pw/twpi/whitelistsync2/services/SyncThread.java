@@ -50,14 +50,11 @@ public class SyncThread implements Runnable {
 
             if (Config.SQLITE_SYNC_MODE.get() == Config.SyncMode.INTERVAL) {
                 while (server.isServerRunning()) {
-                    WhitelistSync2.LOGGER.info("Before Sync");
                     service.updateLocalWhitelistFromDatabase(server);
 
                     if (Config.SYNC_OP_LIST.get()) {
                         service.updateLocalOpListFromDatabase(server);
                     }
-
-                    WhitelistSync2.LOGGER.info("After Sync");
 
                     try {
                         Thread.sleep(Config.SQLITE_SERVER_SYNC_TIMER.get() * 1000);
