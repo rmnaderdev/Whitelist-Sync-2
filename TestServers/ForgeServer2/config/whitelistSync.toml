@@ -7,7 +7,7 @@
 	enableDebugLogging = true
 	#Mode for the database.
 	#Allowed Values: MYSQL, SQLITE
-	databaseMode = "SQLITE"
+	databaseMode = "MYSQL"
 
 #Sqlite configuration (To enable Sqlite, refer to the mode setting in the general configuration).
 [sqlite]
@@ -28,9 +28,9 @@
 	#IP for your mySQL server.
 	mysqlIp = "localhost"
 	#Username for your mySQL server.
-	mysqlUsername = "root"
+	mysqlUsername = "whitelistsynctest"
 	#Name for your mySQL database (No spaces!).
-	mysqlDbName = "WhitelistSync"
+	mysqlDbName = "whitelistsynctest"
 	#Password for your mySQL server.
 	mysqlPassword = "password"
 	#Port for your mySQL server.
