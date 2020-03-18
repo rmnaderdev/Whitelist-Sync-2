@@ -143,7 +143,7 @@ public class Config {
     }
 
     @SubscribeEvent
-    public static void onReload(final ModConfig.ConfigReloading configEvent) {
+    public static void onReload(final ModConfig.ModConfigEvent configEvent) {
     }
 
 }
