@@ -1,0 +1,117 @@
+[18Mar2020 15:04:37.017] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--gameDir, ., --launchTarget, fmlserver, --fml.forgeVersion, 31.1.0, --fml.mcpVersion, 20200122.131323, --fml.mcVersion, 1.15.2, --fml.forgeGroup, net.minecraftforge, nogui]
+[18Mar2020 15:04:37.019] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 5.0.0-milestone.4+67+b1a340b starting: java version 1.8.0_241 by Oracle Corporation
+[18Mar2020 15:04:37.517] [main/INFO] [net.minecraftforge.fml.loading.FixSSL/CORE]: Added Lets Encrypt root certificates as additional trust
+[18Mar2020 15:04:38.001] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'fmlserver' with arguments [--gameDir, ., nogui]
+[18Mar2020 15:04:43.163] [main/WARN] [net.minecraft.command.Commands/]: Ambiguity between arguments [teleport, destination] and [teleport, targets] with inputs: [Player, 0123, @e, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[18Mar2020 15:04:43.165] [main/WARN] [net.minecraft.command.Commands/]: Ambiguity between arguments [teleport, location] and [teleport, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[18Mar2020 15:04:43.166] [main/WARN] [net.minecraft.command.Commands/]: Ambiguity between arguments [teleport, location] and [teleport, targets] with inputs: [0.1 -0.5 .9, 0 0 0]
+[18Mar2020 15:04:43.168] [main/WARN] [net.minecraft.command.Commands/]: Ambiguity between arguments [teleport, targets] and [teleport, destination] with inputs: [Player, 0123, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[18Mar2020 15:04:43.170] [main/WARN] [net.minecraft.command.Commands/]: Ambiguity between arguments [teleport, targets, location] and [teleport, targets, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[18Mar2020 15:04:43.231] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Starting minecraft server version 1.15.2
+[18Mar2020 15:04:43.550] [modloading-worker-11/INFO] [net.minecraftforge.common.ForgeMod/FORGEMOD]: Forge mod loading, version 31.1.0, for MC 1.15.2 with MCP 20200122.131323
+[18Mar2020 15:04:43.550] [modloading-worker-11/INFO] [net.minecraftforge.common.MinecraftForge/FORGE]: MinecraftForge v31.1.0 Initialized
+[18Mar2020 15:04:43.608] [modloading-worker-9/INFO] [whitelistsync2/]: Hello from Whitelist Sync 2!
+[18Mar2020 15:04:44.024] [Forge Version Check/INFO] [net.minecraftforge.fml.VersionChecker/]: [whitelistsync2] Starting version check at http://myurl.me/
+[18Mar2020 15:04:44.025] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Loading properties
+[18Mar2020 15:04:44.027] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Default game type: CREATIVE
+[18Mar2020 15:04:44.027] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Generating keypair
+[18Mar2020 15:04:44.365] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Starting Minecraft server on *:25565
+[18Mar2020 15:04:44.370] [Server thread/INFO] [net.minecraft.network.NetworkSystem/]: Using default channel type
+[18Mar2020 15:04:44.624] [Forge Version Check/WARN] [net.minecraftforge.fml.VersionChecker/]: Failed to process update information
+java.io.IOException: Server returned HTTP response code: 400 for URL: http://myurl.me/
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:1.8.0_241]
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(Unknown Source) ~[?:1.8.0_241]
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(Unknown Source) ~[?:1.8.0_241]
+	at java.lang.reflect.Constructor.newInstance(Unknown Source) ~[?:1.8.0_241]
+	at sun.net.www.protocol.http.HttpURLConnection$10.run(Unknown Source) ~[?:1.8.0_241]
+	at sun.net.www.protocol.http.HttpURLConnection$10.run(Unknown Source) ~[?:1.8.0_241]
+	at java.security.AccessController.doPrivileged(Native Method) ~[?:1.8.0_241]
+	at sun.net.www.protocol.http.HttpURLConnection.getChainedException(Unknown Source) ~[?:1.8.0_241]
+	at sun.net.www.protocol.http.HttpURLConnection.getInputStream0(Unknown Source) ~[?:1.8.0_241]
+	at sun.net.www.protocol.http.HttpURLConnection.getInputStream(Unknown Source) ~[?:1.8.0_241]
+	at net.minecraftforge.fml.VersionChecker$1.openUrlStream(VersionChecker.java:189) ~[?:?]
+	at net.minecraftforge.fml.VersionChecker$1.process(VersionChecker.java:206) ~[?:?]
+	at java.lang.Iterable.forEach(Unknown Source) [?:1.8.0_241]
+	at net.minecraftforge.fml.VersionChecker$1.run(VersionChecker.java:157) [?:?]
+Caused by: java.io.IOException: Server returned HTTP response code: 400 for URL: http://myurl.me/
+	at sun.net.www.protocol.http.HttpURLConnection.getInputStream0(Unknown Source) ~[?:1.8.0_241]
+	at sun.net.www.protocol.http.HttpURLConnection.getInputStream(Unknown Source) ~[?:1.8.0_241]
+	at java.net.HttpURLConnection.getResponseCode(Unknown Source) ~[?:1.8.0_241]
+	at net.minecraftforge.fml.VersionChecker$1.openUrlStream(VersionChecker.java:173) ~[?:?]
+	... 3 more
+[18Mar2020 15:04:44.626] [Forge Version Check/INFO] [net.minecraftforge.fml.VersionChecker/]: [forge] Starting version check at https://files.minecraftforge.net/maven/net/minecraftforge/forge/promotions_slim.json
+[18Mar2020 15:04:44.906] [Forge Version Check/INFO] [net.minecraftforge.fml.VersionChecker/]: [forge] Found status: UP_TO_DATE Current: 31.1.0 Target: null
+[18Mar2020 15:04:45.285] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Preparing level "world"
+[18Mar2020 15:04:45.490] [Server thread/INFO] [net.minecraft.resources.SimpleReloadableResourceManager/]: Reloading ResourceManager: Default, forge-1.15.2-31.1.0-universal.jar, whitelistsync2-1.15.4-2.1.0.jar
+[18Mar2020 15:04:45.767] [Server thread/INFO] [net.minecraft.item.crafting.RecipeManager/]: Loaded 6 recipes
+[18Mar2020 15:04:46.024] [Server thread/INFO] [net.minecraft.advancements.AdvancementList/]: Loaded 825 advancements
+[18Mar2020 15:04:46.212] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Preparing start region for dimension minecraft:overworld
+[18Mar2020 15:04:46.711] [Server thread/INFO] [net.minecraft.world.chunk.listener.LoggingChunkStatusListener/]: Preparing spawn area: 0%
+[18Mar2020 15:04:46.712] [Server thread/INFO] [net.minecraft.world.chunk.listener.LoggingChunkStatusListener/]: Preparing spawn area: 0%
+[18Mar2020 15:04:47.950] [Server-Worker-6/INFO] [net.minecraft.world.chunk.listener.LoggingChunkStatusListener/]: Preparing spawn area: 83%
+[18Mar2020 15:04:47.950] [Server-Worker-6/INFO] [net.minecraft.world.chunk.listener.LoggingChunkStatusListener/]: Preparing spawn area: 83%
+[18Mar2020 15:04:48.213] [Server-Worker-5/INFO] [net.minecraft.world.chunk.listener.LoggingChunkStatusListener/]: Preparing spawn area: 83%
+[18Mar2020 15:04:48.713] [Server-Worker-1/INFO] [net.minecraft.world.chunk.listener.LoggingChunkStatusListener/]: Preparing spawn area: 83%
+[18Mar2020 15:04:49.213] [Server-Worker-4/INFO] [net.minecraft.world.chunk.listener.LoggingChunkStatusListener/]: Preparing spawn area: 93%
+[18Mar2020 15:04:49.473] [Server thread/INFO] [net.minecraft.world.chunk.listener.LoggingChunkStatusListener/]: Time elapsed: 3261 ms
+[18Mar2020 15:04:49.474] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Done (4.262s)! For help, type "help"
+[18Mar2020 15:04:49.477] [Server thread/INFO] [whitelistsync2/]: ----------------------------------------------
+[18Mar2020 15:04:49.477] [Server thread/INFO] [whitelistsync2/]: ---------------WHITELIST SYNC 2---------------
+[18Mar2020 15:04:49.477] [Server thread/INFO] [whitelistsync2/]: ----------------------------------------------
+[18Mar2020 15:04:49.478] [Server thread/INFO] [whitelistsync2/]: Setting up databases...
+[18Mar2020 15:04:49.479] [Server thread/INFO] [whitelistsync2/]: Setting up the SQLITE service...
+[18Mar2020 15:04:49.541] [Server thread/INFO] [whitelistsync2/]: A new database "../whitelistSync.db" has been created.
+[18Mar2020 15:04:49.542] [Server thread/INFO] [whitelistsync2/]: Connected to SQLite database successfully!
+[18Mar2020 15:04:49.552] [Server thread/INFO] [whitelistsync2/]: Database setup!
+[18Mar2020 15:04:49.552] [Server thread/INFO] [whitelistsync2/]: Starting Sync Thread...
+[18Mar2020 15:04:49.553] [Server thread/INFO] [whitelistsync2/]: Sync Thread Started!
+[18Mar2020 15:04:49.553] [Server thread/INFO] [whitelistsync2/]: Registering commands...
+[18Mar2020 15:04:49.558] [Server thread/INFO] [whitelistsync2/]: OP Sync is enabled
+[18Mar2020 15:04:49.563] [Server thread/INFO] [whitelistsync2/]: ----------------------------------------------
+[18Mar2020 15:04:49.563] [Server thread/INFO] [whitelistsync2/]: ----------------------------------------------
+[18Mar2020 15:04:49.565] [Server thread/INFO] [whitelistsync2/]: ----------------------------------------------
+[18Mar2020 15:04:49.669] [Server thread/INFO] [net.minecraft.world.server.ChunkManager/]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[18Mar2020 15:04:49.670] [Server thread/INFO] [net.minecraft.world.server.ChunkManager/]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[18Mar2020 15:04:54.128] [Finalizer/ERROR] [net.minecraftforge.eventbus.EventSubclassTransformer/EVENTBUS]: An error occurred building event handler
+java.lang.NullPointerException: null
+	at net.minecraftforge.eventbus.EventSubclassTransformer.buildEvents(EventSubclassTransformer.java:62) ~[eventbus-2.0.0-milestone.1-service.jar:?]
+	at net.minecraftforge.eventbus.EventSubclassTransformer.transform(EventSubclassTransformer.java:44) [eventbus-2.0.0-milestone.1-service.jar:?]
+	at net.minecraftforge.eventbus.EventBusEngine.processClass(EventBusEngine.java:20) [eventbus-2.0.0-milestone.1-service.jar:?]
+	at net.minecraftforge.eventbus.service.ModLauncherService.processClass(ModLauncherService.java:20) [eventbus-2.0.0-milestone.1-service.jar:2.0.0-milestone.1+57+de55078]
+	at cpw.mods.modlauncher.LaunchPluginHandler.offerClassNodeToPlugins(LaunchPluginHandler.java:85) [modlauncher-5.0.0-milestone.4.jar:?]
+	at cpw.mods.modlauncher.ClassTransformer.transform(ClassTransformer.java:115) [modlauncher-5.0.0-milestone.4.jar:?]
+	at cpw.mods.modlauncher.TransformingClassLoader$DelegatedClassLoader.findClass(TransformingClassLoader.java:239) [modlauncher-5.0.0-milestone.4.jar:?]
+	at cpw.mods.modlauncher.TransformingClassLoader.loadClass(TransformingClassLoader.java:126) [modlauncher-5.0.0-milestone.4.jar:?]
+	at cpw.mods.modlauncher.TransformingClassLoader.loadClass(TransformingClassLoader.java:96) [modlauncher-5.0.0-milestone.4.jar:?]
+	at java.lang.ClassLoader.loadClass(Unknown Source) [?:1.8.0_241]
+	at org.sqlite.core.DB.newSQLException(DB.java:907) [?:?]
+	at org.sqlite.core.CoreStatement.internalClose(CoreStatement.java:115) [?:?]
+	at org.sqlite.jdbc3.JDBC3Statement.close(JDBC3Statement.java:35) [?:?]
+	at org.sqlite.jdbc4.JDBC4Statement.close(JDBC4Statement.java:27) [?:?]
+	at org.sqlite.jdbc3.JDBC3Statement.finalize(JDBC3Statement.java:42) [?:?]
+	at java.lang.System$2.invokeFinalize(Unknown Source) [?:1.8.0_241]
+	at java.lang.ref.Finalizer.runFinalizer(Unknown Source) [?:1.8.0_241]
+	at java.lang.ref.Finalizer.access$100(Unknown Source) [?:1.8.0_241]
+	at java.lang.ref.Finalizer$FinalizerThread.run(Unknown Source) [?:1.8.0_241]
+[18Mar2020 15:05:42.710] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Added potato to whitelist database.
+[18Mar2020 15:05:52.853] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Removed potato from whitelist database.
+[18Mar2020 15:06:15.550] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Whitelist is empty
+[18Mar2020 15:06:21.200] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Local whitelist up to date with database.
+[18Mar2020 15:06:29.350] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Incorrect argument for command
+[18Mar2020 15:06:29.352] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: wl co<--[HERE]
+[18Mar2020 15:06:33.548] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Incorrect argument for command
+[18Mar2020 15:06:33.549] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: wl help<--[HERE]
+[18Mar2020 15:06:41.699] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Pushed local whitelist to database.
+[18Mar2020 15:06:51.698] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Incorrect argument for command
+[18Mar2020 15:06:51.698] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: wl op Potato<--[HERE]
+[18Mar2020 15:06:55.398] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Incorrect argument for command
+[18Mar2020 15:06:55.398] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: wlop Potato<--[HERE]
+[18Mar2020 15:07:00.204] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Opped potato in database.
+[18Mar2020 15:07:06.055] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Deopped potato from database.
+[18Mar2020 15:07:17.349] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Stopping the server
+[18Mar2020 15:07:17.398] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Stopping server
+[18Mar2020 15:07:17.399] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving players
+[18Mar2020 15:07:17.400] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving worlds
+[18Mar2020 15:07:17.403] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'world'/minecraft:overworld
+[18Mar2020 15:07:17.825] [Server thread/INFO] [net.minecraft.world.server.ChunkManager/]: ThreadedAnvilChunkStorage (world): All chunks are saved
+[18Mar2020 15:07:17.835] [Server thread/INFO] [net.minecraft.world.server.ChunkManager/]: ThreadedAnvilChunkStorage (world): All chunks are saved

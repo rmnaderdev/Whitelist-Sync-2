@@ -1,0 +1,42 @@
+
+#General configuration
+[general]
+	#Option on whether to sync the server's op list to the database.
+	syncOpList = false
+	#Option on whether to output whitelist/op changes triggered by other servers. This will show when a new user is opped or whitelisted on anther connected sever.
+	enableDebugLogging = false
+	#Mode for the database.
+	#Allowed Values: MYSQL, SQLITE
+	databaseMode = "SQLITE"
+
+#MySQL configuration (To enable mySQL, refer to the mode setting in the general configuration).
+[mySQL]
+	#IP for your mySQL server.
+	mysqlIp = "localhost"
+	#Username for your mySQL server.
+	mysqlUsername = "root"
+	#Name for your mySQL database (No spaces!).
+	mysqlDbName = "WhitelistSync"
+	#Password for your mySQL server.
+	mysqlPassword = "password"
+	#Port for your mySQL server.
+	#Range: 1 ~ 65535
+	mysqlPort = 3306
+	#Time Interval in seconds for when the server polls the whitelist changes from the mySQL database. (Warning! Time lower than 5 sec may effect performace.)
+	#Range: > 1
+	mysqlSyncTimer = 60
+
+#Sqlite configuration (To enable Sqlite, refer to the mode setting in the general configuration).
+[sqlite]
+	#Mode for how the database updates.
+	#Allowed Values: INTERVAL, LISTENER
+	sqliteSyncMode = "INTERVAL"
+	#Insert System Path for your SQLite database file. This should be the same for all your servers you want to sync!
+	sqliteDatabasePath = "./whitelistSync.db"
+	#Time Interval in seconds for when the server polls the whitelist changes from the database. (Only used in INTERVAL Sqlite Mode!)
+	#Range: > 1
+	sqliteServerSyncTimer = 60
+	#Time Interval in seconds for when the server checks for database changes (Only used in Database Update Sqlite Mode!)
+	#Range: > 1
+	sqliteServerListenerTimer = 10
+
