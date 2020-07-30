@@ -21,7 +21,7 @@ import pw.twpi.whitelistsync2.models.OpUser;
 /**
  * Service for SQLITE Databases
  *
- * @author Richard Nader, Jr. <nader1rm@cmich.edu>
+ * @author Richard Nader, Jr. <rmnader@svsu.edu>
  */
 public class SqLiteService implements BaseService {
 

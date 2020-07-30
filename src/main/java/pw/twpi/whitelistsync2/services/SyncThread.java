@@ -15,7 +15,7 @@ import pw.twpi.whitelistsync2.WhitelistSync2;
 
 /**
  * 
- * @author Richard Nader, Jr. <nader1rm@cmich.edu>
+ * @author Richard Nader, Jr. <rmnader@svsu.edu>
  */
 public class SyncThread implements Runnable {
     

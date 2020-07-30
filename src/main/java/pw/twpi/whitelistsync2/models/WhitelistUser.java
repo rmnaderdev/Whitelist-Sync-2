@@ -3,7 +3,7 @@ package pw.twpi.whitelistsync2.models;
 
 /**
  * DAO for a whitelisted user
- * @author Richard Nader, Jr. <nader1rm@cmich.edu>
+ * @author Richard Nader, Jr. <rmnader@svsu.edu>
  */
 public class WhitelistUser {
 

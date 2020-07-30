@@ -20,7 +20,7 @@ import pw.twpi.whitelistsync2.services.BaseService;
 /**
  * Service for MYSQL Databases
  *
- * @author Richard Nader, Jr. <nader1rm@cmich.edu>
+ * @author Richard Nader, Jr. <rmnader@svsu.edu>
  */
 public class MySqlService implements BaseService {
 

@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  * Class to read json data for the OP list
- * @author Richard Nader, Jr. <nader1rm@cmich.edu>
+ * @author Richard Nader, Jr. <rmnader@svsu.edu>
  */
 public class OPlistRead {
     
