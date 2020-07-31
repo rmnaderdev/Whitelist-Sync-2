@@ -11,6 +11,6 @@
         "credits": "Peteley for help with the file listener.",
         "logoFile": "",
         "screenshots": [],
-        "dependencies": ["json-simple-1.1.1", "sqlite-jdbc-3.19.3", "mysql-connector-java-8.0.8-dmr", Spark]
+        "dependencies": ["sqlite-jdbc-3.19.3", "mysql-connector-java-8.0.8-dmr"]
     }
 ]
