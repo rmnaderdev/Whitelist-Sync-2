@@ -14,7 +14,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 
-version = "1.15.2-2.2.0"
+version = "1.15.2-2.2.1"
 group = "com.potatosaucevfx.whitelistsync2" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "whitelistsync2"
 
@@ -76,7 +76,7 @@ minecraft {
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
-            args '--mod', 'examplemod', '--all', '--output', file('src/generated/resources/')
+            args '--mod', 'whitelistsync2', '--all', '--output', file('src/generated/resources/')
 
             mods {
                 whitelistsync2 {

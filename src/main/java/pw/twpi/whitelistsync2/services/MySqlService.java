@@ -100,6 +100,51 @@ public class MySqlService implements BaseService {
                     PreparedStatement stmt3 = conn.prepareStatement(sql);
                     stmt3.execute();
                     stmt3.close();
+
+
+                    // Remove old op level field if it exists
+                    sql =
+                            "SELECT COUNT(*) AS count " +
+                                    "FROM INFORMATION_SCHEMA.COLUMNS " +
+                                    "WHERE TABLE_SCHEMA = '" + databaseName + "' AND TABLE_NAME = 'op' AND COLUMN_NAME = 'level'";
+                    PreparedStatement stmt4 = conn.prepareStatement(sql);
+                    ResultSet rs = stmt4.executeQuery();
+                    rs.next();
+
+                    int count = rs.getInt("count");
+
+                    if(count > 0) {
+                        sql = "ALTER TABLE " + databaseName + ".op DROP COLUMN level";
+                        PreparedStatement stmt5 = conn.prepareStatement(sql);
+                        stmt5.execute();
+                        stmt5.close();
+                        WhitelistSync2.LOGGER.info("Removed unused op table \"level\" column.");
+                    }
+                    rs.close();
+                    stmt4.close();
+
+
+                    // Remove old op bypassesPlayerLimit field if it exists
+                    sql =
+                            "SELECT COUNT(*) AS count " +
+                                    "FROM INFORMATION_SCHEMA.COLUMNS " +
+                                    "WHERE TABLE_SCHEMA = '" + databaseName + "' AND TABLE_NAME = 'op' AND COLUMN_NAME = 'bypassesPlayerLimit'";
+                    PreparedStatement stmt5 = conn.prepareStatement(sql);
+                    ResultSet rs1 = stmt5.executeQuery();
+                    rs1.next();
+
+                    int count1 = rs1.getInt("count");
+
+                    if(count1 > 0) {
+                        sql = "ALTER TABLE " + databaseName + ".op DROP COLUMN bypassesPlayerLimit";
+                        PreparedStatement stmt6 = conn.prepareStatement(sql);
+                        stmt6.execute();
+                        stmt6.close();
+                        WhitelistSync2.LOGGER.info("Removed unused op table \"bypassesPlayerLimit\" column.");
+                    }
+                    rs1.close();
+                    stmt5.close();
+
                 }
 
                 WhitelistSync2.LOGGER.info("Setup MySQL database!");
@@ -143,6 +188,7 @@ public class MySqlService implements BaseService {
 
             WhitelistSync2.LOGGER.debug("Database pulled whitelisted players | Took " + timeTaken + "ms | Read " + records + " records.");
 
+            rs.close();
             stmt.close();
             conn.close();
         } catch (SQLException e) {
@@ -182,6 +228,7 @@ public class MySqlService implements BaseService {
 
                 WhitelistSync2.LOGGER.debug("Database pulled opped players | Took " + timeTaken + "ms | Read " + records + " records.");
 
+                rs.close();
                 stmt.close();
                 conn.close();
             } catch (SQLException e) {
@@ -334,6 +381,7 @@ public class MySqlService implements BaseService {
             long timeTaken = System.currentTimeMillis() - startTime;
             WhitelistSync2.LOGGER.debug("Copied whitelist database to local | Took " + timeTaken + "ms | Wrote " + records + " records.");
 
+            rs.close();
             stmt.close();
             conn.close();
             return true;
@@ -392,6 +440,7 @@ public class MySqlService implements BaseService {
                 long timeTaken = System.currentTimeMillis() - startTime;
                 WhitelistSync2.LOGGER.debug("Copied op database to local | Took " + timeTaken + "ms | Wrote " + records + " records.");
 
+                rs.close();
                 stmt.close();
                 conn.close();
                 return true;
