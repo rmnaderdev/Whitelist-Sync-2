@@ -17,11 +17,6 @@ public class Config {
         SQLITE
     }
 
-    public enum SyncMode {
-        INTERVAL,
-        LISTENER
-    }
-
     public static final String CATEGORY_GENERAL = "general";
     public static final String CATEGORY_MYSQL = "mySQL";
     public static final String CATEGORY_SQLITE = "sqlite";
@@ -32,13 +27,9 @@ public class Config {
     // Only one common config
     public static ForgeConfigSpec SERVER_CONFIG;
 
-
-
-
     // General Settings
     public static ForgeConfigSpec.EnumValue<DatabaseMode> DATABASE_MODE;
     public static ForgeConfigSpec.BooleanValue SYNC_OP_LIST;
-    public static ForgeConfigSpec.BooleanValue ENABLE_DEBUG_LOGGING;
 
     // MYSQL Settings
     public static ForgeConfigSpec.IntValue MYSQL_SYNC_TIMER;
@@ -50,9 +41,7 @@ public class Config {
 
     // SQLITE Settings
     public static ForgeConfigSpec.ConfigValue<String> SQLITE_DATABASE_PATH;
-    public static ForgeConfigSpec.EnumValue<SyncMode> SQLITE_SYNC_MODE;
     public static ForgeConfigSpec.IntValue SQLITE_SERVER_SYNC_TIMER;
-    public static ForgeConfigSpec.IntValue SQLITE_SERVER_LISTENER_TIMER;
 
 
     static {
@@ -87,9 +76,6 @@ public class Config {
                 .defineEnum("databaseMode", DatabaseMode.SQLITE);
         SYNC_OP_LIST = SERVER_BUILDER.comment("Option on whether to sync the server's op list to the database.")
                 .define("syncOpList", false);
-        ENABLE_DEBUG_LOGGING = SERVER_BUILDER.comment("Option on whether to output whitelist/op changes triggered by other servers. " +
-                "This will show when a new user is opped or whitelisted on anther connected sever.")
-                .define("enableDebugLogging", false);
     }
 
     private static void setupMySQLConfig() {
@@ -110,18 +96,12 @@ public class Config {
     }
 
     private static void setupSqliteConfig() {
-        SQLITE_SYNC_MODE = SERVER_BUILDER.comment("Mode for how the database updates.")
-                .defineEnum("sqliteSyncMode", SyncMode.INTERVAL);
         SQLITE_DATABASE_PATH = SERVER_BUILDER.comment("Insert System Path for your SQLite database file. " +
                 "This should be the same for all your servers you want to sync!")
                 .define("sqliteDatabasePath", "./whitelistSync.db");
         SQLITE_SERVER_SYNC_TIMER = SERVER_BUILDER.comment("Time Interval in seconds for when the server " +
                 "polls the whitelist changes from the database. (Only used in INTERVAL Sqlite Mode!)")
                 .defineInRange("sqliteServerSyncTimer", 60, 1, Integer.MAX_VALUE);
-        SQLITE_SERVER_LISTENER_TIMER = SERVER_BUILDER.comment("Time Interval in seconds for when the server checks " +
-                "for database changes (Only used in Database Update Sqlite Mode!)")
-                .defineInRange("sqliteServerListenerTimer", 10, 1, Integer.MAX_VALUE);
-
     }
 
 
@@ -143,7 +123,7 @@ public class Config {
     }
 
     @SubscribeEvent
-    public static void onReload(final ModConfig.ConfigReloading configEvent) {
+    public static void onReload(final ModConfig.ModConfigEvent configEvent) {
     }
 
 }

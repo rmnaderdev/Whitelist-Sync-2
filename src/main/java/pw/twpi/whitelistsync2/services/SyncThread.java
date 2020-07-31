@@ -15,7 +15,7 @@ import pw.twpi.whitelistsync2.WhitelistSync2;
 
 /**
  * 
- * @author Richard Nader, Jr. <nader1rm@cmich.edu>
+ * @author Richard Nader, Jr. <rmnader@svsu.edu>
  */
 public class SyncThread implements Runnable {
     
@@ -35,36 +35,29 @@ public class SyncThread implements Runnable {
     public void run() {
         if (service.getClass().equals(MySqlService.class)) {
             while (server.isServerRunning()) {
-                service.updateLocalWhitelistFromDatabase(server);
+                service.copyDatabaseWhitelistedPlayersToLocal(server);
 
                 if (Config.SYNC_OP_LIST.get()) {
-                    service.updateLocalOpListFromDatabase(server);
+                    service.copyDatabaseOppedPlayersToLocal(server);
                 }
 
                 try {
                     Thread.sleep(Config.MYSQL_SYNC_TIMER.get() * 1000);
-                } catch (InterruptedException e) {
-                }
+                } catch (InterruptedException ignored) { }
             }
         } else if (service.getClass().equals(SqLiteService.class)) {
+            while (server.isServerRunning()) {
+                service.copyDatabaseWhitelistedPlayersToLocal(server);
 
-            if (Config.SQLITE_SYNC_MODE.get() == Config.SyncMode.INTERVAL) {
-                while (server.isServerRunning()) {
-                    service.updateLocalWhitelistFromDatabase(server);
-
-                    if (Config.SYNC_OP_LIST.get()) {
-                        service.updateLocalOpListFromDatabase(server);
-                    }
-
-                    try {
-                        Thread.sleep(Config.SQLITE_SERVER_SYNC_TIMER.get() * 1000);
-                    } catch (InterruptedException e) {}
-
+                if (Config.SYNC_OP_LIST.get()) {
+                    service.copyDatabaseOppedPlayersToLocal(server);
                 }
-            } else if (Config.SQLITE_SYNC_MODE.get() == Config.SyncMode.LISTENER) {
-                checkSQliteDB();
-            }
 
+                try {
+                    Thread.sleep(Config.SQLITE_SERVER_SYNC_TIMER.get() * 1000);
+                } catch (InterruptedException e) {}
+
+            }
         } else {
             WhitelistSync2.LOGGER.error("Error in the Sync Thread! "
                     + "Nothing will be synced! Please report to author!");
@@ -74,56 +67,6 @@ public class SyncThread implements Runnable {
             }
         }
 
-    }
-
-    private void checkSQliteDB() {
-        try {
-            this.fileSystem = FileSystems.getDefault();
-            this.watcher = fileSystem.newWatchService();
-
-            Path dataBasePath = fileSystem.getPath(Config.SQLITE_DATABASE_PATH.get().replace("whitelist.db", ""));
-            dataBasePath.register(watcher, ENTRY_MODIFY);
-
-        } catch (IOException e) {
-            WhitelistSync2.LOGGER.error("Error finding whitelist database file. "
-                    + "This should not happen, please report.\n" + e.getMessage());
-        }
-
-        while (server.isServerRunning()) {
-            WatchKey key;
-            try {
-                key = watcher.take();
-            } catch (InterruptedException x) {
-                return;
-            }
-
-            for (WatchEvent<?> event : key.pollEvents()) {
-                WatchEvent.Kind<?> kind = event.kind();
-
-                // Test if whitelist is changed
-                if (event.context().toString().equalsIgnoreCase("whitelist.db")) {
-                    WhitelistSync2.LOGGER.debug("Remote Database Updated... Syncing...");
-                    service.updateLocalWhitelistFromDatabase(server);
-
-                    if (Config.SYNC_OP_LIST.get()) {
-                        service.updateLocalOpListFromDatabase(server);
-                    }
-                }
-            }
-
-            // Reset the key -- this step is critical if you want to
-            // receive further watch events.  If the key is no longer valid,
-            // the directory is inaccessible so exit the loop.
-            boolean valid = key.reset();
-            if (!valid) {
-                break;
-            }
-
-            try {
-                Thread.sleep(Config.SQLITE_SERVER_LISTENER_TIMER.get() * 1000);
-            } catch (InterruptedException e) {}
-
-        }
     }
 
 }

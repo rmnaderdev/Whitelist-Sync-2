@@ -1,0 +1,470 @@
+[18Mar2020 15:11:55.956] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--gameDir, ., --launchTarget, fmlserver, --fml.forgeVersion, 31.1.0, --fml.mcpVersion, 20200122.131323, --fml.mcVersion, 1.15.2, --fml.forgeGroup, net.minecraftforge, nogui]
+[18Mar2020 15:11:55.958] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 5.0.0-milestone.4+67+b1a340b starting: java version 1.8.0_241 by Oracle Corporation
+[18Mar2020 15:11:55.964] [main/DEBUG] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Found launch services [minecraft,testharness,fmlclient,fmlserver]
+[18Mar2020 15:11:55.970] [main/DEBUG] [cpw.mods.modlauncher.NameMappingServiceHandler/MODLAUNCHER]: Found naming services : []
+[18Mar2020 15:11:55.977] [main/DEBUG] [cpw.mods.modlauncher.LaunchPluginHandler/MODLAUNCHER]: Found launch plugins: [eventbus,object_holder_definalize,runtime_enum_extender,accesstransformer,capability_inject_definalize,runtimedistcleaner]
+[18Mar2020 15:11:55.984] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Discovering transformation services
+[18Mar2020 15:11:55.991] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Found additional transformation services from discovery services: []
+[18Mar2020 15:11:56.001] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Found transformer services : [fml]
+[18Mar2020 15:11:56.001] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Transformation services loading
+[18Mar2020 15:11:56.002] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Loading service fml
+[18Mar2020 15:11:56.002] [main/DEBUG] [net.minecraftforge.fml.loading.FMLServiceProvider/]: Injecting tracing printstreams for STDOUT/STDERR.
+[18Mar2020 15:11:56.004] [main/DEBUG] [net.minecraftforge.fml.loading.LauncherVersion/CORE]: Found FMLLauncher version 31.1
+[18Mar2020 15:11:56.004] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: FML 31.1 loading
+[18Mar2020 15:11:56.004] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: FML found ModLauncher version : 5.0.0-milestone.4+67+b1a340b
+[18Mar2020 15:11:56.004] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: Initializing modjar URL handler
+[18Mar2020 15:11:56.005] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: FML found AccessTransformer version : 2.0.0-milestone.1+47+4a08f17
+[18Mar2020 15:11:56.005] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: FML found EventBus version : 2.0.0-milestone.1+57+de55078
+[18Mar2020 15:11:56.005] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: Found Runtime Dist Cleaner
+[18Mar2020 15:11:56.007] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: FML found CoreMod version : 2.0.0-milestone.1+5+5b32e68
+[18Mar2020 15:11:56.008] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: Found ForgeSPI package implementation version 2.0.0-milestone.1+7+a2eaa64
+[18Mar2020 15:11:56.008] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: Found ForgeSPI package specification 3
+[18Mar2020 15:11:56.454] [main/INFO] [net.minecraftforge.fml.loading.FixSSL/CORE]: Added Lets Encrypt root certificates as additional trust
+[18Mar2020 15:11:56.455] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Loaded service fml
+[18Mar2020 15:11:56.457] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Configuring option handling for services
+[18Mar2020 15:11:56.462] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Transformation services initializing
+[18Mar2020 15:11:56.462] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Initializing transformation service fml
+[18Mar2020 15:11:56.463] [main/DEBUG] [net.minecraftforge.fml.loading.FMLServiceProvider/CORE]: Setting up basic FML game directories
+[18Mar2020 15:11:56.463] [main/DEBUG] [net.minecraftforge.fml.loading.FileUtils/CORE]: Found existing GAMEDIR directory : C:\Users\RJ\gitPersonal\Whitelist-Sync-2\TestServers\ForgeServer2
+[18Mar2020 15:11:56.464] [main/DEBUG] [net.minecraftforge.fml.loading.FMLPaths/CORE]: Path GAMEDIR is C:\Users\RJ\gitPersonal\Whitelist-Sync-2\TestServers\ForgeServer2
+[18Mar2020 15:11:56.464] [main/DEBUG] [net.minecraftforge.fml.loading.FileUtils/CORE]: Found existing MODSDIR directory : C:\Users\RJ\gitPersonal\Whitelist-Sync-2\TestServers\ForgeServer2\mods
+[18Mar2020 15:11:56.464] [main/DEBUG] [net.minecraftforge.fml.loading.FMLPaths/CORE]: Path MODSDIR is C:\Users\RJ\gitPersonal\Whitelist-Sync-2\TestServers\ForgeServer2\mods
+[18Mar2020 15:11:56.464] [main/DEBUG] [net.minecraftforge.fml.loading.FileUtils/CORE]: Found existing CONFIGDIR directory : C:\Users\RJ\gitPersonal\Whitelist-Sync-2\TestServers\ForgeServer2\config
+[18Mar2020 15:11:56.464] [main/DEBUG] [net.minecraftforge.fml.loading.FMLPaths/CORE]: Path CONFIGDIR is C:\Users\RJ\gitPersonal\Whitelist-Sync-2\TestServers\ForgeServer2\config
+[18Mar2020 15:11:56.464] [main/DEBUG] [net.minecraftforge.fml.loading.FMLPaths/CORE]: Path FMLCONFIG is C:\Users\RJ\gitPersonal\Whitelist-Sync-2\TestServers\ForgeServer2\config\fml.toml
+[18Mar2020 15:11:56.464] [main/DEBUG] [net.minecraftforge.fml.loading.FMLServiceProvider/CORE]: Loading configuration
+[18Mar2020 15:11:56.492] [main/DEBUG] [net.minecraftforge.fml.loading.FileUtils/CORE]: Found existing default config directory directory : C:\Users\RJ\gitPersonal\Whitelist-Sync-2\TestServers\ForgeServer2\defaultconfigs
+[18Mar2020 15:11:56.492] [main/DEBUG] [net.minecraftforge.fml.loading.FMLServiceProvider/CORE]: Preparing launch handler
+[18Mar2020 15:11:56.492] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: Using fmlserver as launch service
+[18Mar2020 15:11:56.496] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: Received command line version data  : MC Version: '1.15.2' MCP Version: '20200122.131323' Forge Version: '31.1.0' Forge group: 'net.minecraftforge'
+[18Mar2020 15:11:56.497] [main/DEBUG] [net.minecraftforge.fml.loading.LibraryFinder/CORE]: Found JAR asm at path C:\Users\RJ\gitPersonal\Whitelist-Sync-2\TestServers\ForgeServer2\libraries\org\ow2\asm\asm\7.2\asm-7.2.jar
+[18Mar2020 15:11:56.497] [main/DEBUG] [net.minecraftforge.fml.loading.LibraryFinder/CORE]: Found probable library path C:\Users\RJ\gitPersonal\Whitelist-Sync-2\TestServers\ForgeServer2\libraries
+[18Mar2020 15:11:56.497] [main/DEBUG] [net.minecraftforge.fml.loading.LibraryFinder/CORE]: Found forge path C:\Users\RJ\gitPersonal\Whitelist-Sync-2\TestServers\ForgeServer2\libraries\net\minecraftforge\forge\1.15.2-31.1.0\forge-1.15.2-31.1.0-universal.jar is present
+[18Mar2020 15:11:56.498] [main/DEBUG] [net.minecraftforge.fml.loading.LibraryFinder/CORE]: SRG MC at C:\Users\RJ\gitPersonal\Whitelist-Sync-2\TestServers\ForgeServer2\libraries\net\minecraft\server\1.15.2-20200122.131323\server-1.15.2-20200122.131323-srg.jar is present
+[18Mar2020 15:11:56.498] [main/DEBUG] [net.minecraftforge.fml.loading.LibraryFinder/CORE]: MC Extras at C:\Users\RJ\gitPersonal\Whitelist-Sync-2\TestServers\ForgeServer2\libraries\net\minecraft\server\1.15.2\server-1.15.2-extra.jar is present
+[18Mar2020 15:11:56.498] [main/DEBUG] [net.minecraftforge.fml.loading.LibraryFinder/CORE]: Forge patches at C:\Users\RJ\gitPersonal\Whitelist-Sync-2\TestServers\ForgeServer2\libraries\net\minecraftforge\forge\1.15.2-31.1.0\forge-1.15.2-31.1.0-server.jar is present
+[18Mar2020 15:11:56.500] [main/DEBUG] [net.minecraftforge.fml.loading.LanguageLoadingProvider/CORE]: Found 0 language providers
+[18Mar2020 15:11:56.501] [main/DEBUG] [net.minecraftforge.fml.loading.LanguageLoadingProvider/CORE]: Adding forge as a language from C:\Users\RJ\gitPersonal\Whitelist-Sync-2\TestServers\ForgeServer2\libraries\net\minecraftforge\forge\1.15.2-31.1.0\forge-1.15.2-31.1.0-universal.jar
+[18Mar2020 15:11:56.502] [main/DEBUG] [net.minecraftforge.fml.loading.LanguageLoadingProvider/CORE]: Adding file:/C:/Users/RJ/gitPersonal/Whitelist-Sync-2/TestServers/ForgeServer2/libraries/net/minecraftforge/forge/1.15.2-31.1.0/forge-1.15.2-31.1.0-universal.jar to languageloader classloader
+[18Mar2020 15:11:56.527] [main/DEBUG] [net.minecraftforge.fml.loading.LanguageLoadingProvider/CORE]: Found 2 language providers
+[18Mar2020 15:11:56.527] [main/DEBUG] [net.minecraftforge.fml.loading.LanguageLoadingProvider/CORE]: Found language provider javafml, version 31.1
+[18Mar2020 15:11:56.529] [main/DEBUG] [net.minecraftforge.fml.loading.LanguageLoadingProvider/CORE]: Found language provider minecraft, version 1
+[18Mar2020 15:11:56.531] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Initialized transformation service fml
+[18Mar2020 15:11:56.532] [main/DEBUG] [cpw.mods.modlauncher.NameMappingServiceHandler/MODLAUNCHER]: Current naming domain is 'srg'
+[18Mar2020 15:11:56.533] [main/DEBUG] [cpw.mods.modlauncher.NameMappingServiceHandler/MODLAUNCHER]: Identified name mapping providers {}
+[18Mar2020 15:11:56.533] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Transformation services begin scanning
+[18Mar2020 15:11:56.533] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Beginning scan trigger - transformation service fml
+[18Mar2020 15:11:56.533] [main/DEBUG] [net.minecraftforge.fml.loading.FMLServiceProvider/CORE]: Initiating mod scan
+[18Mar2020 15:11:56.543] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModListHandler/CORE]: Found mod coordinates from lists: []
+[18Mar2020 15:11:56.556] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModDiscoverer/CORE]: Found Mod Locators : (mods folder:null),(maven libs:null),(exploded directory:null),(minecraft:null)
+[18Mar2020 15:11:56.571] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate C:\Users\RJ\gitPersonal\Whitelist-Sync-2\TestServers\ForgeServer2\mods\whitelistsync2-1.15.4-2.1.0.jar
+[18Mar2020 15:11:56.596] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file whitelistsync2-1.15.4-2.1.0.jar with {whitelistsync2} mods - versions {version}
+[18Mar2020 15:11:56.596] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Loading mod file C:\Users\RJ\gitPersonal\Whitelist-Sync-2\TestServers\ForgeServer2\mods\whitelistsync2-1.15.4-2.1.0.jar with language javafml
+[18Mar2020 15:11:56.597] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate C:\Users\RJ\gitPersonal\Whitelist-Sync-2\TestServers\ForgeServer2\libraries\net\minecraftforge\forge\1.15.2-31.1.0\forge-1.15.2-31.1.0-universal.jar
+[18Mar2020 15:11:56.598] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file forge-1.15.2-31.1.0-universal.jar with {forge} mods - versions {31.1.0}
+[18Mar2020 15:11:56.598] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Loading mod file C:\Users\RJ\gitPersonal\Whitelist-Sync-2\TestServers\ForgeServer2\libraries\net\minecraftforge\forge\1.15.2-31.1.0\forge-1.15.2-31.1.0-universal.jar with language javafml
+[18Mar2020 15:11:56.616] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Found coremod fieldtomethodtransformers with Javascript path META-INF/fieldtomethodtransformers.js
+[18Mar2020 15:11:56.616] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Found coremod META-INF/fieldtomethodtransformers.js
+[18Mar2020 15:11:56.617] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate C:\Users\RJ\gitPersonal\Whitelist-Sync-2\TestServers\ForgeServer2\libraries\net\minecraftforge\forge\1.15.2-31.1.0\forge-1.15.2-31.1.0-server.jar
+[18Mar2020 15:11:56.619] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file forge-1.15.2-31.1.0-server.jar with {minecraft} mods - versions {1.15.2}
+[18Mar2020 15:11:56.619] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Loading mod file C:\Users\RJ\gitPersonal\Whitelist-Sync-2\TestServers\ForgeServer2\libraries\net\minecraftforge\forge\1.15.2-31.1.0\forge-1.15.2-31.1.0-server.jar with language minecraft
+[18Mar2020 15:11:56.625] [main/DEBUG] [net.minecraftforge.fml.loading.ModSorter/LOADING]: Found 0 mandatory requirements
+[18Mar2020 15:11:56.626] [main/DEBUG] [net.minecraftforge.fml.loading.ModSorter/LOADING]: Found 0 mandatory mod requirements missing
+[18Mar2020 15:11:56.864] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: End scan trigger - transformation service fml
+[18Mar2020 15:11:56.864] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Transformation services loading transformers
+[18Mar2020 15:11:56.864] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Initializing transformers for transformation service fml
+[18Mar2020 15:11:56.864] [main/DEBUG] [net.minecraftforge.fml.loading.FMLServiceProvider/CORE]: Loading coremod transformers
+[18Mar2020 15:11:56.865] [main/DEBUG] [net.minecraftforge.coremod.CoreModEngine/COREMOD]: Loading CoreMod from META-INF/fieldtomethodtransformers.js
+[18Mar2020 15:11:56.933] [main/DEBUG] [net.minecraftforge.coremod.CoreModEngine/COREMOD]: CoreMod loaded successfully
+[18Mar2020 15:11:56.937] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@5b080f3a to Target : CLASS {Lnet/minecraft/potion/EffectInstance;} {} {V}
+[18Mar2020 15:11:56.938] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@2756c0a7 to Target : CLASS {Lnet/minecraft/block/FlowingFluidBlock;} {} {V}
+[18Mar2020 15:11:56.938] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@350ec41e to Target : CLASS {Lnet/minecraft/item/BucketItem;} {} {V}
+[18Mar2020 15:11:56.938] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@69637b10 to Target : CLASS {Lnet/minecraft/block/StairsBlock;} {} {V}
+[18Mar2020 15:11:56.938] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@71984c3 to Target : CLASS {Lnet/minecraft/block/FlowerPotBlock;} {} {V}
+[18Mar2020 15:11:56.938] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@165b2f7f to Target : CLASS {Lnet/minecraft/item/FishBucketItem;} {} {V}
+[18Mar2020 15:11:56.938] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Initialized transformers for transformation service fml
+[18Mar2020 15:11:56.946] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'fmlserver' with arguments [--gameDir, ., nogui]
+[18Mar2020 15:11:57.899] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/block/FlowingFluidBlock
+[18Mar2020 15:11:57.971] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/block/StairsBlock
+[18Mar2020 15:11:58.064] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/block/FlowerPotBlock
+[18Mar2020 15:12:00.736] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/item/BucketItem
+[18Mar2020 15:12:00.758] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/item/FishBucketItem
+[18Mar2020 15:12:00.871] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/potion/EffectInstance
+[18Mar2020 15:12:02.300] [main/WARN] [net.minecraft.command.Commands/]: Ambiguity between arguments [teleport, destination] and [teleport, targets] with inputs: [Player, 0123, @e, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[18Mar2020 15:12:02.301] [main/WARN] [net.minecraft.command.Commands/]: Ambiguity between arguments [teleport, location] and [teleport, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[18Mar2020 15:12:02.308] [main/WARN] [net.minecraft.command.Commands/]: Ambiguity between arguments [teleport, location] and [teleport, targets] with inputs: [0.1 -0.5 .9, 0 0 0]
+[18Mar2020 15:12:02.310] [main/WARN] [net.minecraft.command.Commands/]: Ambiguity between arguments [teleport, targets] and [teleport, destination] with inputs: [Player, 0123, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[18Mar2020 15:12:02.311] [main/WARN] [net.minecraft.command.Commands/]: Ambiguity between arguments [teleport, targets, location] and [teleport, targets, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[18Mar2020 15:12:02.385] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Starting minecraft server version 1.15.2
+[18Mar2020 15:12:02.448] [Server thread/DEBUG] [net.minecraftforge.fml.ForgeI18n/CORE]: Loading I18N data entries: 4533
+[18Mar2020 15:12:02.655] [Server thread/DEBUG] [net.minecraftforge.fml.ModLoader/CORE]: Loading Network data for FML net version: FML2
+[18Mar2020 15:12:02.683] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Using 12 threads for parallel mod-loading
+[18Mar2020 15:12:02.686] [Server thread/DEBUG] [net.minecraftforge.fml.ModLoader/LOADING]: ModContainer is cpw.mods.modlauncher.TransformingClassLoader@10fde30a
+[18Mar2020 15:12:02.696] [Server thread/DEBUG] [net.minecraftforge.fml.ModLoader/LOADING]: ModContainer is cpw.mods.modlauncher.TransformingClassLoader@10fde30a
+[18Mar2020 15:12:02.699] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLJavaModLanguageProvider/LOADING]: Loading FMLModContainer from classloader cpw.mods.modlauncher.TransformingClassLoader@10fde30a - got cpw.mods.modlauncher.TransformingClassLoader@10fde30a
+[18Mar2020 15:12:02.699] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Creating FMLModContainer instance for pw.twpi.whitelistsync2.WhitelistSync2 with classLoader cpw.mods.modlauncher.TransformingClassLoader@10fde30a & cpw.mods.modlauncher.TransformingClassLoader@10fde30a
+[18Mar2020 15:12:02.708] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Loaded modclass pw.twpi.whitelistsync2.WhitelistSync2 with cpw.mods.modlauncher.TransformingClassLoader@10fde30a
+[18Mar2020 15:12:02.708] [Server thread/DEBUG] [net.minecraftforge.fml.ModLoader/LOADING]: ModContainer is cpw.mods.modlauncher.TransformingClassLoader@10fde30a
+[18Mar2020 15:12:02.708] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLJavaModLanguageProvider/LOADING]: Loading FMLModContainer from classloader cpw.mods.modlauncher.TransformingClassLoader@10fde30a - got cpw.mods.modlauncher.TransformingClassLoader@10fde30a
+[18Mar2020 15:12:02.708] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Creating FMLModContainer instance for net.minecraftforge.common.ForgeMod with classLoader cpw.mods.modlauncher.TransformingClassLoader@10fde30a & cpw.mods.modlauncher.TransformingClassLoader@10fde30a
+[18Mar2020 15:12:02.716] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Loaded modclass net.minecraftforge.common.ForgeMod with cpw.mods.modlauncher.TransformingClassLoader@10fde30a
+[18Mar2020 15:12:02.725] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching parallel event LifecycleEvent:CONSTRUCT
+[18Mar2020 15:12:02.741] [modloading-worker-9/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Loading mod instance whitelistsync2 of type pw.twpi.whitelistsync2.WhitelistSync2
+[18Mar2020 15:12:02.741] [modloading-worker-11/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Loading mod instance forge of type net.minecraftforge.common.ForgeMod
+[18Mar2020 15:12:02.741] [modloading-worker-11/DEBUG] [net.minecraftforge.versions.forge.ForgeVersion/CORE]: Forge Version package package net.minecraftforge.versions.forge, Forge, version 31.1 from cpw.mods.modlauncher.TransformingClassLoader@10fde30a
+[18Mar2020 15:12:02.742] [modloading-worker-11/DEBUG] [net.minecraftforge.versions.forge.ForgeVersion/CORE]: Found Forge version 31.1.0
+[18Mar2020 15:12:02.742] [modloading-worker-11/DEBUG] [net.minecraftforge.versions.forge.ForgeVersion/CORE]: Found Forge spec 31.1
+[18Mar2020 15:12:02.742] [modloading-worker-11/DEBUG] [net.minecraftforge.versions.forge.ForgeVersion/CORE]: Found Forge group net.minecraftforge
+[18Mar2020 15:12:02.744] [modloading-worker-11/DEBUG] [net.minecraftforge.versions.mcp.MCPVersion/CORE]: Found MC version information 1.15.2
+[18Mar2020 15:12:02.745] [modloading-worker-11/DEBUG] [net.minecraftforge.versions.mcp.MCPVersion/CORE]: Found MCP version information 20200122.131323
+[18Mar2020 15:12:02.745] [modloading-worker-11/INFO] [net.minecraftforge.common.ForgeMod/FORGEMOD]: Forge mod loading, version 31.1.0, for MC 1.15.2 with MCP 20200122.131323
+[18Mar2020 15:12:02.745] [modloading-worker-11/INFO] [net.minecraftforge.common.MinecraftForge/FORGE]: MinecraftForge v31.1.0 Initialized
+[18Mar2020 15:12:02.798] [modloading-worker-9/DEBUG] [net.minecraftforge.fml.config.ConfigTracker/CONFIG]: Config file whitelistsync2-server.toml for whitelistsync2 tracking
+[18Mar2020 15:12:02.802] [modloading-worker-9/INFO] [whitelistsync2/]: Hello from Whitelist Sync 2!
+[18Mar2020 15:12:02.803] [modloading-worker-9/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Loaded mod instance whitelistsync2 of type pw.twpi.whitelistsync2.WhitelistSync2
+[18Mar2020 15:12:02.803] [modloading-worker-9/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Injecting Automatic event subscribers for whitelistsync2
+[18Mar2020 15:12:02.810] [modloading-worker-9/DEBUG] [net.minecraftforge.fml.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for whitelistsync2
+[18Mar2020 15:12:02.814] [modloading-worker-9/DEBUG] [net.minecraftforge.fml.AutomaticEventSubscriber/LOADING]: Auto-subscribing pw.twpi.whitelistsync2.Config to FORGE
+[18Mar2020 15:12:02.815] [modloading-worker-9/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Completed Automatic event subscribers for whitelistsync2
+[18Mar2020 15:12:02.816] [modloading-worker-11/DEBUG] [net.minecraftforge.fml.config.ConfigTracker/CONFIG]: Config file forge-client.toml for forge tracking
+[18Mar2020 15:12:02.816] [modloading-worker-11/DEBUG] [net.minecraftforge.fml.config.ConfigTracker/CONFIG]: Config file forge-server.toml for forge tracking
+[18Mar2020 15:12:02.817] [modloading-worker-11/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Loaded mod instance forge of type net.minecraftforge.common.ForgeMod
+[18Mar2020 15:12:02.817] [modloading-worker-11/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Injecting Automatic event subscribers for forge
+[18Mar2020 15:12:02.817] [modloading-worker-11/DEBUG] [net.minecraftforge.fml.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for forge
+[18Mar2020 15:12:02.818] [modloading-worker-11/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Completed Automatic event subscribers for forge
+[18Mar2020 15:12:02.819] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:CREATE_REGISTRIES
+[18Mar2020 15:12:02.820] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.NewRegistry
+[18Mar2020 15:12:02.820] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.NewRegistry
+[18Mar2020 15:12:02.820] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.NewRegistry
+[18Mar2020 15:12:02.820] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.NewRegistry
+[18Mar2020 15:12:02.859] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.859] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:block>
+[18Mar2020 15:12:02.859] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:block>
+[18Mar2020 15:12:02.859] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:block>
+[18Mar2020 15:12:02.859] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:block>
+[18Mar2020 15:12:02.875] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.875] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:item>
+[18Mar2020 15:12:02.875] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:item>
+[18Mar2020 15:12:02.875] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:item>
+[18Mar2020 15:12:02.875] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:item>
+[18Mar2020 15:12:02.877] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.877] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<forge:moddimensions>
+[18Mar2020 15:12:02.877] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<forge:moddimensions>
+[18Mar2020 15:12:02.877] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<forge:moddimensions>
+[18Mar2020 15:12:02.877] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<forge:moddimensions>
+[18Mar2020 15:12:02.878] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.878] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:activities>
+[18Mar2020 15:12:02.878] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:activities>
+[18Mar2020 15:12:02.878] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:activities>
+[18Mar2020 15:12:02.878] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:activities>
+[18Mar2020 15:12:02.878] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.878] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:biome>
+[18Mar2020 15:12:02.878] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:biome>
+[18Mar2020 15:12:02.878] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:biome>
+[18Mar2020 15:12:02.879] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:biome>
+[18Mar2020 15:12:02.879] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.879] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:biome_source_type>
+[18Mar2020 15:12:02.879] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:biome_source_type>
+[18Mar2020 15:12:02.879] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:biome_source_type>
+[18Mar2020 15:12:02.879] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:biome_source_type>
+[18Mar2020 15:12:02.880] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.880] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:block_entity_type>
+[18Mar2020 15:12:02.880] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:block_entity_type>
+[18Mar2020 15:12:02.880] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:block_entity_type>
+[18Mar2020 15:12:02.880] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:block_entity_type>
+[18Mar2020 15:12:02.880] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.880] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:carver>
+[18Mar2020 15:12:02.880] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:carver>
+[18Mar2020 15:12:02.880] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:carver>
+[18Mar2020 15:12:02.880] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:carver>
+[18Mar2020 15:12:02.881] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.881] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:chunk_generator_type>
+[18Mar2020 15:12:02.881] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:chunk_generator_type>
+[18Mar2020 15:12:02.881] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:chunk_generator_type>
+[18Mar2020 15:12:02.881] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:chunk_generator_type>
+[18Mar2020 15:12:02.881] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.881] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:chunk_status>
+[18Mar2020 15:12:02.881] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:chunk_status>
+[18Mar2020 15:12:02.881] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:chunk_status>
+[18Mar2020 15:12:02.881] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:chunk_status>
+[18Mar2020 15:12:02.882] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.882] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:dataserializers>
+[18Mar2020 15:12:02.882] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:dataserializers>
+[18Mar2020 15:12:02.882] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:dataserializers>
+[18Mar2020 15:12:02.882] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:dataserializers>
+[18Mar2020 15:12:02.882] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.882] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:decorator>
+[18Mar2020 15:12:02.883] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:decorator>
+[18Mar2020 15:12:02.883] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:decorator>
+[18Mar2020 15:12:02.883] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:decorator>
+[18Mar2020 15:12:02.883] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.883] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:enchantment>
+[18Mar2020 15:12:02.883] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:enchantment>
+[18Mar2020 15:12:02.883] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:enchantment>
+[18Mar2020 15:12:02.883] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:enchantment>
+[18Mar2020 15:12:02.884] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.884] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:entity_type>
+[18Mar2020 15:12:02.884] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:entity_type>
+[18Mar2020 15:12:02.884] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:entity_type>
+[18Mar2020 15:12:02.884] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:entity_type>
+[18Mar2020 15:12:02.884] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.884] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:feature>
+[18Mar2020 15:12:02.884] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:feature>
+[18Mar2020 15:12:02.884] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:feature>
+[18Mar2020 15:12:02.884] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:feature>
+[18Mar2020 15:12:02.885] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.885] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:fluid>
+[18Mar2020 15:12:02.885] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:fluid>
+[18Mar2020 15:12:02.885] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:fluid>
+[18Mar2020 15:12:02.885] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:fluid>
+[18Mar2020 15:12:02.885] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.885] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:memory_module_type>
+[18Mar2020 15:12:02.885] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:memory_module_type>
+[18Mar2020 15:12:02.886] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:memory_module_type>
+[18Mar2020 15:12:02.886] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:memory_module_type>
+[18Mar2020 15:12:02.886] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.886] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:menu>
+[18Mar2020 15:12:02.886] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:menu>
+[18Mar2020 15:12:02.886] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:menu>
+[18Mar2020 15:12:02.886] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:menu>
+[18Mar2020 15:12:02.887] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.887] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:mob_effect>
+[18Mar2020 15:12:02.887] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:mob_effect>
+[18Mar2020 15:12:02.887] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:mob_effect>
+[18Mar2020 15:12:02.887] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:mob_effect>
+[18Mar2020 15:12:02.887] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.887] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:motive>
+[18Mar2020 15:12:02.887] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:motive>
+[18Mar2020 15:12:02.887] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:motive>
+[18Mar2020 15:12:02.887] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:motive>
+[18Mar2020 15:12:02.888] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.888] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:particle_type>
+[18Mar2020 15:12:02.888] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:particle_type>
+[18Mar2020 15:12:02.888] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:particle_type>
+[18Mar2020 15:12:02.888] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:particle_type>
+[18Mar2020 15:12:02.888] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.889] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:point_of_interest_type>
+[18Mar2020 15:12:02.889] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:point_of_interest_type>
+[18Mar2020 15:12:02.889] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:point_of_interest_type>
+[18Mar2020 15:12:02.889] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:point_of_interest_type>
+[18Mar2020 15:12:02.889] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.889] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:potion>
+[18Mar2020 15:12:02.889] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:potion>
+[18Mar2020 15:12:02.889] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:potion>
+[18Mar2020 15:12:02.889] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:potion>
+[18Mar2020 15:12:02.890] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.890] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:recipe_serializer>
+[18Mar2020 15:12:02.890] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:recipe_serializer>
+[18Mar2020 15:12:02.890] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:recipe_serializer>
+[18Mar2020 15:12:02.960] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:recipe_serializer>
+[18Mar2020 15:12:02.960] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.960] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:schedule>
+[18Mar2020 15:12:02.960] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:schedule>
+[18Mar2020 15:12:02.961] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:schedule>
+[18Mar2020 15:12:02.961] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:schedule>
+[18Mar2020 15:12:02.961] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.961] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:sensor_type>
+[18Mar2020 15:12:02.961] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:sensor_type>
+[18Mar2020 15:12:02.961] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:sensor_type>
+[18Mar2020 15:12:02.961] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:sensor_type>
+[18Mar2020 15:12:02.961] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.961] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:sound_event>
+[18Mar2020 15:12:02.961] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:sound_event>
+[18Mar2020 15:12:02.961] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:sound_event>
+[18Mar2020 15:12:02.961] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:sound_event>
+[18Mar2020 15:12:02.962] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.962] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:stat_type>
+[18Mar2020 15:12:02.962] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:stat_type>
+[18Mar2020 15:12:02.962] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:stat_type>
+[18Mar2020 15:12:02.962] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:stat_type>
+[18Mar2020 15:12:02.962] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.962] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:surface_builder>
+[18Mar2020 15:12:02.962] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:surface_builder>
+[18Mar2020 15:12:02.962] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:surface_builder>
+[18Mar2020 15:12:02.962] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:surface_builder>
+[18Mar2020 15:12:02.962] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching synchronous event LifecycleEvent:LOAD_REGISTRIES
+[18Mar2020 15:12:02.962] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : RegistryEvent.Register<minecraft:villager_profession>
+[18Mar2020 15:12:02.962] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : RegistryEvent.Register<minecraft:villager_profession>
+[18Mar2020 15:12:02.962] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : RegistryEvent.Register<minecraft:villager_profession>
+[18Mar2020 15:12:02.962] [Server thread/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : RegistryEvent.Register<minecraft:villager_profession>
+[18Mar2020 15:12:02.966] [Server thread/DEBUG] [net.minecraftforge.fml.config.ConfigTracker/CONFIG]: Loading configs type COMMON
+[18Mar2020 15:12:02.966] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching parallel event LifecycleEvent:COMMON_SETUP
+[18Mar2020 15:12:02.967] [modloading-worker-9/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : FMLCommonSetupEvent
+[18Mar2020 15:12:02.967] [modloading-worker-2/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : FMLCommonSetupEvent
+[18Mar2020 15:12:02.967] [modloading-worker-9/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : FMLCommonSetupEvent
+[18Mar2020 15:12:03.160] [modloading-worker-2/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : FMLCommonSetupEvent
+[18Mar2020 15:12:03.161] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching parallel event LifecycleEvent:SIDED_SETUP
+[18Mar2020 15:12:03.161] [Forge Version Check/INFO] [net.minecraftforge.fml.VersionChecker/]: [whitelistsync2] Starting version check at http://myurl.me/
+[18Mar2020 15:12:03.162] [modloading-worker-9/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : FMLDedicatedServerSetupEvent
+[18Mar2020 15:12:03.162] [modloading-worker-4/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : FMLDedicatedServerSetupEvent
+[18Mar2020 15:12:03.162] [modloading-worker-9/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : FMLDedicatedServerSetupEvent
+[18Mar2020 15:12:03.162] [modloading-worker-4/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : FMLDedicatedServerSetupEvent
+[18Mar2020 15:12:03.163] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Loading properties
+[18Mar2020 15:12:03.164] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Default game type: CREATIVE
+[18Mar2020 15:12:03.164] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Generating keypair
+[18Mar2020 15:12:03.561] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Starting Minecraft server on *:25566
+[18Mar2020 15:12:03.566] [Server thread/INFO] [net.minecraft.network.NetworkSystem/]: Using default channel type
+[18Mar2020 15:12:03.739] [Forge Version Check/WARN] [net.minecraftforge.fml.VersionChecker/]: Failed to process update information
+java.io.IOException: Server returned HTTP response code: 400 for URL: http://myurl.me/
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:1.8.0_241]
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(Unknown Source) ~[?:1.8.0_241]
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(Unknown Source) ~[?:1.8.0_241]
+	at java.lang.reflect.Constructor.newInstance(Unknown Source) ~[?:1.8.0_241]
+	at sun.net.www.protocol.http.HttpURLConnection$10.run(Unknown Source) ~[?:1.8.0_241]
+	at sun.net.www.protocol.http.HttpURLConnection$10.run(Unknown Source) ~[?:1.8.0_241]
+	at java.security.AccessController.doPrivileged(Native Method) ~[?:1.8.0_241]
+	at sun.net.www.protocol.http.HttpURLConnection.getChainedException(Unknown Source) ~[?:1.8.0_241]
+	at sun.net.www.protocol.http.HttpURLConnection.getInputStream0(Unknown Source) ~[?:1.8.0_241]
+	at sun.net.www.protocol.http.HttpURLConnection.getInputStream(Unknown Source) ~[?:1.8.0_241]
+	at net.minecraftforge.fml.VersionChecker$1.openUrlStream(VersionChecker.java:189) ~[?:?]
+	at net.minecraftforge.fml.VersionChecker$1.process(VersionChecker.java:206) ~[?:?]
+	at java.lang.Iterable.forEach(Unknown Source) [?:1.8.0_241]
+	at net.minecraftforge.fml.VersionChecker$1.run(VersionChecker.java:157) [?:?]
+Caused by: java.io.IOException: Server returned HTTP response code: 400 for URL: http://myurl.me/
+	at sun.net.www.protocol.http.HttpURLConnection.getInputStream0(Unknown Source) ~[?:1.8.0_241]
+	at sun.net.www.protocol.http.HttpURLConnection.getInputStream(Unknown Source) ~[?:1.8.0_241]
+	at java.net.HttpURLConnection.getResponseCode(Unknown Source) ~[?:1.8.0_241]
+	at net.minecraftforge.fml.VersionChecker$1.openUrlStream(VersionChecker.java:173) ~[?:?]
+	... 3 more
+[18Mar2020 15:12:03.742] [Forge Version Check/INFO] [net.minecraftforge.fml.VersionChecker/]: [forge] Starting version check at https://files.minecraftforge.net/maven/net/minecraftforge/forge/promotions_slim.json
+[18Mar2020 15:12:04.033] [Forge Version Check/DEBUG] [net.minecraftforge.fml.VersionChecker/]: [forge] Received version check data:
+{
+  "homepage": "http://files.minecraftforge.net/maven/net/minecraftforge/forge/",
+  "promos": {
+    "1.1-latest": "1.3.2.6",
+    "1.10-latest": "12.18.0.2000",
+    "1.10.2-latest": "12.18.3.2511",
+    "1.10.2-recommended": "12.18.3.2185",
+    "1.11-latest": "13.19.1.2199",
+    "1.11-recommended": "13.19.1.2189",
+    "1.11.2-latest": "13.20.1.2588",
+    "1.11.2-recommended": "13.20.1.2386",
+    "1.12-latest": "14.21.1.2443",
+    "1.12-recommended": "14.21.1.2387",
+    "1.12.1-latest": "14.22.1.2485",
+    "1.12.1-recommended": "14.22.1.2478",
+    "1.12.2-latest": "14.23.5.2847",
+    "1.12.2-recommended": "14.23.5.2768",
+    "1.13.2-latest": "25.0.219",
+    "1.14.2-latest": "26.0.63",
+    "1.14.3-latest": "27.0.60",
+    "1.14.4-latest": "28.2.3",
+    "1.14.4-recommended": "28.2.0",
+    "1.15-latest": "29.0.4",
+    "1.15.1-latest": "30.0.51",
+    "1.15.2-latest": "31.1.25",
+    "1.15.2-recommended": "31.1.0",
+    "1.5.2-latest": "7.8.1.738",
+    "1.5.2-recommended": "7.8.1.737",
+    "1.6.1-latest": "8.9.0.775",
+    "1.6.2-latest": "9.10.1.871",
+    "1.6.2-recommended": "9.10.1.871",
+    "1.6.3-latest": "9.11.0.878",
+    "1.6.4-latest": "9.11.1.1345",
+    "1.6.4-recommended": "9.11.1.1345",
+    "1.7.10-latest": "10.13.4.1614",
+    "1.7.10-latest-1.7.10": "10.13.2.1343",
+    "1.7.10-recommended": "10.13.4.1558",
+    "1.7.2-latest": "10.12.2.1147",
+    "1.7.2-recommended": "10.12.2.1121",
+    "1.8-latest": "11.14.4.1577",
+    "1.8-recommended": "11.14.4.1563",
+    "1.8.8-latest": "11.15.0.1655",
+    "1.8.9-latest": "11.15.1.2318",
+    "1.8.9-recommended": "11.15.1.1722",
+    "1.9-latest": "12.16.0.1942",
+    "1.9-recommended": "12.16.1.1887",
+    "1.9.4-latest": "12.17.0.2051",
+    "1.9.4-recommended": "12.17.0.1976",
+    "latest-1.7.10": "10.13.2.1343"
+  }
+}
+[18Mar2020 15:12:04.034] [Forge Version Check/INFO] [net.minecraftforge.fml.VersionChecker/]: [forge] Found status: UP_TO_DATE Current: 31.1.0 Target: null
+[18Mar2020 15:12:04.115] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching parallel event LifecycleEvent:ENQUEUE_IMC
+[18Mar2020 15:12:04.122] [modloading-worker-9/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : InterModEnqueueEvent
+[18Mar2020 15:12:04.122] [modloading-worker-2/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : InterModEnqueueEvent
+[18Mar2020 15:12:04.122] [modloading-worker-9/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : InterModEnqueueEvent
+[18Mar2020 15:12:04.122] [modloading-worker-2/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : InterModEnqueueEvent
+[18Mar2020 15:12:04.122] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching parallel event LifecycleEvent:PROCESS_IMC
+[18Mar2020 15:12:04.132] [modloading-worker-11/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : InterModProcessEvent
+[18Mar2020 15:12:04.132] [modloading-worker-9/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : InterModProcessEvent
+[18Mar2020 15:12:04.132] [modloading-worker-9/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : InterModProcessEvent
+[18Mar2020 15:12:04.132] [modloading-worker-11/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : InterModProcessEvent
+[18Mar2020 15:12:04.136] [Server thread/DEBUG] [net.minecraftforge.fml.ModList/LOADING]: Dispatching parallel event LifecycleEvent:COMPLETE
+[18Mar2020 15:12:04.141] [modloading-worker-9/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid whitelistsync2 : FMLLoadCompleteEvent
+[18Mar2020 15:12:04.141] [modloading-worker-11/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Firing event for modid forge : FMLLoadCompleteEvent
+[18Mar2020 15:12:04.141] [modloading-worker-9/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid whitelistsync2 : FMLLoadCompleteEvent
+[18Mar2020 15:12:04.141] [modloading-worker-11/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Fired event for modid forge : FMLLoadCompleteEvent
+[18Mar2020 15:12:04.159] [Server thread/DEBUG] [net.minecraftforge.registries.ClearableRegistry/REGISTRY]: minecraft:feature: Clearing registry
+[18Mar2020 15:12:04.448] [Server thread/DEBUG] [net.minecraftforge.fml.loading.FileUtils/CORE]: Found existing serverconfig directory : .\world\serverconfig
+[18Mar2020 15:12:04.448] [Server thread/DEBUG] [net.minecraftforge.fml.config.ConfigTracker/CONFIG]: Loading configs type SERVER
+[18Mar2020 15:12:04.448] [Server thread/DEBUG] [net.minecraftforge.fml.config.ConfigTracker/CONFIG]: Loading config file type SERVER at whitelistsync2-server.toml for whitelistsync2
+[18Mar2020 15:12:04.449] [Server thread/DEBUG] [net.minecraftforge.fml.config.ConfigFileTypeHandler/CONFIG]: Built TOML config for .\world\serverconfig\whitelistsync2-server.toml
+[18Mar2020 15:12:04.449] [Server thread/DEBUG] [net.minecraftforge.fml.config.ConfigFileTypeHandler/CONFIG]: Loaded TOML config file .\world\serverconfig\whitelistsync2-server.toml
+[18Mar2020 15:12:04.457] [Server thread/DEBUG] [net.minecraftforge.fml.config.ConfigFileTypeHandler/CONFIG]: Watching TOML config file .\world\serverconfig\whitelistsync2-server.toml for changes
+[18Mar2020 15:12:04.460] [Server thread/DEBUG] [net.minecraftforge.fml.config.ConfigTracker/CONFIG]: Loading config file type SERVER at forge-server.toml for forge
+[18Mar2020 15:12:04.460] [Server thread/DEBUG] [net.minecraftforge.fml.config.ConfigFileTypeHandler/CONFIG]: Built TOML config for .\world\serverconfig\forge-server.toml
+[18Mar2020 15:12:04.461] [Server thread/DEBUG] [net.minecraftforge.fml.config.ConfigFileTypeHandler/CONFIG]: Loaded TOML config file .\world\serverconfig\forge-server.toml
+[18Mar2020 15:12:04.461] [Server thread/DEBUG] [net.minecraftforge.fml.config.ConfigFileTypeHandler/CONFIG]: Watching TOML config file .\world\serverconfig\forge-server.toml for changes
+[18Mar2020 15:12:04.461] [Server thread/DEBUG] [net.minecraftforge.common.ForgeConfig/FORGEMOD]: Loaded forge config file forge-server.toml
+[18Mar2020 15:12:04.514] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Preparing level "world"
+[18Mar2020 15:12:04.566] [Server thread/DEBUG] [net.minecraftforge.common.DimensionManager/DIMS]: Reading Dimension Entries.
+[18Mar2020 15:12:04.567] [Server thread/DEBUG] [net.minecraftforge.registries.ClearableRegistry/REGISTRY]: minecraft:dimension_type: Clearing registry
+[18Mar2020 15:12:04.567] [Server thread/DEBUG] [net.minecraftforge.common.DimensionManager/DIMS]: Registering vanilla entry ID: 1 Name: minecraft:overworld Value: DimensionType{null}
+[18Mar2020 15:12:04.567] [Server thread/DEBUG] [net.minecraftforge.common.DimensionManager/DIMS]: Registering vanilla entry ID: 2 Name: minecraft:the_end Value: DimensionType{null}
+[18Mar2020 15:12:04.567] [Server thread/DEBUG] [net.minecraftforge.common.DimensionManager/DIMS]: Registering vanilla entry ID: 0 Name: minecraft:the_nether Value: DimensionType{null}
+[18Mar2020 15:12:04.611] [Server thread/DEBUG] [net.minecraftforge.registries.ClearableRegistry/REGISTRY]: minecraft:feature: Clearing registry
+[18Mar2020 15:12:04.736] [Server thread/DEBUG] [net.minecraftforge.fml.server.ServerLifecycleHooks/CORE]: Generating PackInfo named mod:forge for mod file C:\Users\RJ\gitPersonal\Whitelist-Sync-2\TestServers\ForgeServer2\libraries\net\minecraftforge\forge\1.15.2-31.1.0\forge-1.15.2-31.1.0-universal.jar
+[18Mar2020 15:12:04.736] [Server thread/DEBUG] [net.minecraftforge.fml.server.ServerLifecycleHooks/CORE]: Generating PackInfo named mod:whitelistsync2 for mod file C:\Users\RJ\gitPersonal\Whitelist-Sync-2\TestServers\ForgeServer2\mods\whitelistsync2-1.15.4-2.1.0.jar
+[18Mar2020 15:12:04.738] [Server thread/INFO] [net.minecraft.resources.SimpleReloadableResourceManager/]: Reloading ResourceManager: Default, forge-1.15.2-31.1.0-universal.jar, whitelistsync2-1.15.4-2.1.0.jar
+[18Mar2020 15:12:05.061] [Server thread/INFO] [net.minecraft.item.crafting.RecipeManager/]: Loaded 6 recipes
+[18Mar2020 15:12:05.324] [Server thread/INFO] [net.minecraft.advancements.AdvancementList/]: Loaded 825 advancements
+[18Mar2020 15:12:05.500] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Preparing start region for dimension minecraft:overworld
+[18Mar2020 15:12:05.973] [Server thread/INFO] [net.minecraft.world.chunk.listener.LoggingChunkStatusListener/]: Preparing spawn area: 0%
+[18Mar2020 15:12:06.000] [Server-Worker-4/INFO] [net.minecraft.world.chunk.listener.LoggingChunkStatusListener/]: Preparing spawn area: 0%
+[18Mar2020 15:12:07.498] [Server-Worker-6/INFO] [net.minecraft.world.chunk.listener.LoggingChunkStatusListener/]: Preparing spawn area: 83%
+[18Mar2020 15:12:07.498] [Server-Worker-6/INFO] [net.minecraft.world.chunk.listener.LoggingChunkStatusListener/]: Preparing spawn area: 83%
+[18Mar2020 15:12:07.502] [Server-Worker-2/INFO] [net.minecraft.world.chunk.listener.LoggingChunkStatusListener/]: Preparing spawn area: 83%
+[18Mar2020 15:12:08.001] [Server-Worker-7/INFO] [net.minecraft.world.chunk.listener.LoggingChunkStatusListener/]: Preparing spawn area: 83%
+[18Mar2020 15:12:08.504] [Server-Worker-1/INFO] [net.minecraft.world.chunk.listener.LoggingChunkStatusListener/]: Preparing spawn area: 86%
+[18Mar2020 15:12:09.011] [Server thread/INFO] [net.minecraft.world.chunk.listener.LoggingChunkStatusListener/]: Time elapsed: 3511 ms
+[18Mar2020 15:12:09.011] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Done (4.578s)! For help, type "help"
+[18Mar2020 15:12:09.015] [Server thread/DEBUG] [net.minecraftforge.fml.ForgeI18n/CORE]: Loading I18N data entries: 146
+[18Mar2020 15:12:09.016] [Server thread/INFO] [whitelistsync2/]: ----------------------------------------------
+[18Mar2020 15:12:09.017] [Server thread/INFO] [whitelistsync2/]: ---------------WHITELIST SYNC 2---------------
+[18Mar2020 15:12:09.018] [Server thread/INFO] [whitelistsync2/]: ----------------------------------------------
+[18Mar2020 15:12:09.019] [Server thread/INFO] [whitelistsync2/]: Setting up databases...
+[18Mar2020 15:12:09.198] [Server thread/INFO] [whitelistsync2/]: OP Sync is ENABLED!
+[18Mar2020 15:12:09.198] [Server thread/INFO] [whitelistsync2/]: Loaded mySQL database!
+[18Mar2020 15:12:09.209] [Server thread/INFO] [whitelistsync2/]: Database setup!
+[18Mar2020 15:12:09.212] [Server thread/INFO] [whitelistsync2/]: Starting Sync Thread...
+[18Mar2020 15:12:09.214] [Server thread/INFO] [whitelistsync2/]: Sync Thread Started!
+[18Mar2020 15:12:09.214] [Server thread/INFO] [whitelistsync2/]: Registering commands...
+[18Mar2020 15:12:09.219] [Server thread/INFO] [whitelistsync2/]: OP Sync is enabled
+[18Mar2020 15:12:09.224] [Server thread/INFO] [whitelistsync2/]: ----------------------------------------------
+[18Mar2020 15:12:09.226] [Thread-14/DEBUG] [whitelistsync2/]: getWhitelistJson returned an array of 0 entries.
+[18Mar2020 15:12:09.226] [Thread-14/DEBUG] [whitelistsync2/]: Whitelist Table Pulled | Took 12ms | Wrote 0 records.
+[18Mar2020 15:12:09.228] [Thread-14/DEBUG] [whitelistsync2/]: getOplistJson returned an array of 0 entries.
+[18Mar2020 15:12:09.228] [Thread-14/DEBUG] [whitelistsync2/]: Ops Table Pulled | Took 2ms | Wrote 0 records.
+[18Mar2020 15:12:09.224] [Server thread/INFO] [whitelistsync2/]: ----------------------------------------------
+[18Mar2020 15:12:09.233] [Server thread/INFO] [whitelistsync2/]: ----------------------------------------------
+[18Mar2020 15:12:09.318] [Server thread/DEBUG] [net.minecraftforge.common.DimensionManager/DIMS]: Queueing dimension 1 to unload
+[18Mar2020 15:12:09.510] [Server thread/DEBUG] [net.minecraftforge.common.DimensionManager/DIMS]: Queueing dimension -1 to unload
+[18Mar2020 15:12:09.515] [Server thread/DEBUG] [net.minecraftforge.common.DimensionManager/DIMS]: Unloading dimension 1
+[18Mar2020 15:12:09.518] [Server thread/INFO] [net.minecraft.world.server.ChunkManager/]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[18Mar2020 15:12:09.519] [Server thread/DEBUG] [net.minecraftforge.common.DimensionManager/DIMS]: Unloading dimension -1
+[18Mar2020 15:12:09.519] [Server thread/INFO] [net.minecraft.world.server.ChunkManager/]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[18Mar2020 15:13:09.228] [Thread-14/DEBUG] [whitelistsync2/]: getWhitelistJson returned an array of 0 entries.
+[18Mar2020 15:13:09.230] [Thread-14/INFO] [whitelistsync2/]: Added potato to whitelist.
+[18Mar2020 15:13:09.230] [Thread-14/DEBUG] [whitelistsync2/]: Whitelist Table Pulled | Took 2ms | Wrote 1 records.
+[18Mar2020 15:13:09.231] [Thread-14/DEBUG] [whitelistsync2/]: getOplistJson returned an array of 0 entries.
+[18Mar2020 15:13:09.232] [Thread-14/INFO] [whitelistsync2/]: Opped potato.
+[18Mar2020 15:13:09.233] [Thread-14/DEBUG] [whitelistsync2/]: Ops Table Pulled | Took 3ms | Wrote 1 records.
+[18Mar2020 15:13:28.991] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Stopping the server
+[18Mar2020 15:13:29.037] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Stopping server
+[18Mar2020 15:13:29.038] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving players
+[18Mar2020 15:13:29.039] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving worlds
+[18Mar2020 15:13:29.040] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'world'/minecraft:overworld
+[18Mar2020 15:13:29.377] [Server thread/INFO] [net.minecraft.world.server.ChunkManager/]: ThreadedAnvilChunkStorage (world): All chunks are saved
+[18Mar2020 15:13:29.379] [Server thread/DEBUG] [net.minecraftforge.fml.FMLWorldPersistenceHook/WP]: Gathering id map for writing to world save world
+[18Mar2020 15:13:29.388] [Server thread/INFO] [net.minecraft.world.server.ChunkManager/]: ThreadedAnvilChunkStorage (world): All chunks are saved

@@ -34,7 +34,7 @@ public class CommandSync implements Command<CommandSource> {
     // Command action
     @Override
     public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
-        if(WhitelistSync2.whitelistService.updateLocalOpListFromDatabase(context.getSource().getServer())) {
+        if(WhitelistSync2.whitelistService.copyDatabaseOppedPlayersToLocal(context.getSource().getServer())) {
             context.getSource().sendFeedback(new StringTextComponent("Local op list up to date with database."), false);
         } else {
             throw DB_ERROR.create();

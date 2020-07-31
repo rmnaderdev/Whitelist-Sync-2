@@ -1,48 +1,44 @@
 package pw.twpi.whitelistsync2.services;
 
-import com.mojang.authlib.GameProfile;
 import java.util.ArrayList;
+
+import com.mojang.authlib.GameProfile;
 import net.minecraft.server.MinecraftServer;
+import pw.twpi.whitelistsync2.models.OppedPlayer;
+import pw.twpi.whitelistsync2.models.WhitelistedPlayer;
 
 /**
  * Interface for different database services
- * @author Richard Nader, Jr. <nader1rm@cmich.edu>
+ * @author Richard Nader, Jr. <rmnader@svsu.edu>
  */
 public interface BaseService {
-    
-    // Pushed local whitelist to database
-    public boolean pushLocalWhitelistToDatabase(MinecraftServer server);
-    
-    // Pushed local op list to database
-    public boolean pushLocalOpListToDatabase(MinecraftServer server);
 
-    // Gets ArrayList of uuids whitelisted in database.
-    public ArrayList<String> pullWhitelistedUuidsFromDatabase(MinecraftServer server);
+    public boolean initializeDatabase();
 
-    // Gets ArrayList of uuids ops in database.
-    public ArrayList<String> pullOpUuidsFromDatabase(MinecraftServer server);
 
-    // Gets ArrayList of names whitelisted in database.
-    public ArrayList<String> pullWhitelistedNamesFromDatabase(MinecraftServer server);
+    // Getter functions
+    public ArrayList<WhitelistedPlayer> getWhitelistedPlayersFromDatabase();
+    public ArrayList<OppedPlayer> getOppedPlayersFromDatabase();
 
-    // Gets ArrayList of names ops in database.
-    public ArrayList<String> pullOppedNamesFromDatabase(MinecraftServer server);
+    public ArrayList<WhitelistedPlayer> getWhitelistedPlayersFromLocal();
+    public ArrayList<OppedPlayer> getOppedPlayersFromLocal();
 
-    // Adds player to database whitelist.
-    public boolean addPlayerToDatabaseWhitelist(GameProfile player);
 
-    // Adds op player to database.
-    public boolean addPlayerToDatabaseOp(GameProfile player);
+    // Syncing functions
+    public boolean copyLocalWhitelistedPlayersToDatabase();
+    public boolean copyLocalOppedPlayersToDatabase();
 
-    // Removes player from database.
-    public boolean removePlayerFromDatabaseWhitelist(GameProfile player);
+    public boolean copyDatabaseWhitelistedPlayersToLocal(MinecraftServer server);
+    public boolean copyDatabaseOppedPlayersToLocal(MinecraftServer server);
 
-    // Removes op player from database.
-    public boolean removePlayerFromDatabaseOp(GameProfile player);
 
-    // Copies whitelist from database to server.
-    public boolean updateLocalWhitelistFromDatabase(MinecraftServer server);
+    // Addition functions
+    public boolean addWhitelistPlayer(GameProfile player);
+    public boolean addOppedPlayer(GameProfile player);
 
-    // Copies op list from database to server.
-    public boolean updateLocalOpListFromDatabase(MinecraftServer server);
+
+    // Removal functions
+    public boolean removeWhitelistPlayer(GameProfile player);
+    public boolean removeOppedPlayer(GameProfile player);
+
 }

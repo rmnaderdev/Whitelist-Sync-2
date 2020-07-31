@@ -29,7 +29,7 @@ public class CommandList implements Command<CommandSource> {
     // Command action
     @Override
     public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
-        context.getSource().sendFeedback(new StringTextComponent(Utilities.FormatOpUsersOutput(WhitelistSync2.whitelistService.pullOppedNamesFromDatabase(context.getSource().getServer()))), false);
+        context.getSource().sendFeedback(new StringTextComponent(Utilities.FormatOppedPlayersOutput(WhitelistSync2.whitelistService.getOppedPlayersFromDatabase())), false);
         return 0;
     }
 }
