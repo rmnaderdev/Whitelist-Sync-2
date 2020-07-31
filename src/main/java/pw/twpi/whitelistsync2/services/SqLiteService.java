@@ -34,7 +34,7 @@ public class SqLiteService implements BaseService {
             Class.forName("org.sqlite.JDBC").newInstance();
         } catch (Exception e) {
             WhitelistSync2.LOGGER.error("Failed to init sqlite connector. Is the library missing?");
-            e.printStackTrace();
+            WhitelistSync2.LOGGER.error(e.getMessage(), e);
             isSuccess = false;
         }
 
@@ -105,14 +105,11 @@ public class SqLiteService implements BaseService {
 
             // Connect to database.
             Connection conn = DriverManager.getConnection("jdbc:sqlite:" + Config.SQLITE_DATABASE_PATH.get());
-            Statement stmt = conn.createStatement();
-            String sql = "SELECT uuid, name, whitelisted FROM whitelist WHERE whitelisted = 1;";
-
-            // Start time of querry.
             long startTime = System.currentTimeMillis();
 
-            stmt.execute(sql);
-            ResultSet rs = stmt.executeQuery(sql);
+            String sql = "SELECT uuid, name, whitelisted FROM whitelist WHERE whitelisted = 1;";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
 
             // Save queried return to names list.
             while (rs.next()) {
@@ -128,10 +125,10 @@ public class SqLiteService implements BaseService {
             stmt.close();
             conn.close();
         } catch (SQLException e) {
-            // Something is wrong...
             WhitelistSync2.LOGGER.error("Error querying whitelisted players from database!");
             WhitelistSync2.LOGGER.error(e.getMessage(), e);
         }
+
         return whitelistedPlayers;
     }
 
@@ -147,14 +144,11 @@ public class SqLiteService implements BaseService {
 
                 // Connect to database.
                 Connection conn = DriverManager.getConnection("jdbc:sqlite:" + Config.SQLITE_DATABASE_PATH.get());
-                Statement stmt = conn.createStatement();
-                String sql = "SELECT uuid, name FROM op WHERE isOp = 1;";
-
-                // Start time of query.
                 long startTime = System.currentTimeMillis();
 
-                stmt.execute(sql);
-                ResultSet rs = stmt.executeQuery(sql);
+                String sql = "SELECT uuid, name FROM op WHERE isOp = 1;";
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery();
 
                 // Save queried return to names list.
                 while (rs.next()) {
@@ -173,13 +167,13 @@ public class SqLiteService implements BaseService {
                 WhitelistSync2.LOGGER.error("Error querying opped players from database!");
                 WhitelistSync2.LOGGER.error(e.getMessage(), e);
             }
-            return oppedPlayers;
 
         } else {
             WhitelistSync2.LOGGER.error("Op list syncing is currently disabled in your config. "
                     + "Please enable it and restart the server to use this feature.");
-            return oppedPlayers;
         }
+
+        return oppedPlayers;
     }
 
     @Override
@@ -203,16 +197,16 @@ public class SqLiteService implements BaseService {
         try {
             // Connect to database.
             Connection conn = DriverManager.getConnection("jdbc:sqlite:" + Config.SQLITE_DATABASE_PATH.get());
-            Statement stmt = conn.createStatement();
             long startTime = System.currentTimeMillis();
             // Loop through local whitelist and insert into database.
             for (WhitelistedPlayer player : whitelistedPlayers) {
 
                 if (player.getUuid() != null && player.getName() != null) {
-                    PreparedStatement sql = conn.prepareStatement("INSERT OR REPLACE INTO whitelist(uuid, name, whitelisted) VALUES (?, ?, 1)");
-                    sql.setString(1, player.getUuid());
-                    sql.setString(2, player.getName());
-                    sql.executeUpdate();
+                    PreparedStatement stmt = conn.prepareStatement("INSERT OR REPLACE INTO whitelist(uuid, name, whitelisted) VALUES (?, ?, 1)");
+                    stmt.setString(1, player.getUuid());
+                    stmt.setString(2, player.getName());
+                    stmt.executeUpdate();
+                    stmt.close();
 
                     records++;
                 }
@@ -220,7 +214,6 @@ public class SqLiteService implements BaseService {
             // Record time taken.
             long timeTaken = System.currentTimeMillis() - startTime;
             WhitelistSync2.LOGGER.debug("Whitelist table updated | Took " + timeTaken + "ms | Wrote " + records + " records.");
-            stmt.close();
             conn.close();
 
             return true;
@@ -244,16 +237,16 @@ public class SqLiteService implements BaseService {
             try {
                 // Connect to database.
                 Connection conn = DriverManager.getConnection("jdbc:sqlite:" + Config.SQLITE_DATABASE_PATH.get());
-                Statement stmt = conn.createStatement();
                 long startTime = System.currentTimeMillis();
                 // Loop through local opped players and insert into database.
                 for (OppedPlayer player : oppedPlayers) {
 
                     if (player.getUuid() != null && player.getName() != null) {
-                        PreparedStatement sql = conn.prepareStatement("INSERT OR REPLACE INTO op(uuid, name, isOp) VALUES (?, ?, 1)");
-                        sql.setString(1, player.getUuid());
-                        sql.setString(2, player.getName());
-                        sql.executeUpdate();
+                        PreparedStatement stmt = conn.prepareStatement("INSERT OR REPLACE INTO op(uuid, name, isOp) VALUES (?, ?, 1)");
+                        stmt.setString(1, player.getUuid());
+                        stmt.setString(2, player.getName());
+                        stmt.executeUpdate();
+                        stmt.close();
 
                         records++;
                     }
@@ -261,7 +254,6 @@ public class SqLiteService implements BaseService {
                 // Record time taken.
                 long timeTaken = System.currentTimeMillis() - startTime;
                 WhitelistSync2.LOGGER.debug("Op table updated | Took " + timeTaken + "ms | Wrote " + records + " records.");
-                stmt.close();
                 conn.close();
 
                 return true;
@@ -283,21 +275,19 @@ public class SqLiteService implements BaseService {
             int records = 0;
 
             Connection conn = DriverManager.getConnection("jdbc:sqlite:" + Config.SQLITE_DATABASE_PATH.get());
-            Statement stmt = conn.createStatement();
+            long startTime = System.currentTimeMillis();
 
             String sql = "SELECT name, uuid, whitelisted FROM whitelist;";
-
-            long startTime = System.currentTimeMillis();
-            stmt.execute(sql);
-
-            ResultSet rs = stmt.executeQuery(sql);
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
 
             ArrayList<WhitelistedPlayer> localWhitelistedPlayers = WhitelistedPlayersFileUtilities.getWhitelistedPlayers();
 
             while (rs.next()) {
-                int whitelisted = rs.getInt("whitelisted");
                 String uuid = rs.getString("uuid");
                 String name = rs.getString("name");
+                int whitelisted = rs.getInt("whitelisted");
+
                 GameProfile player = new GameProfile(UUID.fromString(uuid), name);
 
                 if (whitelisted == 1) {
@@ -344,14 +334,11 @@ public class SqLiteService implements BaseService {
                 int records = 0;
 
                 Connection conn = DriverManager.getConnection("jdbc:sqlite:" + Config.SQLITE_DATABASE_PATH.get());
-                Statement stmt = conn.createStatement();
+                long startTime = System.currentTimeMillis();
 
                 String sql = "SELECT name, uuid, isOp FROM op;";
-
-                long startTime = System.currentTimeMillis();
-                stmt.execute(sql);
-
-                ResultSet rs = stmt.executeQuery(sql);
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery();
 
                 ArrayList<OppedPlayer> localOppedPlayers = OppedPlayersFileUtilities.getOppedPlayers();
 
@@ -387,12 +374,10 @@ public class SqLiteService implements BaseService {
                 stmt.close();
                 conn.close();
                 return true;
-
             } catch (SQLException e) {
                 WhitelistSync2.LOGGER.error("Error querying opped players from database!");
                 WhitelistSync2.LOGGER.error(e.getMessage(), e);
             }
-
         } else {
             WhitelistSync2.LOGGER.error("Op list syncing is currently disabled in your config. "
                     + "Please enable it and restart the server to use this feature.");
@@ -410,7 +395,8 @@ public class SqLiteService implements BaseService {
             // Start time.
             long startTime = System.currentTimeMillis();
 
-            PreparedStatement stmt = conn.prepareStatement("INSERT OR REPLACE INTO whitelist(uuid, name, whitelisted) VALUES (?, ?, 1)");
+            String sql = "INSERT OR REPLACE INTO whitelist(uuid, name, whitelisted) VALUES (?, ?, 1)";
+            PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, player.getId().toString());
             stmt.setString(2, player.getName());
             stmt.executeUpdate();
@@ -434,7 +420,6 @@ public class SqLiteService implements BaseService {
     public boolean addOppedPlayer(GameProfile player) {
         if (Config.SYNC_OP_LIST.get()) {
             try {
-                ArrayList<OppedPlayer> oppedPlayers = OppedPlayersFileUtilities.getOppedPlayers();
                 // Open connection
                 Connection conn = DriverManager.getConnection("jdbc:sqlite:" + Config.SQLITE_DATABASE_PATH.get());
 
