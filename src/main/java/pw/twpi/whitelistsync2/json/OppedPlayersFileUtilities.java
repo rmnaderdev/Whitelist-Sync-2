@@ -48,7 +48,7 @@ public class OppedPlayersFileUtilities {
             // Read data as Json array from server directory
             oplist = (JsonArray) parser.parse(new FileReader(WhitelistSync2.SERVER_FILEPATH + "/ops.json"));
             
-            WhitelistSync2.LOGGER.debug("getOppedPlayersFromFile returned an array of " + oplist.size() + " entries.");
+            // WhitelistSync2.LOGGER.debug("getOppedPlayersFromFile returned an array of " + oplist.size() + " entries.");
         } catch (FileNotFoundException e) {
             WhitelistSync2.LOGGER.error("ops.json file not found.");
             e.printStackTrace();

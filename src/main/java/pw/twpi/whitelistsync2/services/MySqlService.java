@@ -26,10 +26,10 @@ import pw.twpi.whitelistsync2.models.WhitelistedPlayer;
  */
 public class MySqlService implements BaseService {
 
-    private String databaseName;
-    private String url;
-    private String username;
-    private String password;
+    private final String databaseName;
+    private final String url;
+    private final String username;
+    private final String password;
 
     public MySqlService() {
         this.databaseName = Config.MYSQL_DB_NAME.get();
@@ -414,7 +414,7 @@ public class MySqlService implements BaseService {
             Connection conn = DriverManager.getConnection(url, username, password);
             long startTime = System.currentTimeMillis();
 
-            String sql = "INSERT OR REPLACE INTO " + databaseName + ".whitelist(uuid, name, whitelisted) VALUES (?, ?, true)";
+            String sql = "REPLACE INTO " + databaseName + ".whitelist(uuid, name, whitelisted) VALUES (?, ?, true)";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, player.getId().toString());
             stmt.setString(2, player.getName());
@@ -443,7 +443,7 @@ public class MySqlService implements BaseService {
                 Connection conn = DriverManager.getConnection(url, username, password);
                 long startTime = System.currentTimeMillis();
 
-                String sql = "INSERT OR REPLACE INTO " + databaseName + ".op(uuid, name, isOp) VALUES (?, ?, true)";
+                String sql = "REPLACE INTO " + databaseName + ".op(uuid, name, isOp) VALUES (?, ?, true)";
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 stmt.setString(1, player.getId().toString());
                 stmt.setString(2, player.getName());
@@ -475,7 +475,7 @@ public class MySqlService implements BaseService {
             Connection conn = DriverManager.getConnection(url, username, password);
             long startTime = System.currentTimeMillis();
 
-            String sql = "INSERT OR REPLACE INTO " + databaseName + ".whitelist(uuid, name, whitelisted) VALUES (?, ?, false)";
+            String sql = "REPLACE INTO " + databaseName + ".whitelist(uuid, name, whitelisted) VALUES (?, ?, false)";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, player.getId().toString());
             stmt.setString(2, player.getName());
@@ -504,7 +504,7 @@ public class MySqlService implements BaseService {
                 Connection conn = DriverManager.getConnection(url, username, password);
                 long startTime = System.currentTimeMillis();
 
-                String sql = "INSERT OR REPLACE INTO " + databaseName + ".op(uuid, name, isOp) VALUES (?, ?, false)";
+                String sql = "REPLACE INTO " + databaseName + ".op(uuid, name, isOp) VALUES (?, ?, false)";
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 stmt.setString(1, player.getId().toString());
                 stmt.setString(2, player.getName());

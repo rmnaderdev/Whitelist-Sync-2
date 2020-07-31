@@ -48,7 +48,7 @@ public class WhitelistedPlayersFileUtilities {
             // Read data as Json array from server directory
             whitelist = (JsonArray) parser.parse(new FileReader(WhitelistSync2.SERVER_FILEPATH + "/whitelist.json"));
 
-            WhitelistSync2.LOGGER.debug("getWhitelistedPlayersFromFile returned an array of " + whitelist.size() + " entries.");
+            // WhitelistSync2.LOGGER.debug("getWhitelistedPlayersFromFile returned an array of " + whitelist.size() + " entries.");
         } catch (FileNotFoundException e) {
             WhitelistSync2.LOGGER.error("whitelist.json file not found.");
             e.printStackTrace();

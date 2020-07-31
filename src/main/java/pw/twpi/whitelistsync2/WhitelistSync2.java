@@ -36,6 +36,8 @@ public class WhitelistSync2
 
     @SubscribeEvent
     public void onServerStarting(FMLServerStartingEvent event) {
+        boolean setupSuccessful = true;
+
         // Load config
         Config.loadConfig(Config.SERVER_CONFIG, FMLPaths.CONFIGDIR.get().resolve("whitelistSync.toml"));
 
@@ -52,11 +54,11 @@ public class WhitelistSync2
         } else if (Config.DATABASE_MODE.get() == Config.DatabaseMode.MYSQL) {
             whitelistService = new MySqlService();
         } else {
-            throw new RuntimeException("Please check what WHITELIST_MODE is set in the config"
-                    + "and make sure it is set to a supported mode.");
+            LOGGER.error("Please check what WHITELIST_MODE is set in the config and make sure it is set to a supported mode.");
+            setupSuccessful = false;
         }
 
-        if(!whitelistService.initializeDatabase()) {
+        if(!whitelistService.initializeDatabase() || !setupSuccessful) {
             LOGGER.error("Error initializing whitelist sync database. Disabling mod functionality. Please correct errors and restart.");
         } else {
             // Database is setup!
@@ -79,6 +81,7 @@ public class WhitelistSync2
                 LOGGER.info("Opped Player Sync is disabled");
             }
         }
+
 
         LOGGER.info("----------------------------------------------");
         LOGGER.info("----------------------------------------------");
