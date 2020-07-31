@@ -34,7 +34,7 @@ public class CommandCopyToDatabase implements Command<CommandSource> {
     // Command action
     @Override
     public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
-        if(WhitelistSync2.whitelistService.pushLocalOpListToDatabase(context.getSource().getServer())) {
+        if(WhitelistSync2.whitelistService.copyLocalOppedPlayersToDatabase()) {
             context.getSource().sendFeedback(new StringTextComponent("Pushed local op list to database."), false);
         } else {
             throw DB_ERROR.create();

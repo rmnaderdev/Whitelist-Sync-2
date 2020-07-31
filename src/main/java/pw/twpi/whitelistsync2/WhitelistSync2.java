@@ -47,7 +47,6 @@ public class WhitelistSync2
         LOGGER.info("---------------WHITELIST SYNC 2---------------");
         LOGGER.info("----------------------------------------------");
 
-        LOGGER.info("Setting up databases...");
         if (Config.DATABASE_MODE.get() == Config.DatabaseMode.SQLITE) {
             whitelistService = new SqLiteService();
         } else if (Config.DATABASE_MODE.get() == Config.DatabaseMode.MYSQL) {
@@ -56,27 +55,29 @@ public class WhitelistSync2
             throw new RuntimeException("Please check what WHITELIST_MODE is set in the config"
                     + "and make sure it is set to a supported mode.");
         }
-        LOGGER.info("Database setup!");
 
-
-        // Check if whitelisting is enabled.
-        if (!event.getServer().getPlayerList().isWhiteListEnabled()) {
-            LOGGER.info("Oh no! I see whitelisting isn't enabled in the server properties. "
-                    + "I assume this is not intentional, I'll enable it for you!");
-            event.getServer().getPlayerList().setWhiteListEnabled(true);
-        }
-
-        LOGGER.info("Starting Sync Thread...");
-        StartSyncThread(event.getServer(), whitelistService);
-
-        LOGGER.info("Registering commands...");
-        WhitelistCommands.register(event.getCommandDispatcher());
-
-        if(Config.SYNC_OP_LIST.get()) {
-            LOGGER.info("OP Sync is enabled");
-            OpCommands.register(event.getCommandDispatcher());
+        if(!whitelistService.initializeDatabase()) {
+            LOGGER.error("Error initializing whitelist sync database. Disabling mod functionality. Please correct errors and restart.");
         } else {
-            LOGGER.info("OP Sync is disabled");
+            // Database is setup!
+
+            // Check if whitelisting is enabled.
+            if (!event.getServer().getPlayerList().isWhiteListEnabled()) {
+                LOGGER.info("Oh no! I see whitelisting isn't enabled in the server properties. "
+                        + "I assume this is not intentional, I'll enable it for you!");
+                event.getServer().getPlayerList().setWhiteListEnabled(true);
+            }
+
+            StartSyncThread(event.getServer(), whitelistService);
+
+            WhitelistCommands.register(event.getCommandDispatcher());
+
+            if(Config.SYNC_OP_LIST.get()) {
+                LOGGER.info("Opped Player Sync is enabled");
+                OpCommands.register(event.getCommandDispatcher());
+            } else {
+                LOGGER.info("Opped Player Sync is disabled");
+            }
         }
 
         LOGGER.info("----------------------------------------------");

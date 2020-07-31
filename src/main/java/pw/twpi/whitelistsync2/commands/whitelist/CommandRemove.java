@@ -60,7 +60,7 @@ public class CommandRemove implements Command<CommandSource> {
             String playerName = TextComponentUtils.getDisplayName(gameProfile).getString();
 
             if (whiteList.isWhitelisted(gameProfile)) {
-                if(WhitelistSync2.whitelistService.removePlayerFromDatabaseWhitelist(gameProfile)) {
+                if(WhitelistSync2.whitelistService.removeWhitelistPlayer(gameProfile)) {
                     WhitelistEntry whitelistentry = new WhitelistEntry(gameProfile);
                     whiteList.removeEntry(whitelistentry);
                     context.getSource().sendFeedback(new StringTextComponent(String.format("Removed %s from whitelist database.", playerName)), true);

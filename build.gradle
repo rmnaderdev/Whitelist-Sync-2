@@ -14,7 +14,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 
-version = "1.15.4-2.1.0"
+version = "1.15.4-2.2.0"
 group = "com.potatosaucevfx.whitelistsync2" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "whitelistsync2"
 
