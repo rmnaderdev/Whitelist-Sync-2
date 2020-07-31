@@ -72,11 +72,11 @@ public class WhitelistSync2
 
             StartSyncThread(event.getServer(), whitelistService);
 
-            WhitelistCommands.register(event.getCommandDispatcher());
+            WhitelistCommands.register(event.getServer().getCommandManager().getDispatcher());
 
             if(Config.SYNC_OP_LIST.get()) {
                 LOGGER.info("Opped Player Sync is enabled");
-                OpCommands.register(event.getCommandDispatcher());
+                OpCommands.register(event.getServer().getCommandManager().getDispatcher());
             } else {
                 LOGGER.info("Opped Player Sync is disabled");
             }
