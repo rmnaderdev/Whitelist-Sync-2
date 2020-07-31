@@ -3,8 +3,6 @@
 [general]
 	#Option on whether to sync the server's op list to the database.
 	syncOpList = false
-	#Option on whether to output whitelist/op changes triggered by other servers. This will show when a new user is opped or whitelisted on anther connected sever.
-	enableDebugLogging = false
 	#Mode for the database.
 	#Allowed Values: MYSQL, SQLITE
 	databaseMode = "SQLITE"

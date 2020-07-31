@@ -73,7 +73,7 @@ public class CommandAdd implements Command<CommandSource> {
 
             if(!whiteList.isWhitelisted(gameProfile)) {
                 // Add player to whitelist service
-                if(WhitelistSync2.whitelistService.addPlayerToDatabaseWhitelist(gameProfile)) {
+                if(WhitelistSync2.whitelistService.addWhitelistPlayer(gameProfile)) {
                     WhitelistEntry whitelistentry = new WhitelistEntry(gameProfile);
                     whiteList.addEntry(whitelistentry);
 

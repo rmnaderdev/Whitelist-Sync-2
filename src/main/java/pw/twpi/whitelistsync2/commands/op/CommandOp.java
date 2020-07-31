@@ -70,7 +70,7 @@ public class CommandOp implements Command<CommandSource> {
 
             if(!playerList.canSendCommands(gameProfile)) {
                 // Add player to whitelist service
-                if(WhitelistSync2.whitelistService.addPlayerToDatabaseOp(gameProfile)) {
+                if(WhitelistSync2.whitelistService.addOppedPlayer(gameProfile)) {
                     playerList.addOp(gameProfile);
 
                     context.getSource().sendFeedback(new StringTextComponent(String.format("Opped %s in database.", playerName)), true);

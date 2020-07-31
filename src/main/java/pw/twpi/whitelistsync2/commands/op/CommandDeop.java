@@ -58,7 +58,7 @@ public class CommandDeop implements Command<CommandSource> {
             String playerName = TextComponentUtils.getDisplayName(gameProfile).getString();
 
             if (playerList.canSendCommands(gameProfile)) {
-                if(WhitelistSync2.whitelistService.removePlayerFromDatabaseOp(gameProfile)) {
+                if(WhitelistSync2.whitelistService.removeOppedPlayer(gameProfile)) {
                     playerList.removeOp(gameProfile);
                     context.getSource().sendFeedback(new StringTextComponent(String.format("Deopped %s from database.", playerName)), true);
                     ++i;
