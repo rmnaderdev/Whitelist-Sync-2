@@ -16,7 +16,7 @@ Looking for a spigot plugin? Find it on the [WhitelistSync2-Spigot GitHub](https
 
 ## Installation
 
-#### For sqlite database config:
+#### For SQLite database config:
 - Download this mod and add it to your mods folder.
 - Run your server and setup the config (whitelistsync.cfg/whitelistsync.toml) and configure your update settings and timers.
 - NOTE: Be sure to make the database path the same for all of the servers you want to link together!
