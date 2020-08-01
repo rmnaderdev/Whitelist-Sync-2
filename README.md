@@ -4,7 +4,7 @@ Introducing Whitelist Sync!
 ===========================
 
 
-### A mod that allows you to sync the whitelists and ops list from multiple forge servers together using one MySQL or SQlite database!
+### A mod that allows you to sync the whitelists and ops list from multiple Forge and Spigot servers together using one MySQL or SQlite database!
 This mod allows you to run a single /wl add &lt;player&gt; or /wlop op &lt;player&gt; on one of your servers and it will update all of your other forge servers running this mod connected to the proper database!
 
 Looking for a spigot plugin? Find it on the [WhitelistSync2-Spigot GitHub](https://github.com/PotatoSauceVFX/Whitelist-Sync-2-Spigot/releases "WhitelistSync2-Spigot GitHub") page.
