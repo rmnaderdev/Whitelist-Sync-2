@@ -22,7 +22,7 @@ updateJSONURL="http://myurl.me/" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
 displayURL="https://www.curseforge.com/minecraft/mc-mods/whitelistsync2" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
-logoFile="examplemod.png" #optional
+logoFile="" #optional
 # A text field displayed in the mod UI
 credits="The TWPI Community" #optional
 # A text field displayed in the mod UI
@@ -31,3 +31,4 @@ authors="PotatoSauceVFX" #optional
 description='''
 Server side mod to sync whitelists and op lists to a database.
 '''
+license="GNU General Public License v3.0"

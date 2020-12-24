@@ -14,7 +14,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 
-version = "1.16.1-2.2.1"
+version = "1.16.3-2.2.2"
 group = "com.potatosaucevfx.whitelistsync2" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "whitelistsync2"
 
@@ -96,7 +96,7 @@ dependencies {
     // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft 'net.minecraftforge:forge:1.16.1-32.0.98'
+    minecraft 'net.minecraftforge:forge:1.16.3-34.1.0'
 
     extraLibs 'org.xerial:sqlite-jdbc:3.21.0.1'
     extraLibs 'mysql:mysql-connector-java:8.0.13'
