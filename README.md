@@ -10,7 +10,7 @@ This mod allows you to run a single /wl add &lt;player&gt; or /wlop op &lt;playe
 Looking for a spigot plugin? Find it on the [WhitelistSync2-Spigot GitHub](https://github.com/PotatoSauceVFX/Whitelist-Sync-2-Spigot/releases "WhitelistSync2-Spigot GitHub") page.
 
 ## News
-**[3/18/20]** I am a college student and work a part time Software development job so those take my priority since I need money to pay the bills. Donations are appreciated and allow me to spend more time on this  project. Otherwise I will make changes when I can. Thank you for understanding. :)
+**[3/18/20]** I am a college student and work a part-time Software development job, so those take my priority since I need money to pay the bills. Donations are appreciated and allow me to spend more time on this  project. Otherwise I will make changes when I can. Thank you for understanding. :)
 
 **[7/31/20]** Version 2.2.1 has been released and includes some bug fixes. **PLEASE NOTE: Once you initially run this version on a MySQL database when using the op sync feature, the older versions of the mod will no longer work and will give SQL errors due to changes in the data structure. To still use older versions of this mod, disable the op sync feature of the older versions or contact me for specific changes.**
 
