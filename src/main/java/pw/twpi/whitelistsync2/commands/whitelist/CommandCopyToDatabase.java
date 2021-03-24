@@ -25,7 +25,7 @@ public class CommandCopyToDatabase implements Command<CommandSource> {
     // Initial command "checks"
     public static ArgumentBuilder<CommandSource, ?> register(CommandDispatcher<CommandSource> dispatcher) {
         return Commands.literal(commandName)
-                .requires(cs -> cs.hasPermissionLevel(permissionLevel))
+                .requires(cs -> cs.hasPermission(permissionLevel))
                 .executes(CMD);
     }
 
@@ -34,7 +34,7 @@ public class CommandCopyToDatabase implements Command<CommandSource> {
     public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
 
         if(WhitelistSync2.whitelistService.copyLocalWhitelistedPlayersToDatabase()) {
-            context.getSource().sendFeedback(new StringTextComponent("Pushed local whitelist to database."), false);
+            context.getSource().sendSuccess(new StringTextComponent("Pushed local whitelist to database."), false);
         } else {
             throw DB_ERROR.create();
         }

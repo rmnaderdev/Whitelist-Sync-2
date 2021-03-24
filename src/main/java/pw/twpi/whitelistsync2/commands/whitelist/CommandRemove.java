@@ -39,10 +39,10 @@ public class CommandRemove implements Command<CommandSource> {
     // Initial command "checks"
     public static ArgumentBuilder<CommandSource, ?> register(CommandDispatcher<CommandSource> dispatcher) {
         return Commands.literal(commandName)
-                .requires(cs -> cs.hasPermissionLevel(permissionLevel))
+                .requires(cs -> cs.hasPermission(permissionLevel))
                 .then(Commands.argument("players", new GameProfileArgument().gameProfile())
                     .suggests((context, suggestionsBuilder) -> {
-                        return ISuggestionProvider.suggest(context.getSource().getServer().getPlayerList().getWhitelistedPlayerNames(), suggestionsBuilder);
+                        return ISuggestionProvider.suggest(context.getSource().getServer().getPlayerList().getWhiteList().getUserList(), suggestionsBuilder);
                     })
                     .executes(CMD));
     }
@@ -51,7 +51,7 @@ public class CommandRemove implements Command<CommandSource> {
     @Override
     public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
         Collection<GameProfile> players = GameProfileArgument.getGameProfiles(context, "players");
-        WhiteList whiteList = context.getSource().getServer().getPlayerList().getWhitelistedPlayers();
+        WhiteList whiteList = context.getSource().getServer().getPlayerList().getWhiteList();
 
         int i = 0;
 
@@ -59,11 +59,11 @@ public class CommandRemove implements Command<CommandSource> {
 
             String playerName = TextComponentUtils.getDisplayName(gameProfile).getString();
 
-            if (whiteList.isWhitelisted(gameProfile)) {
+            if (whiteList.isWhiteListed(gameProfile)) {
                 if(WhitelistSync2.whitelistService.removeWhitelistPlayer(gameProfile)) {
                     WhitelistEntry whitelistentry = new WhitelistEntry(gameProfile);
-                    whiteList.removeEntry(whitelistentry);
-                    context.getSource().sendFeedback(new StringTextComponent(String.format("Removed %s from whitelist database.", playerName)), true);
+                    whiteList.remove(whitelistentry);
+                    context.getSource().sendSuccess(new StringTextComponent(String.format("Removed %s from whitelist database.", playerName)), true);
                     ++i;
                     // Everything is kosher
                 } else {
@@ -72,12 +72,12 @@ public class CommandRemove implements Command<CommandSource> {
                 }
             } else {
                 // Player is not whitelisted
-                context.getSource().sendFeedback(new StringTextComponent(String.format("%s is not whitelisted.", playerName)), true);
+                context.getSource().sendSuccess(new StringTextComponent(String.format("%s is not whitelisted.", playerName)), true);
             }
         }
 
         if (i > 0) {
-            context.getSource().getServer().kickPlayersNotWhitelisted(context.getSource());
+            context.getSource().getServer().kickUnlistedPlayers(context.getSource());
         }
         return i;
     }

@@ -361,7 +361,7 @@ public class MySqlService implements BaseService {
                 if (whitelisted == 1) {
                     if (localWhitelistedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid))) {
                         try {
-                            server.getPlayerList().getWhitelistedPlayers().addEntry(new WhitelistEntry(player));
+                            server.getPlayerList().getWhiteList().add(new WhitelistEntry(player));
                             WhitelistSync2.LOGGER.debug("Added " + name + " to whitelist.");
                             records++;
                         } catch (NullPointerException e) {
@@ -371,7 +371,7 @@ public class MySqlService implements BaseService {
                     }
                 } else {
                     if (localWhitelistedPlayers.stream().anyMatch(o -> o.getUuid().equals(uuid))) {
-                        server.getPlayerList().getWhitelistedPlayers().removeEntry(player);
+                        server.getPlayerList().getWhiteList().remove(player);
                         WhitelistSync2.LOGGER.debug("Removed " + name + " from whitelist.");
                         records++;
                     }
@@ -420,7 +420,7 @@ public class MySqlService implements BaseService {
                     if (opped == 1) {
                         if (localOppedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid))) {
                             try {
-                                server.getPlayerList().addOp(player);
+                                server.getPlayerList().op(player);
                                 WhitelistSync2.LOGGER.debug("Opped " + name + ".");
                                 records++;
                             } catch (NullPointerException e) {
@@ -430,7 +430,7 @@ public class MySqlService implements BaseService {
                         }
                     } else {
                         if (localOppedPlayers.stream().anyMatch(o -> o.getUuid().equals(uuid))) {
-                            server.getPlayerList().removeOp(player);
+                            server.getPlayerList().deop(player);
                             WhitelistSync2.LOGGER.debug("Deopped " + name + ".");
                             records++;
                         }

@@ -37,7 +37,7 @@ public class CommandOp implements Command<CommandSource> {
     // Initial command "checks"
     public static ArgumentBuilder<CommandSource, ?> register(CommandDispatcher<CommandSource> dispatcher) {
         return Commands.literal(commandName)
-                .requires(cs -> cs.hasPermissionLevel(permissionLevel))
+                .requires(cs -> cs.hasPermission(permissionLevel))
                 .then(Commands.argument("players", new GameProfileArgument().gameProfile())
                         .suggests((context, suggestionsBuilder) -> {
                             // Get server playerlist
@@ -45,9 +45,9 @@ public class CommandOp implements Command<CommandSource> {
 
 
                             return ISuggestionProvider.suggest(playerlist.getPlayers().stream()
-                                    // Filter by players in playerlist who are not whitelisted
+                                    // Filter by players in playerlist who are not opped
                                     .filter((playerEntity) -> {
-                                        return !playerlist.canSendCommands(playerEntity.getGameProfile());
+                                        return !playerlist.isOp(playerEntity.getGameProfile());
 
                                         // Map player names from returned filtered collection
                                     }).map((playerEntity) -> {
@@ -68,12 +68,12 @@ public class CommandOp implements Command<CommandSource> {
 
             String playerName = TextComponentUtils.getDisplayName(gameProfile).getString();
 
-            if(!playerList.canSendCommands(gameProfile)) {
+            if(!playerList.isOp(gameProfile)) {
                 // Add player to whitelist service
                 if(WhitelistSync2.whitelistService.addOppedPlayer(gameProfile)) {
-                    playerList.addOp(gameProfile);
+                    playerList.op(gameProfile);
 
-                    context.getSource().sendFeedback(new StringTextComponent(String.format("Opped %s in database.", playerName)), true);
+                    context.getSource().sendSuccess(new StringTextComponent(String.format("Opped %s in database.", playerName)), true);
                     ++i;
                     // Everything is kosher!
                 } else {
@@ -82,7 +82,7 @@ public class CommandOp implements Command<CommandSource> {
                 }
             } else {
                 // Player already whitelisted
-                context.getSource().sendFeedback(new StringTextComponent(String.format("%s is already opped.", playerName)), true);
+                context.getSource().sendSuccess(new StringTextComponent(String.format("%s is already opped.", playerName)), true);
             }
         }
 
