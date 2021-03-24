@@ -39,7 +39,7 @@ public class CommandAdd implements Command<CommandSource> {
     // Initial command "checks"
     public static ArgumentBuilder<CommandSource, ?> register(CommandDispatcher<CommandSource> dispatcher) {
         return Commands.literal(commandName)
-                .requires(cs -> cs.hasPermissionLevel(permissionLevel))
+                .requires(cs -> cs.hasPermission(permissionLevel))
                 .then(Commands.argument("players", new GameProfileArgument().gameProfile())
                     .suggests((context, suggestionsBuilder) -> {
                         // Get server playerlist
@@ -49,7 +49,7 @@ public class CommandAdd implements Command<CommandSource> {
                         return ISuggestionProvider.suggest(playerlist.getPlayers().stream()
                         // Filter by players in playerlist who are not whitelisted
                         .filter((playerEntity) -> {
-                            return !playerlist.getWhitelistedPlayers().isWhitelisted(playerEntity.getGameProfile());
+                            return !playerlist.getWhiteList().isWhiteListed(playerEntity.getGameProfile());
 
                         // Map player names from returned filtered collection
                         }).map((playerEntity) -> {
@@ -63,7 +63,7 @@ public class CommandAdd implements Command<CommandSource> {
     @Override
     public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
         Collection<GameProfile> players = GameProfileArgument.getGameProfiles(context, "players");
-        WhiteList whiteList = context.getSource().getServer().getPlayerList().getWhitelistedPlayers();
+        WhiteList whiteList = context.getSource().getServer().getPlayerList().getWhiteList();
 
         int i = 0;
 
@@ -71,13 +71,13 @@ public class CommandAdd implements Command<CommandSource> {
 
             String playerName = TextComponentUtils.getDisplayName(gameProfile).getString();
 
-            if(!whiteList.isWhitelisted(gameProfile)) {
+            if(!whiteList.isWhiteListed(gameProfile)) {
                 // Add player to whitelist service
                 if(WhitelistSync2.whitelistService.addWhitelistPlayer(gameProfile)) {
                     WhitelistEntry whitelistentry = new WhitelistEntry(gameProfile);
-                    whiteList.addEntry(whitelistentry);
+                    whiteList.add(whitelistentry);
 
-                    context.getSource().sendFeedback(new StringTextComponent(String.format("Added %s to whitelist database.", playerName)), true);
+                    context.getSource().sendSuccess(new StringTextComponent(String.format("Added %s to whitelist database.", playerName)), true);
                     ++i;
                     // Everything is kosher!
                 } else {
@@ -86,7 +86,7 @@ public class CommandAdd implements Command<CommandSource> {
                 }
             } else {
                 // Player already whitelisted
-                context.getSource().sendFeedback(new StringTextComponent(String.format("%s is already whitelisted.", playerName)), true);
+                context.getSource().sendSuccess(new StringTextComponent(String.format("%s is already whitelisted.", playerName)), true);
             }
         }
 

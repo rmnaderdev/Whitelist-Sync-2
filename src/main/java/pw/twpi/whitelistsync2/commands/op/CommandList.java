@@ -22,14 +22,14 @@ public class CommandList implements Command<CommandSource> {
     // Initial command "checks"
     public static ArgumentBuilder<CommandSource, ?> register(CommandDispatcher<CommandSource> dispatcher) {
         return Commands.literal(commandName)
-                .requires(cs -> cs.hasPermissionLevel(permissionLevel))
+                .requires(cs -> cs.hasPermission(permissionLevel))
                 .executes(CMD);
     }
 
     // Command action
     @Override
     public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
-        context.getSource().sendFeedback(new StringTextComponent(Utilities.FormatOppedPlayersOutput(WhitelistSync2.whitelistService.getOppedPlayersFromDatabase())), false);
+        context.getSource().sendSuccess(new StringTextComponent(Utilities.FormatOppedPlayersOutput(WhitelistSync2.whitelistService.getOppedPlayersFromDatabase())), false);
         return 0;
     }
 }

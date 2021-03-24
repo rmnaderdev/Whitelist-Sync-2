@@ -3,3 +3,4 @@
 .\gradlew clean
 .\gradlew genIntelliJRuns --no-daemon
 .\gradlew --refresh-dependencies
+pause

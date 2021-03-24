@@ -37,10 +37,10 @@ public class CommandDeop implements Command<CommandSource> {
     // Initial command "checks"
     public static ArgumentBuilder<CommandSource, ?> register(CommandDispatcher<CommandSource> dispatcher) {
         return Commands.literal(commandName)
-                .requires(cs -> cs.hasPermissionLevel(permissionLevel))
+                .requires(cs -> cs.hasPermission(permissionLevel))
                 .then(Commands.argument("players", new GameProfileArgument().gameProfile())
                         .suggests((context, suggestionsBuilder) -> {
-                            return ISuggestionProvider.suggest(context.getSource().getServer().getPlayerList().getOppedPlayerNames(), suggestionsBuilder);
+                            return ISuggestionProvider.suggest(context.getSource().getServer().getPlayerList().getOpNames(), suggestionsBuilder);
                         })
                         .executes(CMD));
     }
@@ -57,10 +57,10 @@ public class CommandDeop implements Command<CommandSource> {
 
             String playerName = TextComponentUtils.getDisplayName(gameProfile).getString();
 
-            if (playerList.canSendCommands(gameProfile)) {
+            if (playerList.isOp(gameProfile)) {
                 if(WhitelistSync2.whitelistService.removeOppedPlayer(gameProfile)) {
-                    playerList.removeOp(gameProfile);
-                    context.getSource().sendFeedback(new StringTextComponent(String.format("Deopped %s from database.", playerName)), true);
+                    playerList.deop(gameProfile);
+                    context.getSource().sendSuccess(new StringTextComponent(String.format("Deopped %s from database.", playerName)), true);
                     ++i;
                     // Everything is kosher
                 } else {
@@ -69,12 +69,12 @@ public class CommandDeop implements Command<CommandSource> {
                 }
             } else {
                 // Player is not whitelisted
-                context.getSource().sendFeedback(new StringTextComponent(String.format("%s is not opped.", playerName)), true);
+                context.getSource().sendSuccess(new StringTextComponent(String.format("%s is not opped.", playerName)), true);
             }
         }
 
         if (i > 0) {
-            context.getSource().getServer().kickPlayersNotWhitelisted(context.getSource());
+            context.getSource().getServer().kickUnlistedPlayers(context.getSource());
         }
         return i;
     }

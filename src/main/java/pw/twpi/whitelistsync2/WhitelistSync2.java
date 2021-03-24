@@ -43,7 +43,7 @@ public class WhitelistSync2
 
 
         // Server filepath
-        SERVER_FILEPATH = event.getServer().getDataDirectory().getPath();
+        SERVER_FILEPATH = event.getServer().getServerDirectory().getPath();
 
         LOGGER.info("----------------------------------------------");
         LOGGER.info("---------------WHITELIST SYNC 2---------------");
@@ -64,19 +64,20 @@ public class WhitelistSync2
             // Database is setup!
 
             // Check if whitelisting is enabled.
-            if (!event.getServer().getPlayerList().isWhiteListEnabled()) {
+            if (!event.getServer().getPlayerList().isUsingWhitelist()) {
                 LOGGER.info("Oh no! I see whitelisting isn't enabled in the server properties. "
                         + "I assume this is not intentional, I'll enable it for you!");
-                event.getServer().getPlayerList().setWhiteListEnabled(true);
+                event.getServer().getPlayerList().setUsingWhiteList(true);
             }
 
             StartSyncThread(event.getServer(), whitelistService);
 
-            WhitelistCommands.register(event.getServer().getCommandManager().getDispatcher());
+            //WhitelistCommands.register(event.getServer().getCommandManager().getDispatcher());
+            WhitelistCommands.register(event.getServer().getCommands().getDispatcher());
 
             if(Config.SYNC_OP_LIST.get()) {
                 LOGGER.info("Opped Player Sync is enabled");
-                OpCommands.register(event.getServer().getCommandManager().getDispatcher());
+                OpCommands.register(event.getServer().getCommands().getDispatcher());
             } else {
                 LOGGER.info("Opped Player Sync is disabled");
             }

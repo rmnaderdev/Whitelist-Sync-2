@@ -27,7 +27,7 @@ public class CommandSync implements Command<CommandSource> {
     // Initial command "checks"
     public static ArgumentBuilder<CommandSource, ?> register(CommandDispatcher<CommandSource> dispatcher) {
         return Commands.literal(commandName)
-                .requires(cs -> cs.hasPermissionLevel(permissionLevel))
+                .requires(cs -> cs.hasPermission(permissionLevel))
                 .executes(CMD);
     }
 
@@ -36,7 +36,7 @@ public class CommandSync implements Command<CommandSource> {
     public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
 
         if(WhitelistSync2.whitelistService.copyDatabaseWhitelistedPlayersToLocal(context.getSource().getServer())) {
-            context.getSource().sendFeedback(new StringTextComponent("Local whitelist up to date with database."), false);
+            context.getSource().sendSuccess(new StringTextComponent("Local whitelist up to date with database."), false);
         } else {
             throw DB_ERROR.create();
         }

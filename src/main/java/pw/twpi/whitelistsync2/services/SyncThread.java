@@ -34,7 +34,7 @@ public class SyncThread implements Runnable {
     @Override
     public void run() {
         if (service.getClass().equals(MySqlService.class)) {
-            while (server.isServerRunning()) {
+            while (server.isRunning()) {
                 service.copyDatabaseWhitelistedPlayersToLocal(server);
 
                 if (Config.SYNC_OP_LIST.get()) {
@@ -46,7 +46,7 @@ public class SyncThread implements Runnable {
                 } catch (InterruptedException ignored) { }
             }
         } else if (service.getClass().equals(SqLiteService.class)) {
-            while (server.isServerRunning()) {
+            while (server.isRunning()) {
                 service.copyDatabaseWhitelistedPlayersToLocal(server);
 
                 if (Config.SYNC_OP_LIST.get()) {
