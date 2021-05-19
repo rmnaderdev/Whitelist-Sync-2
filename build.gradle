@@ -73,8 +73,8 @@ dependencies {
 shadowJar {
     configurations = [project.configurations.shade]
 
-    relocate 'com.mysql', 'shadow.mysql'
-    relocate 'org.sqlite', 'shadow.sqlite'
+//    relocate 'com.mysql', 'shadow.mysql'
+//    relocate 'org.sqlite', 'shadow.sqlite'
 }
 
 artifacts {
