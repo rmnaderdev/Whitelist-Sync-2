@@ -60,6 +60,7 @@ configurations {
 }
 
 dependencies {
+    implementation 'org.postgresql:postgresql:42.2.23.jre7'
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
     // Shade http so it is not blocked by Forge
@@ -121,5 +122,12 @@ publishing {
         maven {
             url "file:///${project.projectDir}/mcmodsrepo"
         }
+    }
+}
+
+repositories {
+    maven {
+        url 'https://repo.maven.apache.org/maven2'
+        name 'Maven Central'
     }
 }
