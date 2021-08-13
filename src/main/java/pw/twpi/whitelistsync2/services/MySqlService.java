@@ -38,6 +38,11 @@ public class MySqlService implements BaseService {
         this.password = Config.MYSQL_PASSWORD.get();
     }
 
+    @Override
+    public boolean requiresSyncing() {
+        return true;
+    }
+
     // Function used to initialize the database file
     @Override
     public boolean initializeDatabase() {

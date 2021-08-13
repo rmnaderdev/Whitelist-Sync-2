@@ -23,6 +23,11 @@ import pw.twpi.whitelistsync2.models.WhitelistedPlayer;
  */
 public class SqLiteService implements BaseService {
 
+    @Override
+    public boolean requiresSyncing() {
+        return false;
+    }
+
     // Function used to initialize the database file
     @Override
     public boolean initializeDatabase() {

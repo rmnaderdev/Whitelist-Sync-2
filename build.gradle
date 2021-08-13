@@ -67,6 +67,7 @@ dependencies {
     // me figure this out!!!
     shade 'org.xerial:sqlite-jdbc:3.21.0.1'
     shade 'mysql:mysql-connector-java:8.0.13'
+    shade 'org.postgresql:postgresql:42.2.23.jre7'
 }
 
 // START: SHADING DEPENDENCIES
@@ -121,5 +122,12 @@ publishing {
         maven {
             url "file:///${project.projectDir}/mcmodsrepo"
         }
+    }
+}
+
+repositories {
+    maven {
+        url 'https://repo.maven.apache.org/maven2'
+        name 'Maven Central'
     }
 }

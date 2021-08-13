@@ -15,6 +15,8 @@ public interface BaseService {
 
     public boolean initializeDatabase();
 
+    public boolean requiresSyncing();
+
 
     // Getter functions
     public ArrayList<WhitelistedPlayer> getWhitelistedPlayersFromDatabase();
