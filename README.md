@@ -4,14 +4,12 @@ Introducing Whitelist Sync!
 ===========================
 
 
-### A mod that allows you to sync the whitelists and ops list from multiple Forge and Spigot servers together using one MySQL or SQlite database!
+### A mod that allows you to sync the whitelists and ops list from multiple Forge and Spigot servers together using one MySQL, SQlite or PostgreSQL database!
 This mod allows you to run a single /wl add &lt;player&gt; or /wlop op &lt;player&gt; on one of your servers and it will update all of your other forge servers running this mod connected to the proper database!
 
 Looking for a spigot plugin? Find it on the [WhitelistSync2-Spigot GitHub](https://github.com/PotatoSauceVFX/Whitelist-Sync-2-Spigot/releases "WhitelistSync2-Spigot GitHub") page.
 
 ## News
-**[3/18/20]** I am a college student and work a part-time Software development job, so those take my priority since I need money to pay the bills. Donations are appreciated and allow me to spend more time on this  project. Otherwise I will make changes when I can. Thank you for understanding. :)
-
 **[7/31/20]** Version 2.2.1 has been released and includes some bug fixes. **PLEASE NOTE: Once you initially run this version on a MySQL database when using the op sync feature, the older versions of the mod will no longer work and will give SQL errors due to changes in the data structure. To still use older versions of this mod, disable the op sync feature of the older versions or contact me for specific changes.**
 
 ## Installation
@@ -25,7 +23,15 @@ Looking for a spigot plugin? Find it on the [WhitelistSync2-Spigot GitHub](https
 #### For MySQL server database setup:
 - Download this mod and add it to your mods folder.
 - Run your server and setup the config (whitelistsync.cfg/whitelistsync.toml).
-- Setup your mySQL database IP, port, and authentication as well as mySQL Sync Timer.
+- Setup your mySQL database IP, port, and authentication as well as the Sync Timer.
+- Run server and make sure the database connects. **Note:** Mod will make it's own database and table for you or connect to an existing one.
+- Push your existing whitelist to the server (/wl copyServerToDatabase) or pull changes from your database (/wl sync).
+- Enjoy!
+
+#### For postgreSQL server database setup:
+- Download this mod and add it to your mods folder.
+- Run your server and setup the config (whitelistsync.cfg/whitelistsync.toml).
+- Setup your PostgreSQL url and authentication as well as the Sync Timer.
 - Run server and make sure the database connects. **Note:** Mod will make it's own database and table for you or connect to an existing one.
 - Push your existing whitelist to the server (/wl copyServerToDatabase) or pull changes from your database (/wl sync).
 - Enjoy!
