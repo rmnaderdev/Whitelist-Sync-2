@@ -60,7 +60,6 @@ configurations {
 }
 
 dependencies {
-    implementation 'org.postgresql:postgresql:42.2.23.jre7'
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
     // Shade http so it is not blocked by Forge
@@ -68,6 +67,7 @@ dependencies {
     // me figure this out!!!
     shade 'org.xerial:sqlite-jdbc:3.21.0.1'
     shade 'mysql:mysql-connector-java:8.0.13'
+    shade 'org.postgresql:postgresql:42.2.23.jre7'
 }
 
 // START: SHADING DEPENDENCIES
