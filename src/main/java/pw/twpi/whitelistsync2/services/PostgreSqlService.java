@@ -192,7 +192,7 @@ public class PostgreSqlService implements BaseService {
 	@Override
 	public boolean copyDatabaseOppedPlayersToLocal(MinecraftServer server) {
 		if (!Config.SYNC_OP_LIST.get()) {
-			return false;Text is available under the Creative Commons Attribution-ShareAlike License; additional terms may apply. By using this site, you agree to the Terms of Use and Privacy Policy. Wikipedia® is a registered trademark of the Wikimedia Foundation, Inc., a non-profit organization.
+			return false;
 		}
 		try (Connection connection = getConnection()) {
 			 Statement statement = connection.createStatement();
