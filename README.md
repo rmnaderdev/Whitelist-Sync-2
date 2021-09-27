@@ -40,7 +40,7 @@ Looking for a spigot plugin? Find it on the [WhitelistSync2-Spigot GitHub](https
 
 #### Whitelist Control
 - /wl add &lt;player&gt; | Adds a specified player to whitelist. (**Use this instead of /whitelist add**)
-- /wl remove&lt;player&gt; | Removes a specified player from the whitelist. (**Use this instead of /whitelist remove**)
+- /wl remove &lt;player&gt; | Removes a specified player from the whitelist. (**Use this instead of /whitelist remove**)
 - /wl list | Lists users whitelisted across all servers.
 - /wl sync | Pulls whitelist from the database and updates the local server whitelist.
 - /wl copyServerToDatabase | Pushes local server whitelist to the database and merges them in.
