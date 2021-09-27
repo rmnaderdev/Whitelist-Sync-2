@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.management.WhitelistEntry;
+import net.minecraft.server.players.UserWhiteListEntry;
 import pw.twpi.whitelistsync2.Config;
 import pw.twpi.whitelistsync2.WhitelistSync2;
 import pw.twpi.whitelistsync2.json.OppedPlayersFileUtilities;
@@ -50,7 +50,7 @@ public class MySqlService implements BaseService {
         boolean isSuccess = true;
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
+            Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             WhitelistSync2.LOGGER.error("Failed to init mysql-connector. Is the library missing?");
             WhitelistSync2.LOGGER.error(e.getMessage(), e);
@@ -366,7 +366,7 @@ public class MySqlService implements BaseService {
                 if (whitelisted == 1) {
                     if (localWhitelistedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid))) {
                         try {
-                            server.getPlayerList().getWhiteList().add(new WhitelistEntry(player));
+                            server.getPlayerList().getWhiteList().add(new UserWhiteListEntry(player));
                             WhitelistSync2.LOGGER.debug("Added " + name + " to whitelist.");
                             records++;
                         } catch (NullPointerException e) {

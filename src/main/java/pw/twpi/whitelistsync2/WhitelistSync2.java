@@ -2,12 +2,13 @@ package pw.twpi.whitelistsync2;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.fmlserverevents.FMLServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pw.twpi.whitelistsync2.commands.op.OpCommands;
@@ -29,6 +30,19 @@ public class WhitelistSync2
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SERVER_CONFIG);
         MinecraftForge.EVENT_BUS.register(this);
         LOGGER.info("Hello from Whitelist Sync 2!");
+    }
+
+    @SubscribeEvent
+    public void onCommandsRegister(RegisterCommandsEvent event) {
+        //WhitelistCommands.register(event.getServer().getCommandManager().getDispatcher());
+        new WhitelistCommands(event.getDispatcher());
+
+        if(Config.SYNC_OP_LIST.get()) {
+            LOGGER.info("Opped Player Sync is enabled");
+            new OpCommands(event.getDispatcher());
+        } else {
+            LOGGER.info("Opped Player Sync is disabled");
+        }
     }
 
     @SubscribeEvent
@@ -75,16 +89,6 @@ public class WhitelistSync2
             }
 
             StartSyncThread(event.getServer(), whitelistService);
-
-            //WhitelistCommands.register(event.getServer().getCommandManager().getDispatcher());
-            WhitelistCommands.register(event.getServer().getCommands().getDispatcher());
-
-            if(Config.SYNC_OP_LIST.get()) {
-                LOGGER.info("Opped Player Sync is enabled");
-                OpCommands.register(event.getServer().getCommands().getDispatcher());
-            } else {
-                LOGGER.info("Opped Player Sync is disabled");
-            }
         }
 
 

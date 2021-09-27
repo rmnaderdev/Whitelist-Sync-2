@@ -1,24 +1,19 @@
 package pw.twpi.whitelistsync2.commands.whitelist;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.tree.LiteralCommandNode;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.Commands;
-import pw.twpi.whitelistsync2.WhitelistSync2;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import net.minecraft.commands.CommandSourceStack;
 
 public class WhitelistCommands {
-    public static void register(final CommandDispatcher<CommandSource> dispatcher) {
-        // Register wl commands
-        LiteralCommandNode<CommandSource> cmdWl = dispatcher.register(
-                Commands.literal("wl")
-                    .then(CommandList.register(dispatcher))
-                    .then(CommandAdd.register(dispatcher))
-                    .then(CommandRemove.register(dispatcher))
-                    .then(CommandSync.register(dispatcher))
-                    .then(CommandCopyToDatabase.register(dispatcher))
-        );
 
-        // Allow "whitelistsync2" as an alias
-        dispatcher.register(Commands.literal(WhitelistSync2.MODID).redirect(cmdWl));
+    public WhitelistCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
+        dispatcher.register(
+                LiteralArgumentBuilder.<CommandSourceStack>literal("wl")
+                        .then(CommandList.register())
+                        .then(CommandAdd.register())
+                        .then(CommandRemove.register())
+                        .then(CommandSync.register())
+                        .then(CommandCopyToDatabase.register())
+        );
     }
 }

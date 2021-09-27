@@ -2,7 +2,7 @@ package pw.twpi.whitelistsync2.services;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.management.WhitelistEntry;
+import net.minecraft.server.players.UserWhiteListEntry;
 import pw.twpi.whitelistsync2.Config;
 import pw.twpi.whitelistsync2.WhitelistSync2;
 import pw.twpi.whitelistsync2.json.OppedPlayersFileUtilities;
@@ -178,9 +178,9 @@ public class PostgreSqlService implements BaseService {
 				String uuid = result.getString("uuid");
 				GameProfile player = new GameProfile(UUID.fromString(uuid), result.getString("playername"));
 				if (result.getBoolean("is_whitelisted") && localWhitelistedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid))) {
-					server.getPlayerList().getWhiteList().add(new WhitelistEntry(player));
+					server.getPlayerList().getWhiteList().add(new UserWhiteListEntry(player));
 				} else if (localWhitelistedPlayers.stream().anyMatch(o -> o.getUuid().equals(uuid))) {
-					server.getPlayerList().getWhiteList().remove(new WhitelistEntry(player));
+					server.getPlayerList().getWhiteList().remove(new UserWhiteListEntry(player));
 				}
 			}
 		} catch (SQLException e) {
