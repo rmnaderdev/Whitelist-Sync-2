@@ -9,6 +9,10 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.rmnad.minecraft.forge.whitelistsynclib.services.BaseService;
+import net.rmnad.minecraft.forge.whitelistsynclib.services.MySqlService;
+import net.rmnad.minecraft.forge.whitelistsynclib.services.PostgreSqlService;
+import net.rmnad.minecraft.forge.whitelistsynclib.services.SqLiteService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pw.twpi.whitelistsync2.commands.op.OpCommands;
@@ -62,13 +66,27 @@ public class WhitelistSync2
 
         switch (Config.DATABASE_MODE.get()) {
             case SQLITE:
-                whitelistService = new SqLiteService();
+                whitelistService = new SqLiteService(Config.SQLITE_DATABASE_PATH.get(), Config.SYNC_OP_LIST.get());
                 break;
             case MYSQL:
-                whitelistService = new MySqlService();
+                whitelistService = new MySqlService(
+                        Config.MYSQL_DB_NAME.get(),
+                        Config.MYSQL_IP.get(),
+                        Config.MYSQL_PORT.get(),
+                        Config.MYSQL_USERNAME.get(),
+                        Config.MYSQL_PASSWORD.get(),
+                        Config.SYNC_OP_LIST.get()
+                );
                 break;
             case POSTGRESQL:
-                whitelistService = new PostgreSqlService();
+                whitelistService = new PostgreSqlService(
+                        Config.POSTGRESQL_DB_NAME.get(),
+                        Config.POSTGRESQL_IP.get(),
+                        Config.POSTGRESQL_PORT.get(),
+                        Config.POSTGRESQL_USERNAME.get(),
+                        Config.POSTGRESQL_PASSWORD.get(),
+                        Config.SYNC_OP_LIST.get()
+                );
                 break;
             default:
                 LOGGER.error("Please check what WHITELIST_MODE is set in the config and make sure it is set to a supported mode.");

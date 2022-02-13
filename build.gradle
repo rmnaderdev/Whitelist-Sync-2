@@ -21,7 +21,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 
-version = "${mod_version}"
+version = "${mc_version}-${mod_version}"
 group = "${package_group}"
 archivesBaseName = "${mod_name}"
 
@@ -68,13 +68,14 @@ dependencies {
     shade 'org.xerial:sqlite-jdbc:3.21.0.1'
     shade 'mysql:mysql-connector-java:8.0.13'
     shade 'org.postgresql:postgresql:42.2.23.jre7'
+    shade 'net.rmnad.minecraft.forge:whitelistsynclib:+'
 }
 
 // START: SHADING DEPENDENCIES
 shadowJar {
     configurations = [project.configurations.shade]
 
-//    relocate 'com.mysql', 'shadow.mysql'
+    relocate 'net.rmnad', 'shadow.rmnad'
 //    relocate 'org.sqlite', 'shadow.sqlite'
 }
 
@@ -130,4 +131,5 @@ repositories {
         url 'https://repo.maven.apache.org/maven2'
         name 'Maven Central'
     }
+    mavenLocal()
 }

@@ -44,7 +44,7 @@ public class CommandDeop {
                                 String playerName = gameProfile.getName();
 
                                 if (playerList.isOp(gameProfile)) {
-                                    if(WhitelistSync2.whitelistService.removeOppedPlayer(gameProfile)) {
+                                    if(WhitelistSync2.whitelistService.removeOppedPlayer(gameProfile.getId(), gameProfile.getName())) {
                                         playerList.deop(gameProfile);
                                         context.getSource().sendSuccess(new TextComponent(String.format("Deopped %s from database.", playerName)), true);
                                         ++i;

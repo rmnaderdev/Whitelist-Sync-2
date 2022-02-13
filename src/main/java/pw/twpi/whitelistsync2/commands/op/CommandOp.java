@@ -56,7 +56,7 @@ public class CommandOp {
 
                                 if(!playerList.isOp(gameProfile)) {
                                     // Add player to whitelist service
-                                    if(WhitelistSync2.whitelistService.addOppedPlayer(gameProfile)) {
+                                    if(WhitelistSync2.whitelistService.addOppedPlayer(gameProfile.getId(), gameProfile.getName())) {
                                         playerList.op(gameProfile);
 
                                         context.getSource().sendSuccess(new TextComponent(String.format("Opped %s in database.", playerName)), true);

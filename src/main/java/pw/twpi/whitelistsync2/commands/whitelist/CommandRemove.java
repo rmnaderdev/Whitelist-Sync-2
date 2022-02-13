@@ -43,7 +43,7 @@ public class CommandRemove {
                             String playerName = gameProfile.getName();
 
                             if (whiteList.isWhiteListed(gameProfile)) {
-                                if(WhitelistSync2.whitelistService.removeWhitelistPlayer(gameProfile)) {
+                                if(WhitelistSync2.whitelistService.removeWhitelistPlayer(gameProfile.getId(), gameProfile.getName())) {
                                     UserWhiteListEntry whitelistentry = new UserWhiteListEntry(gameProfile);
                                     whiteList.remove(whitelistentry);
                                     context.getSource().sendSuccess(new TextComponent(String.format("Removed %s from whitelist database.", playerName)), true);
