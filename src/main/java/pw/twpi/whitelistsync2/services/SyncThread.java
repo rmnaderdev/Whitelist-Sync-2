@@ -1,11 +1,7 @@
 package pw.twpi.whitelistsync2.services;
 
-import java.nio.file.FileSystem;
-import java.nio.file.WatchService;
-
 import com.mojang.authlib.GameProfile;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.players.ServerOpListEntry;
 import net.minecraft.server.players.UserWhiteListEntry;
 import net.rmnad.minecraft.forge.whitelistsynclib.services.BaseService;
 import pw.twpi.whitelistsync2.Config;
