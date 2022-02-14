@@ -6,6 +6,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.TextComponent;
 import pw.twpi.whitelistsync2.WhitelistSync2;
+import pw.twpi.whitelistsync2.json.WhitelistedPlayersFileUtilities;
 
 public class CommandCopyToDatabase {
     // Name of the command
@@ -19,7 +20,7 @@ public class CommandCopyToDatabase {
         return Commands.literal(commandName)
                 .requires(cs -> cs.hasPermission(permissionLevel))
                 .executes(context -> {
-                    if(WhitelistSync2.whitelistService.copyLocalWhitelistedPlayersToDatabase()) {
+                    if(WhitelistSync2.whitelistService.copyLocalWhitelistedPlayersToDatabase(WhitelistedPlayersFileUtilities.getWhitelistedPlayers())) {
                         context.getSource().sendSuccess(new TextComponent("Pushed local whitelist to database."), false);
                     } else {
                         throw DB_ERROR.create();

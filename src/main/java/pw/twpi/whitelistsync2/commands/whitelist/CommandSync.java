@@ -1,11 +1,15 @@
 package pw.twpi.whitelistsync2.commands.whitelist;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.players.UserWhiteListEntry;
 import pw.twpi.whitelistsync2.WhitelistSync2;
+import pw.twpi.whitelistsync2.json.OppedPlayersFileUtilities;
+import pw.twpi.whitelistsync2.json.WhitelistedPlayersFileUtilities;
 
 public class CommandSync {
     // Name of the command
@@ -19,7 +23,20 @@ public class CommandSync {
         return Commands.literal(commandName)
                 .requires(cs -> cs.hasPermission(permissionLevel))
                 .executes(context -> {
-                    if(WhitelistSync2.whitelistService.copyDatabaseWhitelistedPlayersToLocal(context.getSource().getServer())) {
+
+                    boolean status = WhitelistSync2.whitelistService.copyDatabaseOppedPlayersToLocal(
+                            OppedPlayersFileUtilities.getOppedPlayers(),
+                            (uuid, name)->{
+                                // Called when user added to op list
+                                context.getSource().getServer().getPlayerList().op(new GameProfile(uuid, name));
+                            },
+                            (uuid, name) -> {
+                                // Called when user removed from op list
+                                context.getSource().getServer().getPlayerList().deop(new GameProfile(uuid, name));
+                            }
+                    );
+
+                    if(status) {
                         context.getSource().sendSuccess(new TextComponent("Local whitelist up to date with database."), false);
                     } else {
                         throw DB_ERROR.create();

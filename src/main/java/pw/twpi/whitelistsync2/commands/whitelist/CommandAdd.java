@@ -57,7 +57,7 @@ public class CommandAdd {
 
                         if(!whiteList.isWhiteListed(gameProfile)) {
                             // Add player to whitelist service
-                            if(WhitelistSync2.whitelistService.addWhitelistPlayer(gameProfile)) {
+                            if(WhitelistSync2.whitelistService.addWhitelistPlayer(gameProfile.getId(), gameProfile.getName())) {
                                 UserWhiteListEntry whitelistentry = new UserWhiteListEntry(gameProfile);
                                 whiteList.add(whitelistentry);
 

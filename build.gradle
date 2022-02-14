@@ -1,7 +1,6 @@
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
-        jcenter()
         mavenCentral()
     }
     dependencies {
@@ -11,7 +10,7 @@ buildscript {
 
 // Add shadow plugin
 plugins {
-    id 'com.github.johnrengelman.shadow' version '6.1.0'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'java'
 }
 
@@ -20,14 +19,16 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
+repositories {
+    mavenCentral()
+    maven { url = 'https://maven.rmnad.net/releases' }
+}
 
-version = "${mod_version}"
+version = "${mc_version}-${mod_version}"
 group = "${package_group}"
 archivesBaseName = "${mod_name}"
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17) // Mojang ships Java 8 to end users, so your mod should target Java 8.
-
-println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
 minecraft {
     mappings channel: "${mappings_channel}", version: "${mappings_version}"
@@ -56,26 +57,22 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 configurations {
     shade
-    compile.extendsFrom shade
+    implementation.extendsFrom shade
 }
 
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
-    // Shade http so it is not blocked by Forge
-    // Thank you to https://github.com/lucko/spark/blob/master/spark-forge/build.gradle for helping
-    // me figure this out!!!
-    shade 'org.xerial:sqlite-jdbc:3.21.0.1'
-    shade 'mysql:mysql-connector-java:8.0.13'
-    shade 'org.postgresql:postgresql:42.2.23.jre7'
+    // Shade other dependencies into the final jar
+    shade "org.xerial:sqlite-jdbc:3.21.0.1"
+    shade "mysql:mysql-connector-java:8.0.13"
+    shade "org.postgresql:postgresql:42.2.23.jre7"
+    shade "net.rmnad.minecraft.forge:whitelistsynclib:${whitelistsynclib_version}"
 }
 
 // START: SHADING DEPENDENCIES
 shadowJar {
     configurations = [project.configurations.shade]
-
-//    relocate 'com.mysql', 'shadow.mysql'
-//    relocate 'org.sqlite', 'shadow.sqlite'
 }
 
 artifacts {
@@ -91,20 +88,6 @@ reobf {
 }
 // END: SHADING DEPENDENCIES
 
-// Example for how to get properties into the manifest for reading by the runtime..
-jar {
-    manifest {
-        attributes([
-                "Specification-Title": "${mod_name}",
-                "Specification-Vendor": "twpi",
-                "Specification-Version": "1", // We are version 1 of ourselves
-                "Implementation-Title": project.name,
-                "Implementation-Version": "${version}",
-                "Implementation-Vendor" :"twpi",
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-        ])
-    }
-}
 
 // Example configuration to allow publishing using the maven-publish task
 // This is the preferred method to reobfuscate your jar file
@@ -122,12 +105,5 @@ publishing {
         maven {
             url "file:///${project.projectDir}/mcmodsrepo"
         }
-    }
-}
-
-repositories {
-    maven {
-        url 'https://repo.maven.apache.org/maven2'
-        name 'Maven Central'
     }
 }
