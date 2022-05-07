@@ -25,13 +25,13 @@ Looking for a spigot plugin? Find it on the [WhitelistSync2-Spigot GitHub](https
 
 #### For SQLite database config:
 - Download this mod and add it to your mods folder.
-- Run your server and setup the config (whitelistsync.cfg/whitelistsync.toml) and configure your update settings and timers.
+- Run your server and setup the config (whitelistsync.cfg/whitelistsync.toml/whitelistsync2-server.toml) and configure your update settings and timers.
 - NOTE: Be sure to make the database path the same for all of the servers you want to link together!
 - When the server runs it is going to make a new database. If you want to push your current whitelist to the database use "/wl copyServerToDatabase" then you can start all of your other servers and they will sync to the database.
 
 #### For MySQL server database setup:
 - Download this mod and add it to your mods folder.
-- Run your server and setup the config (whitelistsync.cfg/whitelistsync.toml).
+- Run your server and setup the config (whitelistsync.cfg/whitelistsync.toml/whitelistsync2-server.toml).
 - Setup your mySQL database IP, port, and authentication as well as the Sync Timer.
 - Run server and make sure the database connects. **Note:** Mod will make it's own database and table for you or connect to an existing one.
 - Push your existing whitelist to the server (/wl copyServerToDatabase) or pull changes from your database (/wl sync).
@@ -39,7 +39,7 @@ Looking for a spigot plugin? Find it on the [WhitelistSync2-Spigot GitHub](https
 
 #### For postgreSQL server database setup:
 - Download this mod and add it to your mods folder.
-- Run your server and setup the config (whitelistsync.cfg/whitelistsync.toml).
+- Run your server and setup the config (whitelistsync.cfg/whitelistsync.toml/whitelistsync2-server.toml).
 - Setup your PostgreSQL url and authentication as well as the Sync Timer.
 - Run server and make sure the database connects. **Note:** Mod will make it's own database and table for you or connect to an existing one.
 - Push your existing whitelist to the server (/wl copyServerToDatabase) or pull changes from your database (/wl sync).

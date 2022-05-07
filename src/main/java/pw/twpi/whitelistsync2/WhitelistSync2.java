@@ -53,10 +53,6 @@ public class WhitelistSync2
     public void onServerStarting(ServerStartingEvent event) {
         boolean setupSuccessful = true;
 
-        // Load config
-        Config.loadConfig(Config.SERVER_CONFIG, FMLPaths.CONFIGDIR.get().resolve("whitelistSync.toml"));
-
-
         // Server filepath
         SERVER_FILEPATH = event.getServer().getServerDirectory().getPath();
 

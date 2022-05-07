@@ -43,6 +43,7 @@ minecraft {
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
+            args += ["nogui"]
             mods {
                 whitelistsync2 {
                     source sourceSets.main
@@ -56,44 +57,42 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 configurations {
-    shade
-    implementation.extendsFrom shade
+    shadow
+    implementation.extendsFrom(shadow)
+}
+
+// Add shadowed deps to runs
+minecraft.runs.all {
+    // Set the minecraft_classpath token to the paths of all jars in the library configuration
+    // This is added with the actual Minecraft classpath to get the real classpath information later on
+    lazyToken('minecraft_classpath') {
+        configurations.shadow.copyRecursive().resolve().collect { it.absolutePath }.join(File.pathSeparator)
+    }
 }
 
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
     // Shade other dependencies into the final jar
-    shade "org.xerial:sqlite-jdbc:3.21.0.1"
-    shade "mysql:mysql-connector-java:8.0.13"
-    shade "org.postgresql:postgresql:42.2.23.jre7"
-    shade "net.rmnad.minecraft.forge:whitelistsynclib:${whitelistsynclib_version}"
+    shadow "org.xerial:sqlite-jdbc:3.21.0.1"
+    shadow "mysql:mysql-connector-java:8.0.13"
+    shadow "org.postgresql:postgresql:42.2.23.jre7"
+    shadow "net.rmnad.minecraft.forge:whitelistsynclib:${whitelistsynclib_version}"
 }
 
 // START: SHADING DEPENDENCIES
 shadowJar {
-    configurations = [project.configurations.shade]
-}
-
-artifacts {
-    archives shadowJar
-    shadow shadowJar
+    configurations = [project.configurations.shadow]
+    archiveClassifier.set('')
 }
 
 reobf {
     shadowJar {
-        dependsOn createMcpToSrg
-        mappings = createMcpToSrg.outputs.files.singleFile
+        dependsOn tasks.createMcpToSrg
+        mappings = tasks.createMcpToSrg.outputs.files.singleFile
     }
 }
 // END: SHADING DEPENDENCIES
-
-
-// Example configuration to allow publishing using the maven-publish task
-// This is the preferred method to reobfuscate your jar file
-jar.finalizedBy('reobfJar')
-// However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
-//publish.dependsOn('reobfJar')
 
 publishing {
     publications {
