@@ -12,6 +12,15 @@ Looking for a spigot plugin? Find it on the [WhitelistSync2-Spigot GitHub](https
 ## News
 **[7/31/20]** Version 2.2.1 has been released and includes some bug fixes. **PLEASE NOTE: Once you initially run this version on a MySQL database when using the op sync feature, the older versions of the mod will no longer work and will give SQL errors due to changes in the data structure. To still use older versions of this mod, disable the op sync feature of the older versions or contact me for specific changes.**
 
+**[9/29/21]** Version 2.2.5+ now supports postgreSQL. If you need postgreSQL for an older version of MC (&lt; 1.16.5), let me know and I can add it to my list of things to do.
+
+## Supported Versions
+- 1.18.X
+- 1.16.5
+- 1.12.2
+
+*Versions not listed above can be requested, but I will decide whether or not it is worth my time.*
+
 ## Installation
 
 #### For SQLite database config:
