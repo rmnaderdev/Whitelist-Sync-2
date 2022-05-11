@@ -74,16 +74,16 @@ public class WhitelistSync2
                         Config.SYNC_OP_LIST.get()
                 );
                 break;
-            case POSTGRESQL:
-                whitelistService = new PostgreSqlService(
-                        Config.POSTGRESQL_DB_NAME.get(),
-                        Config.POSTGRESQL_IP.get(),
-                        Config.POSTGRESQL_PORT.get(),
-                        Config.POSTGRESQL_USERNAME.get(),
-                        Config.POSTGRESQL_PASSWORD.get(),
-                        Config.SYNC_OP_LIST.get()
-                );
-                break;
+//            case POSTGRESQL:
+//                whitelistService = new PostgreSqlService(
+//                        Config.POSTGRESQL_DB_NAME.get(),
+//                        Config.POSTGRESQL_IP.get(),
+//                        Config.POSTGRESQL_PORT.get(),
+//                        Config.POSTGRESQL_USERNAME.get(),
+//                        Config.POSTGRESQL_PASSWORD.get(),
+//                        Config.SYNC_OP_LIST.get()
+//                );
+//                break;
             default:
                 LOGGER.error("Please check what WHITELIST_MODE is set in the config and make sure it is set to a supported mode.");
                 setupSuccessful = false;

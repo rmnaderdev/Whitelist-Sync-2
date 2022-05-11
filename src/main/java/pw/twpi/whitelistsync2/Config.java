@@ -14,14 +14,14 @@ public class Config {
 
     public enum DatabaseMode {
         MYSQL,
-        SQLITE,
-        POSTGRESQL
+        SQLITE
+//        POSTGRESQL
     }
 
     public static final String CATEGORY_GENERAL = "general";
     public static final String CATEGORY_MYSQL = "mySQL";
     public static final String CATEGORY_SQLITE = "sqlite";
-    public static final String CATEGORY_POSTGRESQL = "postgresql";
+//    public static final String CATEGORY_POSTGRESQL = "postgresql";
 
     private static final ForgeConfigSpec.Builder SERVER_BUILDER
             = new ForgeConfigSpec.Builder();
@@ -45,11 +45,11 @@ public class Config {
     public static ForgeConfigSpec.ConfigValue<String> SQLITE_DATABASE_PATH;
 
     // POSTGRESQL Settings
-    public static ForgeConfigSpec.ConfigValue<String> POSTGRESQL_DB_NAME;
-    public static ForgeConfigSpec.ConfigValue<String> POSTGRESQL_IP;
-    public static ForgeConfigSpec.IntValue POSTGRESQL_PORT;
-    public static ForgeConfigSpec.ConfigValue<String> POSTGRESQL_USERNAME;
-    public static ForgeConfigSpec.ConfigValue<String> POSTGRESQL_PASSWORD;
+//    public static ForgeConfigSpec.ConfigValue<String> POSTGRESQL_DB_NAME;
+//    public static ForgeConfigSpec.ConfigValue<String> POSTGRESQL_IP;
+//    public static ForgeConfigSpec.IntValue POSTGRESQL_PORT;
+//    public static ForgeConfigSpec.ConfigValue<String> POSTGRESQL_USERNAME;
+//    public static ForgeConfigSpec.ConfigValue<String> POSTGRESQL_PASSWORD;
 
 
     static {
@@ -77,11 +77,11 @@ public class Config {
         SERVER_BUILDER.pop();
 
         // POSTGRESQL Config
-        SERVER_BUILDER.comment(
-                "PostgreSQL configuration (To enable PostgreSQL, " +
-                        "refer to the mode setting in the general configuration)."
-        ).push(CATEGORY_POSTGRESQL);
-        setupPostgreSQLConfig();
+//        SERVER_BUILDER.comment(
+//                "PostgreSQL configuration (To enable PostgreSQL, " +
+//                        "refer to the mode setting in the general configuration)."
+//        ).push(CATEGORY_POSTGRESQL);
+        //setupPostgreSQLConfig();
         SERVER_BUILDER.pop();
 
         SERVER_CONFIG = SERVER_BUILDER.build();
@@ -117,18 +117,18 @@ public class Config {
                 .define("sqliteDatabasePath", "./whitelistSync.db");
     }
 
-    private static void setupPostgreSQLConfig() {
-        POSTGRESQL_DB_NAME = SERVER_BUILDER.comment("Name for your PostgreSQL database (No spaces!).")
-                .define("postgresqlDbName", "WhitelistSync");
-        POSTGRESQL_IP = SERVER_BUILDER.comment("IP for your PostgreSQL server.")
-                .define("postgresqlIp", "localhost");
-        POSTGRESQL_PORT = SERVER_BUILDER.comment("Port for your PostgreSQL server.")
-                .defineInRange("postgresqlPort", 5432, 1, 65535);
-        POSTGRESQL_USERNAME = SERVER_BUILDER.comment("Username for your PostgreSQL server.")
-                .define("postgresqlUsername", "root");
-        POSTGRESQL_PASSWORD = SERVER_BUILDER.comment("Password for your PostgreSQL server.")
-                .define("postgresqlPassword", "password");
-    }
+//    private static void setupPostgreSQLConfig() {
+//        POSTGRESQL_DB_NAME = SERVER_BUILDER.comment("Name for your PostgreSQL database (No spaces!).")
+//                .define("postgresqlDbName", "WhitelistSync");
+//        POSTGRESQL_IP = SERVER_BUILDER.comment("IP for your PostgreSQL server.")
+//                .define("postgresqlIp", "localhost");
+//        POSTGRESQL_PORT = SERVER_BUILDER.comment("Port for your PostgreSQL server.")
+//                .defineInRange("postgresqlPort", 5432, 1, 65535);
+//        POSTGRESQL_USERNAME = SERVER_BUILDER.comment("Username for your PostgreSQL server.")
+//                .define("postgresqlUsername", "root");
+//        POSTGRESQL_PASSWORD = SERVER_BUILDER.comment("Password for your PostgreSQL server.")
+//                .define("postgresqlPassword", "password");
+//    }
 
 
     public static void loadConfig(ForgeConfigSpec spec, Path path) {
