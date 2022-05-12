@@ -82,7 +82,7 @@ public class Config {
 //                        "refer to the mode setting in the general configuration)."
 //        ).push(CATEGORY_POSTGRESQL);
         //setupPostgreSQLConfig();
-        SERVER_BUILDER.pop();
+//        SERVER_BUILDER.pop();
 
         SERVER_CONFIG = SERVER_BUILDER.build();
     }
