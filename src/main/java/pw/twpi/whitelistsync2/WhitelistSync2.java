@@ -112,7 +112,7 @@ public class WhitelistSync2
     }
 
     public void StartSyncThread(MinecraftServer server, BaseService service) {
-        Thread sync = new Thread(new SyncThread(server, service));
+        Thread sync = new Thread(new SyncThread(server, service, Config.SYNC_OP_LIST.get()));
         sync.start();
         LOGGER.info("Sync Thread Started!");
     }

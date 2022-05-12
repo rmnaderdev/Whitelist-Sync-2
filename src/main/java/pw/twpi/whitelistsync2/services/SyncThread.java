@@ -17,10 +17,12 @@ public class SyncThread implements Runnable {
     
     private final MinecraftServer server;
     private final BaseService service;
+    private final boolean syncOpLists;
 
-    public SyncThread(MinecraftServer server, BaseService service) {
+    public SyncThread(MinecraftServer server, BaseService service, boolean syncOpLists) {
         this.server = server;
         this.service = service;
+        this.syncOpLists = syncOpLists;
     }
     
     @Override
@@ -39,7 +41,7 @@ public class SyncThread implements Runnable {
                         }
                 );
 
-                if (Config.SYNC_OP_LIST.get()) {
+                if (syncOpLists) {
                     service.copyDatabaseOppedPlayersToLocal(
                             OppedPlayersFileUtilities.getOppedPlayers(),
                             (uuid, name)->{
@@ -58,8 +60,8 @@ public class SyncThread implements Runnable {
                 } catch (InterruptedException ignored) {
                 }
             }
-        } catch (Throwable t) {
-            WhitelistSync2.LOGGER.error("Error in the whitelist sync thread! Syncing will stop until the server is restarted.", t);
+        } catch (Exception e) {
+            WhitelistSync2.LOGGER.error("Error in the whitelist sync thread! Syncing will stop until the server is restarted.", e);
         }
     }
 
