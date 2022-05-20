@@ -74,9 +74,10 @@ dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
     // Shade other dependencies into the final jar
-    shadow "org.xerial:sqlite-jdbc:3.21.0.1"
-    shadow "mysql:mysql-connector-java:8.0.13"
-    shadow "org.postgresql:postgresql:42.2.23.jre7"
+    // These deps are now handled in the WhitelistSyncLib library
+    //shadow "org.xerial:sqlite-jdbc:3.36.0.3"
+    //shadow "mysql:mysql-connector-java:8.0.13"
+    //shadow "org.postgresql:postgresql:42.2.23.jre7"
     shadow "net.rmnad.minecraft.forge:whitelistsynclib:${whitelistsynclib_version}"
 }
 

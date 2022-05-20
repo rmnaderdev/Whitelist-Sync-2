@@ -13,20 +13,43 @@ import pw.twpi.whitelistsync2.json.WhitelistedPlayersFileUtilities;
  * 
  * @author Richard Nader, Jr. <rmnader@svsu.edu>
  */
-public class SyncThread implements Runnable {
+public class WhitelistSyncThread extends Thread {
     
     private final MinecraftServer server;
     private final BaseService service;
     private final boolean syncOpLists;
+    private final boolean errorOnSetup;
 
-    public SyncThread(MinecraftServer server, BaseService service, boolean syncOpLists) {
+    public WhitelistSyncThread(MinecraftServer server, BaseService service, boolean syncOpLists, boolean errorOnSetup) {
         this.server = server;
         this.service = service;
         this.syncOpLists = syncOpLists;
+        this.errorOnSetup = errorOnSetup;
     }
     
     @Override
     public void run() {
+        // Delay thread start for 5 sec
+        WhitelistSync2.LOGGER.info("Delay start of sync thread, waiting 5 sec...");
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException ignored) {
+        }
+        WhitelistSync2.LOGGER.info("Sync thread starting...");
+
+        if(!this.service.initializeDatabase() || this.errorOnSetup) {
+            WhitelistSync2.LOGGER.error("Error initializing whitelist sync database. Disabling mod functionality. Please correct errors and restart.");
+        } else {
+            // Database is setup!
+
+            // Check if whitelisting is enabled.
+            if (!server.getPlayerList().isUsingWhitelist()) {
+                WhitelistSync2.LOGGER.info("Oh no! I see whitelisting isn't enabled in the server properties. "
+                        + "I assume this is not intentional, I'll enable it for you!");
+                server.getPlayerList().setUsingWhiteList(true);
+            }
+        }
+
         try {
             while (server.isRunning()) {
                 service.copyDatabaseWhitelistedPlayersToLocal(
