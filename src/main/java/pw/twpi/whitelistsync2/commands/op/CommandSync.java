@@ -8,6 +8,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.players.UserWhiteListEntry;
 import pw.twpi.whitelistsync2.WhitelistSync2;
+import pw.twpi.whitelistsync2.json.OppedPlayersFileUtilities;
 import pw.twpi.whitelistsync2.json.WhitelistedPlayersFileUtilities;
 
 public class CommandSync {
@@ -24,15 +25,15 @@ public class CommandSync {
                 .requires(cs -> cs.hasPermission(permissionLevel))
                 .executes(context -> {
 
-                    boolean status = WhitelistSync2.whitelistService.copyDatabaseWhitelistedPlayersToLocal(
-                            WhitelistedPlayersFileUtilities.getWhitelistedPlayers(),
+                    boolean status = WhitelistSync2.whitelistService.copyDatabaseOppedPlayersToLocal(
+                            OppedPlayersFileUtilities.getOppedPlayers(),
                             (uuid, name)->{
-                                // Called when user added to whitelist
-                                context.getSource().getServer().getPlayerList().getWhiteList().add(new UserWhiteListEntry(new GameProfile(uuid, name)));
+                                // Called when user added to op list
+                                context.getSource().getServer().getPlayerList().op(new GameProfile(uuid, name));
                             },
                             (uuid, name) -> {
-                                // Called when user removed from whitelist
-                                context.getSource().getServer().getPlayerList().getWhiteList().remove(new UserWhiteListEntry(new GameProfile(uuid, name)));
+                                // Called when user removed from op list
+                                context.getSource().getServer().getPlayerList().deop(new GameProfile(uuid, name));
                             }
                     );
                     

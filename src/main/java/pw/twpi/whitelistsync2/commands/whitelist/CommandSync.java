@@ -24,15 +24,15 @@ public class CommandSync {
                 .requires(cs -> cs.hasPermission(permissionLevel))
                 .executes(context -> {
 
-                    boolean status = WhitelistSync2.whitelistService.copyDatabaseOppedPlayersToLocal(
-                            OppedPlayersFileUtilities.getOppedPlayers(),
+                    boolean status = WhitelistSync2.whitelistService.copyDatabaseWhitelistedPlayersToLocal(
+                            WhitelistedPlayersFileUtilities.getWhitelistedPlayers(),
                             (uuid, name)->{
-                                // Called when user added to op list
-                                context.getSource().getServer().getPlayerList().op(new GameProfile(uuid, name));
+                                // Called when user added to whitelist
+                                context.getSource().getServer().getPlayerList().getWhiteList().add(new UserWhiteListEntry(new GameProfile(uuid, name)));
                             },
                             (uuid, name) -> {
-                                // Called when user removed from op list
-                                context.getSource().getServer().getPlayerList().deop(new GameProfile(uuid, name));
+                                // Called when user removed from whitelist
+                                context.getSource().getServer().getPlayerList().getWhiteList().remove(new UserWhiteListEntry(new GameProfile(uuid, name)));
                             }
                     );
 
