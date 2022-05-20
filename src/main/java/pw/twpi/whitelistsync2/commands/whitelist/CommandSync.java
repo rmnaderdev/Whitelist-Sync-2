@@ -1,22 +1,17 @@
 package pw.twpi.whitelistsync2.commands.whitelist;
 
-import com.mojang.brigadier.Command;
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.builder.ArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
+import net.minecraft.server.management.WhitelistEntry;
 import net.minecraft.util.text.StringTextComponent;
 import pw.twpi.whitelistsync2.WhitelistSync2;
+import pw.twpi.whitelistsync2.json.WhitelistedPlayersFileUtilities;
 
-public class CommandSync implements Command<CommandSource> {
-    // !!!!!!!!!!!!!!Make sure you change this to this class!!!!!!!!!!!!!!
-    private static final CommandSync CMD = new CommandSync();
-
+public class CommandSync {
     // Name of the command
     private static final String commandName = "sync";
     private static final int permissionLevel = 4;
@@ -28,19 +23,26 @@ public class CommandSync implements Command<CommandSource> {
     public static ArgumentBuilder<CommandSource, ?> register(CommandDispatcher<CommandSource> dispatcher) {
         return Commands.literal(commandName)
                 .requires(cs -> cs.hasPermission(permissionLevel))
-                .executes(CMD);
-    }
+                .executes(context -> {
+                    boolean status = WhitelistSync2.whitelistService.copyDatabaseWhitelistedPlayersToLocal(
+                            WhitelistedPlayersFileUtilities.getWhitelistedPlayers(),
+                            (uuid, name)->{
+                                // Called when user added to whitelist
+                                context.getSource().getServer().getPlayerList().getWhiteList().add(new WhitelistEntry(new GameProfile(uuid, name)));
+                            },
+                            (uuid, name) -> {
+                                // Called when user removed from whitelist
+                                context.getSource().getServer().getPlayerList().getWhiteList().remove(new WhitelistEntry(new GameProfile(uuid, name)));
+                            }
+                    );
 
-    // Command action
-    @Override
-    public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
+                    if(status) {
+                        context.getSource().sendSuccess(new StringTextComponent("Local whitelist up to date with database."), false);
+                    } else {
+                        throw DB_ERROR.create();
+                    }
 
-        if(WhitelistSync2.whitelistService.copyDatabaseWhitelistedPlayersToLocal(context.getSource().getServer())) {
-            context.getSource().sendSuccess(new StringTextComponent("Local whitelist up to date with database."), false);
-        } else {
-            throw DB_ERROR.create();
-        }
-
-        return 0;
+                    return 0;
+                });
     }
 }

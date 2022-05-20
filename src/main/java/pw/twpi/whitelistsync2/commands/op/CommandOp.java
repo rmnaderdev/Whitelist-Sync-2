@@ -1,29 +1,21 @@
 package pw.twpi.whitelistsync2.commands.op;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.builder.ArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.command.arguments.GameProfileArgument;
 import net.minecraft.server.management.PlayerList;
-import net.minecraft.server.management.WhiteList;
-import net.minecraft.server.management.WhitelistEntry;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextComponentUtils;
 import pw.twpi.whitelistsync2.WhitelistSync2;
 
 import java.util.Collection;
 
-public class CommandOp implements Command<CommandSource> {
-    // !!!!!!!!!!!!!!Make sure you change this to this class!!!!!!!!!!!!!!
-    private static final CommandOp CMD = new CommandOp();
+public class CommandOp {
 
     // Name of the command
     private static final String commandName = "op";
@@ -38,7 +30,7 @@ public class CommandOp implements Command<CommandSource> {
     public static ArgumentBuilder<CommandSource, ?> register(CommandDispatcher<CommandSource> dispatcher) {
         return Commands.literal(commandName)
                 .requires(cs -> cs.hasPermission(permissionLevel))
-                .then(Commands.argument("players", new GameProfileArgument().gameProfile())
+                .then(Commands.argument("players", GameProfileArgument.gameProfile())
                         .suggests((context, suggestionsBuilder) -> {
                             // Get server playerlist
                             PlayerList playerlist = context.getSource().getServer().getPlayerList();
@@ -54,38 +46,34 @@ public class CommandOp implements Command<CommandSource> {
                                         return playerEntity.getGameProfile().getName();
                                     }), suggestionsBuilder);
                         })
-                        .executes(CMD));
-    }
+                        .executes(context -> {
+                            Collection<GameProfile> players = GameProfileArgument.getGameProfiles(context, "players");
+                            PlayerList playerList = context.getSource().getServer().getPlayerList();
+                            int i = 0;
 
-    // Command action
-    @Override
-    public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
-        Collection<GameProfile> players = GameProfileArgument.getGameProfiles(context, "players");
-        PlayerList playerList = context.getSource().getServer().getPlayerList();
-        int i = 0;
+                            for(GameProfile gameProfile : players) {
 
-        for(GameProfile gameProfile : players) {
+                                String playerName = gameProfile.getName();
 
-            String playerName = TextComponentUtils.getDisplayName(gameProfile).getString();
+                                if(!playerList.isOp(gameProfile)) {
+                                    // Add player to whitelist service
+                                    if(WhitelistSync2.whitelistService.addOppedPlayer(gameProfile.getId(), gameProfile.getName())) {
+                                        playerList.op(gameProfile);
 
-            if(!playerList.isOp(gameProfile)) {
-                // Add player to whitelist service
-                if(WhitelistSync2.whitelistService.addOppedPlayer(gameProfile)) {
-                    playerList.op(gameProfile);
+                                        context.getSource().sendSuccess(new StringTextComponent(String.format("Opped %s in database.", playerName)), true);
+                                        ++i;
+                                        // Everything is kosher!
+                                    } else {
+                                        // If something happens with the database stuff
+                                        throw DB_ERROR.create(playerName);
+                                    }
+                                } else {
+                                    // Player already whitelisted
+                                    context.getSource().sendSuccess(new StringTextComponent(String.format("%s is already opped.", playerName)), true);
+                                }
+                            }
 
-                    context.getSource().sendSuccess(new StringTextComponent(String.format("Opped %s in database.", playerName)), true);
-                    ++i;
-                    // Everything is kosher!
-                } else {
-                    // If something happens with the database stuff
-                    throw DB_ERROR.create(playerName);
-                }
-            } else {
-                // Player already whitelisted
-                context.getSource().sendSuccess(new StringTextComponent(String.format("%s is already opped.", playerName)), true);
-            }
-        }
-
-        return i;
+                            return i;
+                        }));
     }
 }

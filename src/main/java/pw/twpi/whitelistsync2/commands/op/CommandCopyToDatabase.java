@@ -10,10 +10,9 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.util.text.StringTextComponent;
 import pw.twpi.whitelistsync2.WhitelistSync2;
+import pw.twpi.whitelistsync2.json.OppedPlayersFileUtilities;
 
-public class CommandCopyToDatabase implements Command<CommandSource> {
-    // !!!!!!!!!!!!!!Make sure you change this to this class!!!!!!!!!!!!!!
-    private static final CommandCopyToDatabase CMD = new CommandCopyToDatabase();
+public class CommandCopyToDatabase {
 
     // Name of the command
     private static final String commandName = "copyServerToDatabase";
@@ -23,23 +22,18 @@ public class CommandCopyToDatabase implements Command<CommandSource> {
     private static final SimpleCommandExceptionType DB_ERROR
             = new SimpleCommandExceptionType(new StringTextComponent("Error syncing local op list to database, please check console for details."));
 
-
     // Initial command "checks"
     public static ArgumentBuilder<CommandSource, ?> register(CommandDispatcher<CommandSource> dispatcher) {
         return Commands.literal(commandName)
                 .requires(cs -> cs.hasPermission(permissionLevel))
-                .executes(CMD);
-    }
+                .executes(context -> {
+                    if(WhitelistSync2.whitelistService.copyLocalOppedPlayersToDatabase(OppedPlayersFileUtilities.getOppedPlayers())) {
+                        context.getSource().sendSuccess(new StringTextComponent("Pushed local op list to database."), false);
+                    } else {
+                        throw DB_ERROR.create();
+                    }
 
-    // Command action
-    @Override
-    public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
-        if(WhitelistSync2.whitelistService.copyLocalOppedPlayersToDatabase()) {
-            context.getSource().sendSuccess(new StringTextComponent("Pushed local op list to database."), false);
-        } else {
-            throw DB_ERROR.create();
-        }
-
-        return 0;
+                    return 0;
+                });
     }
 }

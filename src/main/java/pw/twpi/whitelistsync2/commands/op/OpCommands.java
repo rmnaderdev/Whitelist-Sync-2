@@ -7,7 +7,7 @@ import net.minecraft.command.Commands;
 import pw.twpi.whitelistsync2.WhitelistSync2;
 
 public class OpCommands {
-    public static void register(final CommandDispatcher<CommandSource> dispatcher) {
+    public OpCommands(final CommandDispatcher<CommandSource> dispatcher) {
         // Register wl commands
         LiteralCommandNode<CommandSource> cmdWl = dispatcher.register(
                 Commands.literal("wlop")
@@ -17,6 +17,5 @@ public class OpCommands {
                     .then(CommandSync.register(dispatcher))
                     .then(CommandCopyToDatabase.register(dispatcher))
         );
-
     }
 }

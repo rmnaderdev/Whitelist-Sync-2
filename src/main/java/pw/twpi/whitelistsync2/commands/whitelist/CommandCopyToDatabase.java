@@ -1,20 +1,15 @@
 package pw.twpi.whitelistsync2.commands.whitelist;
 
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.ArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.util.text.StringTextComponent;
 import pw.twpi.whitelistsync2.WhitelistSync2;
+import pw.twpi.whitelistsync2.json.WhitelistedPlayersFileUtilities;
 
-public class CommandCopyToDatabase implements Command<CommandSource> {
-    // !!!!!!!!!!!!!!Make sure you change this to this class!!!!!!!!!!!!!!
-    private static final CommandCopyToDatabase CMD = new CommandCopyToDatabase();
-
+public class CommandCopyToDatabase {
     // Name of the command
     private static final String commandName = "copyServerToDatabase";
     private static final int permissionLevel = 4;
@@ -26,19 +21,14 @@ public class CommandCopyToDatabase implements Command<CommandSource> {
     public static ArgumentBuilder<CommandSource, ?> register(CommandDispatcher<CommandSource> dispatcher) {
         return Commands.literal(commandName)
                 .requires(cs -> cs.hasPermission(permissionLevel))
-                .executes(CMD);
-    }
+                .executes(context -> {
+                    if(WhitelistSync2.whitelistService.copyLocalWhitelistedPlayersToDatabase(WhitelistedPlayersFileUtilities.getWhitelistedPlayers())) {
+                        context.getSource().sendSuccess(new StringTextComponent("Pushed local whitelist to database."), false);
+                    } else {
+                        throw DB_ERROR.create();
+                    }
 
-    // Command action
-    @Override
-    public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
-
-        if(WhitelistSync2.whitelistService.copyLocalWhitelistedPlayersToDatabase()) {
-            context.getSource().sendSuccess(new StringTextComponent("Pushed local whitelist to database."), false);
-        } else {
-            throw DB_ERROR.create();
-        }
-
-        return 0;
+                    return 0;
+                });
     }
 }

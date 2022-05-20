@@ -4,8 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import net.rmnad.minecraft.forge.whitelistsynclib.models.WhitelistedPlayer;
 import pw.twpi.whitelistsync2.WhitelistSync2;
-import pw.twpi.whitelistsync2.models.WhitelistedPlayer;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
