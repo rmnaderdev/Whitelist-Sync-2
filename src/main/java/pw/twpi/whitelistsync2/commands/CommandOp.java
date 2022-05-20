@@ -1,9 +1,10 @@
 package pw.twpi.whitelistsync2.commands;
 
 import com.mojang.authlib.GameProfile;
+import net.rmnad.minecraft.forge.whitelistsynclib.services.BaseService;
 import pw.twpi.whitelistsync2.Utilities;
 import pw.twpi.whitelistsync2.WhitelistSync2;
-import pw.twpi.whitelistsync2.config.ConfigHandler;
+import pw.twpi.whitelistsync2.config.Config;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,7 +18,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
-import pw.twpi.whitelistsync2.services.BaseService;
+import pw.twpi.whitelistsync2.json.OppedPlayersFileUtilities;
 
 /**
  * @author Richard Nader, Jr. <rmnader@svsu.edu>
@@ -58,7 +59,7 @@ public class CommandOp implements ICommand {
         if (world.isRemote) {
             WhitelistSync2.LOGGER.error("I don't run on client-side!");
         } else {
-            if (ConfigHandler.SYNC_OP_LIST) {
+            if (Config.SYNC_OP_LIST) {
                 if (args.length > 0) {
                     //Action for showing list
                     if (args[0].equalsIgnoreCase("list")) {
@@ -74,7 +75,7 @@ public class CommandOp implements ICommand {
 
                             if (player != null) {
 
-                                if (service.addOppedPlayer(player)) {
+                                if (service.addOppedPlayer(player.getId(), player.getName())) {
                                     server.getPlayerList().addOp(player);
                                     sender.sendMessage(new TextComponentString(player.getName() + " opped!"));
                                 } else {
@@ -94,15 +95,15 @@ public class CommandOp implements ICommand {
 
                         if (args.length > 1) {
 
-                            GameProfile gameprofile = server.getPlayerList().getOppedPlayers().getGameProfileFromName(args[1]);
+                            GameProfile player = server.getPlayerList().getOppedPlayers().getGameProfileFromName(args[1]);
 
-                            if (gameprofile != null) {
+                            if (player != null) {
 
-                                if (service.removeOppedPlayer(gameprofile)) {
-                                    server.getPlayerList().removeOp(gameprofile);
-                                    sender.sendMessage(new TextComponentString(gameprofile.getName() + " de-opped!"));
+                                if (service.removeOppedPlayer(player.getId(), player.getName())) {
+                                    server.getPlayerList().removeOp(player);
+                                    sender.sendMessage(new TextComponentString(player.getName() + " de-opped!"));
                                 } else {
-                                    sender.sendMessage(new TextComponentString("Error de-opping " + gameprofile.getName() + "!"));
+                                    sender.sendMessage(new TextComponentString("Error de-opping " + player.getName() + "!"));
                                 }
 
                             } else {
@@ -115,7 +116,16 @@ public class CommandOp implements ICommand {
 
                     } else if (args[0].equalsIgnoreCase("sync")) {
 
-                        if (service.copyDatabaseOppedPlayersToLocal(server)) {
+                        if (service.copyDatabaseOppedPlayersToLocal(
+                                OppedPlayersFileUtilities.getOppedPlayers(),
+                                (uuid, name)->{
+                                    // Called when user added to op list
+                                    server.getPlayerList().addOp(new GameProfile(uuid, name));
+                                },
+                                (uuid, name) -> {
+                                    // Called when user removed from op list
+                                    server.getPlayerList().removeOp(new GameProfile(uuid, name));
+                                })) {
                             sender.sendMessage(new TextComponentString("Local up to date with database!"));
                         } else {
                             sender.sendMessage(new TextComponentString("Error syncing local to database!"));
@@ -124,7 +134,7 @@ public class CommandOp implements ICommand {
                     } // Sync server to database
                     else if (args[0].equalsIgnoreCase("copyservertodatabase")) {
 
-                        if (service.copyLocalOppedPlayersToDatabase()) {
+                        if (service.copyLocalOppedPlayersToDatabase(OppedPlayersFileUtilities.getOppedPlayers())) {
                             sender.sendMessage(new TextComponentString("Pushed local to database!"));
                         } else {
                             sender.sendMessage(new TextComponentString("Error pushing local to database!"));

@@ -1,6 +1,8 @@
 package pw.twpi.whitelistsync2.commands;
 
 import com.mojang.authlib.GameProfile;
+import net.minecraft.server.management.UserListWhitelistEntry;
+import net.rmnad.minecraft.forge.whitelistsynclib.services.BaseService;
 import pw.twpi.whitelistsync2.Utilities;
 import pw.twpi.whitelistsync2.WhitelistSync2;
 
@@ -16,7 +18,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
-import pw.twpi.whitelistsync2.services.BaseService;
+import pw.twpi.whitelistsync2.json.WhitelistedPlayersFileUtilities;
 
 /**
  * Command class for whitelisting
@@ -75,7 +77,7 @@ public class CommandWhitelist implements ICommand {
 
                             if (user != null) {
 
-                                if (service.addWhitelistPlayer(user)) {
+                                if (service.addWhitelistPlayer(user.getId(), user.getName())) {
                                     server.getPlayerList().addWhitelistedPlayer(user);
                                     sender.sendMessage(new TextComponentString(user.getName() + " added to the whitelist."));
                                 } else {
@@ -94,14 +96,14 @@ public class CommandWhitelist implements ICommand {
 
                         if (args.length > 1) {
 
-                            GameProfile gameprofile = server.getPlayerList().getWhitelistedPlayers().getByName(args[1]);
-                            if (gameprofile != null) {
+                            GameProfile user = server.getPlayerList().getWhitelistedPlayers().getByName(args[1]);
+                            if (user != null) {
 
-                                if (service.removeWhitelistPlayer(gameprofile)) {
-                                    server.getPlayerList().removePlayerFromWhitelist(gameprofile);
-                                    sender.sendMessage(new TextComponentString(gameprofile.getName() + " removed from the whitelist."));
+                                if (service.removeWhitelistPlayer(user.getId(), user.getName())) {
+                                    server.getPlayerList().removePlayerFromWhitelist(user);
+                                    sender.sendMessage(new TextComponentString(user.getName() + " removed from the whitelist."));
                                 } else {
-                                    sender.sendMessage(new TextComponentString("Error removing " + gameprofile.getName() + " from whitelist!"));
+                                    sender.sendMessage(new TextComponentString("Error removing " + user.getName() + " from whitelist!"));
                                 }
 
                             } else {
@@ -113,7 +115,15 @@ public class CommandWhitelist implements ICommand {
                     } // Sync Database to server
                     else if (args[0].equalsIgnoreCase("sync")) {
 
-                        if (service.copyDatabaseWhitelistedPlayersToLocal(server)) {
+                        if (service.copyDatabaseWhitelistedPlayersToLocal(
+                                WhitelistedPlayersFileUtilities.getWhitelistedPlayers(),
+                                (uuid, name) -> {
+                                    server.getPlayerList().getWhitelistedPlayers().addEntry(new UserListWhitelistEntry(new GameProfile(uuid, name)));
+                                },
+                                (uuid, name) -> {
+                                    server.getPlayerList().getWhitelistedPlayers().removeEntry(new GameProfile(uuid, name));
+                                }
+                        )) {
                             sender.sendMessage(new TextComponentString("Local up to date with database!"));
                         } else {
                             sender.sendMessage(new TextComponentString("Error syncing local to database!"));
@@ -122,7 +132,7 @@ public class CommandWhitelist implements ICommand {
                     } // Sync server to database
                     else if (args[0].equalsIgnoreCase("copyservertodatabase")) {
 
-                        if (service.copyLocalWhitelistedPlayersToDatabase()) {
+                        if (service.copyLocalWhitelistedPlayersToDatabase(WhitelistedPlayersFileUtilities.getWhitelistedPlayers())) {
                             sender.sendMessage(new TextComponentString("Pushed local to database!"));
                         } else {
                             sender.sendMessage(new TextComponentString("Error pushing local to database!"));

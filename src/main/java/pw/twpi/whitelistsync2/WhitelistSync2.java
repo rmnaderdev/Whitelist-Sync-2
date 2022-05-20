@@ -8,15 +8,15 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.rmnad.minecraft.forge.whitelistsynclib.services.BaseService;
+import net.rmnad.minecraft.forge.whitelistsynclib.services.MySqlService;
+import net.rmnad.minecraft.forge.whitelistsynclib.services.SqLiteService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pw.twpi.whitelistsync2.commands.CommandOp;
 import pw.twpi.whitelistsync2.commands.CommandWhitelist;
-import pw.twpi.whitelistsync2.config.ConfigHandler;
-import pw.twpi.whitelistsync2.services.BaseService;
-import pw.twpi.whitelistsync2.services.MySqlService;
-import pw.twpi.whitelistsync2.services.SqLiteService;
-import pw.twpi.whitelistsync2.services.SyncThread;
+import pw.twpi.whitelistsync2.config.Config;
+import pw.twpi.whitelistsync2.services.WhitelistSyncThread;
 
 import java.io.File;
 
@@ -25,11 +25,10 @@ import java.io.File;
  *
  * @author Richard Nader, Jr. <rmnader@svsu.edu>
  */
-@Mod(modid = WhitelistSync2.MODID, version = WhitelistSync2.VERSION, acceptableRemoteVersions = "*", serverSideOnly = true)
+@Mod(modid = WhitelistSync2.MODID)
 public class WhitelistSync2 {
 
     public static final String MODID = "whitelistsync2";
-    public static final String VERSION = "1.12.2-2.2.1"; // Change gradle build config too!
     public static String SERVER_FILEPATH;
     public static Configuration config;
 
@@ -51,7 +50,7 @@ public class WhitelistSync2 {
     @SideOnly(Side.SERVER)
     @Mod.EventHandler
     public void serverLoad(FMLServerStartingEvent event) {
-        boolean setupSuccessful = true;
+        boolean errorOnSetup = false;
 
         // Server filepath
         SERVER_FILEPATH = event.getServer().getDataDirectory().getPath();
@@ -60,38 +59,31 @@ public class WhitelistSync2 {
         LOGGER.info("---------------WHITELIST SYNC 2---------------");
         LOGGER.info("----------------------------------------------");
 
-        if (ConfigHandler.WHITELIST_MODE.equalsIgnoreCase(ConfigHandler.MODE_SQLITE)) {
-            whitelistService = new SqLiteService();
-        } else if (ConfigHandler.WHITELIST_MODE.equalsIgnoreCase(ConfigHandler.MODE_MYSQL)) {
-            whitelistService = new MySqlService();
+        if (Config.WHITELIST_MODE.equalsIgnoreCase(Config.MODE_SQLITE)) {
+            whitelistService = new SqLiteService(Config.sqliteDatabasePath, Config.SYNC_OP_LIST);
+        } else if (Config.WHITELIST_MODE.equalsIgnoreCase(Config.MODE_MYSQL)) {
+            whitelistService = new MySqlService(
+                    Config.mySQL_DBname,
+                    Config.mySQL_IP,
+                    Config.mySQL_PORT,
+                    Config.mySQL_Username,
+                    Config.mySQL_Password,
+                    Config.SYNC_OP_LIST
+            );
         } else {
             LOGGER.error("Please check what WHITELIST_MODE is set in the config and make sure it is set to a supported mode.");
-            setupSuccessful = false;
+            errorOnSetup = true;
         }
 
-        if(!whitelistService.initializeDatabase() || !setupSuccessful) {
-            LOGGER.error("Error initializing whitelist sync database. Disabling mod functionality. Please correct errors and restart.");
+        event.registerServerCommand(new CommandWhitelist(whitelistService));
+        if(Config.SYNC_OP_LIST) {
+            LOGGER.info("Opped Player Sync is enabled");
+            event.registerServerCommand(new CommandOp(whitelistService));
         } else {
-            // Database is setup!
-
-            // Check if whitelisting is enabled.
-            if (!event.getServer().getPlayerList().isWhiteListEnabled()) {
-                LOGGER.info("Oh no! I see whitelisting isn't enabled in the server properties. "
-                        + "I assume this is not intentional, I'll enable it for you!");
-                event.getServer().getPlayerList().setWhiteListEnabled(true);
-            }
-
-            StartSyncThread(event.getServer(), whitelistService);
-
-            event.registerServerCommand(new CommandWhitelist(whitelistService));
-
-            if(ConfigHandler.SYNC_OP_LIST) {
-                LOGGER.info("Opped Player Sync is enabled");
-                event.registerServerCommand(new CommandOp(whitelistService));
-            } else {
-                LOGGER.info("Opped Player Sync is disabled");
-            }
+            LOGGER.info("Opped Player Sync is disabled");
         }
+
+        StartWhitelistSyncThread(event.getServer(), whitelistService, errorOnSetup);
 
         LOGGER.info("----------------------------------------------");
         LOGGER.info("----------------------------------------------");
@@ -102,11 +94,11 @@ public class WhitelistSync2 {
     public void UpdateConfig(FMLPreInitializationEvent e) {
         File directory = e.getModConfigurationDirectory();
         config = new Configuration(new File(directory.getPath(), "whitelistsync.cfg"));
-        ConfigHandler.readConfig();
+        Config.readConfig();
     }
 
-    public void StartSyncThread(MinecraftServer server, BaseService service) {
-        Thread sync = new Thread(new SyncThread(server, service));
+    public static void StartWhitelistSyncThread(MinecraftServer server, BaseService service, boolean errorOnSetup) {
+        WhitelistSyncThread sync = new WhitelistSyncThread(server, service, Config.SYNC_OP_LIST, errorOnSetup);
         sync.start();
         LOGGER.info("Sync Thread Started!");
     }

@@ -2,8 +2,8 @@ package pw.twpi.whitelistsync2;
 
 import java.util.ArrayList;
 import net.minecraft.server.MinecraftServer;
-import pw.twpi.whitelistsync2.models.OppedPlayer;
-import pw.twpi.whitelistsync2.models.WhitelistedPlayer;
+import net.rmnad.minecraft.forge.whitelistsynclib.models.OppedPlayer;
+import net.rmnad.minecraft.forge.whitelistsynclib.models.WhitelistedPlayer;
 
 /**
  * Utility class to help keep main class clean
