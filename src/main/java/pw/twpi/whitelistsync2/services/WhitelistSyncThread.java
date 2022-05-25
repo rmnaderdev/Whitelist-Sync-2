@@ -79,7 +79,7 @@ public class WhitelistSyncThread extends Thread {
                 }
 
                 try {
-                    Thread.sleep(Config.SYNC_TIMER.get() * 1000);
+                    Thread.sleep(Config.COMMON.SYNC_TIMER.get() * 1000);
                 } catch (InterruptedException ignored) {
                 }
             }
