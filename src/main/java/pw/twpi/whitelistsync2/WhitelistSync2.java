@@ -25,7 +25,7 @@ import java.io.File;
  *
  * @author Richard Nader, Jr. <rmnader@svsu.edu>
  */
-@Mod(modid = WhitelistSync2.MODID)
+@Mod(modid = WhitelistSync2.MODID, acceptableRemoteVersions = "*", serverSideOnly = true)
 public class WhitelistSync2 {
 
     public static final String MODID = "whitelistsync2";
