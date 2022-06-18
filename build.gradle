@@ -1,26 +1,12 @@
-buildscript {
-    repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-    }
-}
-
 // Add shadow plugin
 plugins {
     id 'com.github.johnrengelman.shadow' version '7.1.2'
-    id 'java'
+    id 'eclipse'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '5.1.+'
 }
 
-apply plugin: 'net.minecraftforge.gradle'
-// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
-apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
-
 repositories {
-    mavenCentral()
     maven { url = 'https://maven.rmnad.net/releases' }
 }
 
@@ -28,7 +14,7 @@ version = "${mc_version}-${mod_version}"
 group = "${package_group}"
 archivesBaseName = "${mod_name}"
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17) // Mojang ships Java 8 to end users, so your mod should target Java 8.
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
     mappings channel: "${mappings_channel}", version: "${mappings_version}"
@@ -72,12 +58,6 @@ minecraft.runs.all {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
-
-    // Shade other dependencies into the final jar
-    // These deps are now handled in the WhitelistSyncLib library
-    //shadow "org.xerial:sqlite-jdbc:3.36.0.3"
-    //shadow "mysql:mysql-connector-java:8.0.13"
-    //shadow "org.postgresql:postgresql:42.2.23.jre7"
     shadow "net.rmnad.minecraft.forge:whitelistsynclib:${whitelistsynclib_version}"
 }
 

@@ -9,7 +9,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import pw.twpi.whitelistsync2.WhitelistSync2;
 import pw.twpi.whitelistsync2.json.OppedPlayersFileUtilities;
 
@@ -29,7 +29,7 @@ public class CommandCopyToDatabase {
                 .requires(cs -> cs.hasPermission(permissionLevel))
                 .executes(context -> {
                     if(WhitelistSync2.whitelistService.copyLocalOppedPlayersToDatabase(OppedPlayersFileUtilities.getOppedPlayers())) {
-                        context.getSource().sendSuccess(new TextComponent("Pushed local op list to database."), false);
+                        context.getSource().sendSuccess(Component.literal("Pushed local op list to database."), false);
                     } else {
                         throw DB_ERROR.create();
                     }

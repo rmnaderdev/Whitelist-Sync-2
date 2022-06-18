@@ -8,7 +8,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.GameProfileArgument;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.players.PlayerList;
 import pw.twpi.whitelistsync2.WhitelistSync2;
 
@@ -46,7 +46,7 @@ public class CommandDeop {
                                 if (playerList.isOp(gameProfile)) {
                                     if(WhitelistSync2.whitelistService.removeOppedPlayer(gameProfile.getId(), gameProfile.getName())) {
                                         playerList.deop(gameProfile);
-                                        context.getSource().sendSuccess(new TextComponent(String.format("Deopped %s from database.", playerName)), true);
+                                        context.getSource().sendSuccess(Component.literal(String.format("Deopped %s from database.", playerName)), true);
                                         ++i;
                                         // Everything is kosher
                                     } else {
@@ -55,7 +55,7 @@ public class CommandDeop {
                                     }
                                 } else {
                                     // Player is not whitelisted
-                                    context.getSource().sendSuccess(new TextComponent(String.format("%s is not opped.", playerName)), true);
+                                    context.getSource().sendSuccess(Component.literal(String.format("%s is not opped.", playerName)), true);
                                 }
                             }
 

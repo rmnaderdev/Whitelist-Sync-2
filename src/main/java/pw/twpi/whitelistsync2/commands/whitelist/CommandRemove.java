@@ -8,7 +8,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.GameProfileArgument;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.players.UserWhiteList;
 import net.minecraft.server.players.UserWhiteListEntry;
 import pw.twpi.whitelistsync2.WhitelistSync2;
@@ -46,7 +46,7 @@ public class CommandRemove {
                                 if(WhitelistSync2.whitelistService.removeWhitelistPlayer(gameProfile.getId(), gameProfile.getName())) {
                                     UserWhiteListEntry whitelistentry = new UserWhiteListEntry(gameProfile);
                                     whiteList.remove(whitelistentry);
-                                    context.getSource().sendSuccess(new TextComponent(String.format("Removed %s from whitelist database.", playerName)), true);
+                                    context.getSource().sendSuccess(Component.literal(String.format("Removed %s from whitelist database.", playerName)), true);
                                     ++i;
                                     // Everything is kosher
                                 } else {
@@ -55,7 +55,7 @@ public class CommandRemove {
                                 }
                             } else {
                                 // Player is not whitelisted
-                                context.getSource().sendSuccess(new TextComponent(String.format("%s is not whitelisted.", playerName)), true);
+                                context.getSource().sendSuccess(Component.literal(String.format("%s is not whitelisted.", playerName)), true);
                             }
                         }
 

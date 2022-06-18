@@ -8,7 +8,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.GameProfileArgument;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.players.PlayerList;
 import pw.twpi.whitelistsync2.WhitelistSync2;
 
@@ -59,7 +59,7 @@ public class CommandOp {
                                     if(WhitelistSync2.whitelistService.addOppedPlayer(gameProfile.getId(), gameProfile.getName())) {
                                         playerList.op(gameProfile);
 
-                                        context.getSource().sendSuccess(new TextComponent(String.format("Opped %s in database.", playerName)), true);
+                                        context.getSource().sendSuccess(Component.literal(String.format("Opped %s in database.", playerName)), true);
                                         ++i;
                                         // Everything is kosher!
                                     } else {
@@ -68,7 +68,7 @@ public class CommandOp {
                                     }
                                 } else {
                                     // Player already whitelisted
-                                    context.getSource().sendSuccess(new TextComponent(String.format("%s is already opped.", playerName)), true);
+                                    context.getSource().sendSuccess(Component.literal(String.format("%s is already opped.", playerName)), true);
                                 }
                             }
 
