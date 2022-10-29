@@ -19,6 +19,7 @@ Looking for a spigot plugin? Find it on the [WhitelistSync2-Spigot GitHub](https
 **[8/16/22]** This project is primarily for my use as I don't like to put my free-time into it. It is a tool I use and I am happy to keep it open source for others to use as well, but I no longer maintain this project for other people to use. This is part of the reason I no longer maintain it on CurseForge (among other strong feelings I have about the CurseForge platform). I would love to maintain this project for others to use, but this project has ate up so much of my free-time fighting with annoying Forge issues and it lacks any financial incentive to make up for that time. I will still accept issue reports, I just might not get to them in a timely manner. 
 
 ## Supported Versions
+- 1.19.2
 - 1.19
 - 1.18.2
 - 1.16.5
