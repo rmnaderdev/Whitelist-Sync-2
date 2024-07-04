@@ -18,7 +18,7 @@ public class WhitelistSyncThread extends Thread {
     private final MinecraftServer server;
     private final BaseService service;
     private final boolean syncOpLists;
-    private final boolean errorOnSetup;
+    private boolean errorOnSetup;
 
     public WhitelistSyncThread(MinecraftServer server, BaseService service, boolean syncOpLists, boolean errorOnSetup) {
         this.server = server;
@@ -39,6 +39,7 @@ public class WhitelistSyncThread extends Thread {
 
         if(!this.service.initializeDatabase() || this.errorOnSetup) {
             WhitelistSync2.LOGGER.error("Error initializing whitelist sync database. Disabling mod functionality. Please correct errors and restart.");
+            this.errorOnSetup = true;
         } else {
             // Database is setup!
 
@@ -48,6 +49,10 @@ public class WhitelistSyncThread extends Thread {
                         + "I assume this is not intentional, I'll enable it for you!");
                 server.getPlayerList().setUsingWhiteList(true);
             }
+        }
+
+        if (this.errorOnSetup) {
+            return;
         }
 
         try {
