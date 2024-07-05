@@ -3,7 +3,6 @@ package net.rmnad.whitelistsync2.services;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.players.UserWhiteListEntry;
-import net.rmnad.whitelistsynclib.services.BaseService;
 import net.rmnad.whitelistsync2.Config;
 import net.rmnad.whitelistsync2.WhitelistSync2;
 import net.rmnad.whitelistsync2.json.OppedPlayersFileUtilities;

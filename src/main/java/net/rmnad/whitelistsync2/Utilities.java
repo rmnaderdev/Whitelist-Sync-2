@@ -1,7 +1,7 @@
 package net.rmnad.whitelistsync2;
 
-import net.rmnad.whitelistsynclib.models.OppedPlayer;
-import net.rmnad.whitelistsynclib.models.WhitelistedPlayer;
+import net.rmnad.whitelistsync2.models.OppedPlayer;
+import net.rmnad.whitelistsync2.models.WhitelistedPlayer;
 
 import java.util.ArrayList;
 

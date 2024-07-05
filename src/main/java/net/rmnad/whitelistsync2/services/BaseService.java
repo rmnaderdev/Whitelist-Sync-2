@@ -1,9 +1,9 @@
-package net.rmnad.whitelistsynclib.services;
+package net.rmnad.whitelistsync2.services;
 
-import net.rmnad.whitelistsynclib.callbacks.IOnUserAdd;
-import net.rmnad.whitelistsynclib.callbacks.IOnUserRemove;
-import net.rmnad.whitelistsynclib.models.OppedPlayer;
-import net.rmnad.whitelistsynclib.models.WhitelistedPlayer;
+import net.rmnad.whitelistsync2.callbacks.IOnUserAdd;
+import net.rmnad.whitelistsync2.models.OppedPlayer;
+import net.rmnad.whitelistsync2.models.WhitelistedPlayer;
+import net.rmnad.whitelistsync2.callbacks.IOnUserRemove;
 
 import java.util.ArrayList;
 import java.util.UUID;

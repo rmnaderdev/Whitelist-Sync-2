@@ -1,4 +1,4 @@
-package net.rmnad.whitelistsynclib.models;
+package net.rmnad.whitelistsync2.models;
 
 
 public class OppedPlayer {
@@ -6,15 +6,8 @@ public class OppedPlayer {
     private boolean isOp;
     private String uuid;
     private String name;
-
-    public OppedPlayer() {
-    }
-
-    public OppedPlayer(String uuid, String name, boolean isOp) {
-        this.uuid = uuid;
-        this.name = name;
-        this.isOp = isOp;
-    }
+    private int level;
+    private Boolean bypassesPlayerLimit;
 
     public boolean isOp() {
         return isOp;
@@ -40,12 +33,30 @@ public class OppedPlayer {
         this.name = name;
     }
 
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public Boolean getBypassesPlayerLimit() {
+        return bypassesPlayerLimit;
+    }
+
+    public void setBypassesPlayerLimit(Boolean bypassesPlayerLimit) {
+        this.bypassesPlayerLimit = bypassesPlayerLimit;
+    }
+
     @Override
     public String toString() {
         return "OppedPlayer{" +
                 "isOp=" + isOp +
                 ", uuid='" + uuid + '\'' +
                 ", name='" + name + '\'' +
+                ", level='" + level + '\'' +
+                ", bypassesPlayerLimit=" + bypassesPlayerLimit +
                 '}';
     }
 }

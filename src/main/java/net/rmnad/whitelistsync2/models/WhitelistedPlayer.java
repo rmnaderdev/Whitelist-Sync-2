@@ -1,4 +1,4 @@
-package net.rmnad.whitelistsynclib.models;
+package net.rmnad.whitelistsync2.models;
 /**
  * DAO for a whitelisted user
  */

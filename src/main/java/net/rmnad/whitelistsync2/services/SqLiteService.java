@@ -1,11 +1,11 @@
-package net.rmnad.whitelistsynclib.services;
+package net.rmnad.whitelistsync2.services;
 
 
-import net.rmnad.whitelistsynclib.WhitelistSyncLib;
-import net.rmnad.whitelistsynclib.callbacks.IOnUserAdd;
-import net.rmnad.whitelistsynclib.callbacks.IOnUserRemove;
-import net.rmnad.whitelistsynclib.models.OppedPlayer;
-import net.rmnad.whitelistsynclib.models.WhitelistedPlayer;
+import net.rmnad.whitelistsync2.WhitelistSync2;
+import net.rmnad.whitelistsync2.callbacks.IOnUserAdd;
+import net.rmnad.whitelistsync2.callbacks.IOnUserRemove;
+import net.rmnad.whitelistsync2.models.OppedPlayer;
+import net.rmnad.whitelistsync2.models.WhitelistedPlayer;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -64,15 +64,14 @@ public class SqLiteService implements BaseService {
     // Function used to initialize the database file
     @Override
     public boolean initializeDatabase() {
-        WhitelistSyncLib.LOGGER.info("Setting up the SQLite service...");
+        WhitelistSync2.LOGGER.info("Setting up the SQLite service...");
         boolean success = true;
 
-        // Load class?
         try {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException e) {
-            WhitelistSyncLib.LOGGER.error("Failed to init sqlite connector. Is the library missing?");
-            WhitelistSyncLib.LOGGER.error(e.getMessage(), e);
+            WhitelistSync2.LOGGER.error("Failed to init sqlite connector. Is the library missing?");
+            WhitelistSync2.LOGGER.error(e.getMessage(), e);
             success = false;
         }
 
@@ -83,7 +82,7 @@ public class SqLiteService implements BaseService {
                 conn = getConnection();
 
                 // If the conn is valid, everything below this will run
-                WhitelistSyncLib.LOGGER.info("Connected to SQLite database successfully!");
+                WhitelistSync2.LOGGER.info("Connected to SQLite database successfully!");
 
                 // Create whitelist table if it doesn't exist.
                 // SQL statement for creating a new table
@@ -98,15 +97,19 @@ public class SqLiteService implements BaseService {
                     // SQL statement for creating a new table
                     sql = "CREATE TABLE IF NOT EXISTS op (\n"
                             + "	uuid text NOT NULL PRIMARY KEY,\n"
-                            + "	name text,\n"
+                            + "	name text NOT NULL,\n"
+                            + "	level integer NOT NULL,\n"
+                            + "	bypassesPlayerLimit integer NOT NULL,\n"
                             + " isOp integer NOT NULL);";
                     stmt = conn.createStatement();
                     stmt.executeUpdate(sql);
 
+                    // Execute migration
+                    migrateOpList(conn);
                 }
             } catch (SQLException e) {
-                WhitelistSyncLib.LOGGER.error("Error creating whitelist or op table!");
-                WhitelistSyncLib.LOGGER.error(e.getMessage(), e);
+                WhitelistSync2.LOGGER.error("Error creating whitelist or op table!");
+                WhitelistSync2.LOGGER.error(e.getMessage(), e);
                 success = false;
             } finally {
                 cleanup(stmt, conn);
@@ -145,10 +148,10 @@ public class SqLiteService implements BaseService {
             // Total time taken.
             long timeTaken = System.currentTimeMillis() - startTime;
 
-            WhitelistSyncLib.LOGGER.debug("Database pulled whitelisted players | Took " + timeTaken + "ms | Read " + records + " records.");
+            WhitelistSync2.LOGGER.debug("Database pulled whitelisted players | Took " + timeTaken + "ms | Read " + records + " records.");
         } catch (SQLException e) {
-            WhitelistSyncLib.LOGGER.error("Error querying whitelisted players from database!");
-            WhitelistSyncLib.LOGGER.error(e.getMessage(), e);
+            WhitelistSync2.LOGGER.error("Error querying whitelisted players from database!");
+            WhitelistSync2.LOGGER.error(e.getMessage(), e);
         } finally {
             cleanup(rs, stmt, conn);
         }
@@ -173,29 +176,36 @@ public class SqLiteService implements BaseService {
                 conn = getConnection();
                 long startTime = System.currentTimeMillis();
 
-                String sql = "SELECT uuid, name FROM op WHERE isOp = 1;";
+                String sql = "SELECT uuid, name, level, bypassesPlayerLimit FROM op WHERE isOp = 1;";
                 stmt = conn.prepareStatement(sql);
                 rs = stmt.executeQuery();
 
                 // Save queried return to names list.
                 while (rs.next()) {
-                    oppedPlayers.add(new OppedPlayer(rs.getString("uuid"), rs.getString("name"), true));
+                    OppedPlayer oppedPlayer = new OppedPlayer();
+                    oppedPlayer.setIsOp(true);
+                    oppedPlayer.setUuid(rs.getString("uuid"));
+                    oppedPlayer.setName(rs.getString("name"));
+                    oppedPlayer.setLevel(rs.getInt("level"));
+                    oppedPlayer.setBypassesPlayerLimit(rs.getBoolean("bypassesPlayerLimit"));
+
+                    oppedPlayers.add(oppedPlayer);
                     records++;
                 }
 
                 // Total time taken.
                 long timeTaken = System.currentTimeMillis() - startTime;
 
-                WhitelistSyncLib.LOGGER.debug("Database pulled opped players | Took " + timeTaken + "ms | Read " + records + " records.");
+                WhitelistSync2.LOGGER.debug("Database pulled opped players | Took " + timeTaken + "ms | Read " + records + " records.");
             } catch (SQLException e) {
-                WhitelistSyncLib.LOGGER.error("Error querying opped players from database!");
-                WhitelistSyncLib.LOGGER.error(e.getMessage(), e);
+                WhitelistSync2.LOGGER.error("Error querying opped players from database!");
+                WhitelistSync2.LOGGER.error(e.getMessage(), e);
             } finally {
                 cleanup(rs, stmt, conn);
             }
 
         } else {
-            WhitelistSyncLib.LOGGER.error("Op list syncing is currently disabled in your config. "
+            WhitelistSync2.LOGGER.error("Op list syncing is currently disabled in your config. "
                     + "Please enable it and restart the server to use this feature.");
         }
 
@@ -230,12 +240,12 @@ public class SqLiteService implements BaseService {
             }
             // Record time taken.
             long timeTaken = System.currentTimeMillis() - startTime;
-            WhitelistSyncLib.LOGGER.debug("Whitelist table updated | Took " + timeTaken + "ms | Wrote " + records + " records.");
+            WhitelistSync2.LOGGER.debug("Whitelist table updated | Took " + timeTaken + "ms | Wrote " + records + " records.");
 
             success = true;
         } catch (SQLException e) {
-            WhitelistSyncLib.LOGGER.error("Failed to update database with local records.");
-            WhitelistSyncLib.LOGGER.error(e.getMessage(), e);
+            WhitelistSync2.LOGGER.error("Failed to update database with local records.");
+            WhitelistSync2.LOGGER.error(e.getMessage(), e);
             success = false;
         } finally {
             cleanup(stmt, conn);
@@ -273,12 +283,12 @@ public class SqLiteService implements BaseService {
                 }
                 // Record time taken.
                 long timeTaken = System.currentTimeMillis() - startTime;
-                WhitelistSyncLib.LOGGER.debug("Op table updated | Took " + timeTaken + "ms | Wrote " + records + " records.");
+                WhitelistSync2.LOGGER.debug("Op table updated | Took " + timeTaken + "ms | Wrote " + records + " records.");
 
                 success = true;
             } catch (SQLException e) {
-                WhitelistSyncLib.LOGGER.error("Failed to update database with local records.");
-                WhitelistSyncLib.LOGGER.error(e.getMessage(), e);
+                WhitelistSync2.LOGGER.error("Failed to update database with local records.");
+                WhitelistSync2.LOGGER.error(e.getMessage(), e);
                 success = false;
             } finally {
                 cleanup(stmt, conn);
@@ -286,7 +296,7 @@ public class SqLiteService implements BaseService {
 
             return success;
         } else {
-            WhitelistSyncLib.LOGGER.error("Op list syncing is currently disabled in your config. "
+            WhitelistSync2.LOGGER.error("Op list syncing is currently disabled in your config. "
                     + "Please enable it and restart the server to use this feature.");
         }
 
@@ -315,32 +325,32 @@ public class SqLiteService implements BaseService {
                 int whitelisted = rs.getInt("whitelisted");
 
                 if (whitelisted == 1) {
-                    if (localWhitelistedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid))) {
+                    if (localWhitelistedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid.toString()))) {
                         try {
                             onUserAdd.call(uuid, name);
-                            WhitelistSyncLib.LOGGER.debug("Added " + name + " to whitelist.");
+                            WhitelistSync2.LOGGER.debug("Added " + name + " to whitelist.");
                             records++;
                         } catch (NullPointerException e) {
-                            WhitelistSyncLib.LOGGER.error("Player is null?");
-                            WhitelistSyncLib.LOGGER.error(e.getMessage(), e);
+                            WhitelistSync2.LOGGER.error("Player is null?");
+                            WhitelistSync2.LOGGER.error(e.getMessage(), e);
                         }
                     }
                 } else {
-                    if (localWhitelistedPlayers.stream().anyMatch(o -> o.getUuid().equals(uuid))) {
+                    if (localWhitelistedPlayers.stream().anyMatch(o -> o.getUuid().equals(uuid.toString()))) {
                         onUserRemove.call(uuid, name);
-                        WhitelistSyncLib.LOGGER.debug("Removed " + name + " from whitelist.");
+                        WhitelistSync2.LOGGER.debug("Removed " + name + " from whitelist.");
                         records++;
                     }
                 }
 
             }
             long timeTaken = System.currentTimeMillis() - startTime;
-            WhitelistSyncLib.LOGGER.debug("Copied whitelist database to local | Took " + timeTaken + "ms | Wrote " + records + " records.");
+            WhitelistSync2.LOGGER.debug("Copied whitelist database to local | Took " + timeTaken + "ms | Wrote " + records + " records.");
 
             success = true;
         } catch (SQLException e) {
-            WhitelistSyncLib.LOGGER.error("Error querying whitelisted players from database!");
-            WhitelistSyncLib.LOGGER.error(e.getMessage(), e);
+            WhitelistSync2.LOGGER.error("Error querying whitelisted players from database!");
+            WhitelistSync2.LOGGER.error(e.getMessage(), e);
             success = false;
         } finally {
             cleanup(rs, stmt, conn);
@@ -364,7 +374,7 @@ public class SqLiteService implements BaseService {
                 conn = getConnection();
                 long startTime = System.currentTimeMillis();
 
-                String sql = "SELECT name, uuid, isOp FROM op;";
+                String sql = "SELECT uuid, name, level, bypassesPlayerLimit, isOp FROM op;";
                 stmt = conn.prepareStatement(sql);
                 rs = stmt.executeQuery();
 
@@ -374,31 +384,31 @@ public class SqLiteService implements BaseService {
                     int opped = rs.getInt("isOp");
 
                     if (opped == 1) {
-                        if (localOppedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid))) {
+                        if (localOppedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid.toString()))) {
                             try {
                                 onUserAdd.call(uuid, name);
-                                WhitelistSyncLib.LOGGER.debug("Opped " + name + ".");
+                                WhitelistSync2.LOGGER.debug("Opped " + name + ".");
                                 records++;
                             } catch (NullPointerException e) {
-                                WhitelistSyncLib.LOGGER.error("Player is null?");
-                                WhitelistSyncLib.LOGGER.error(e.getMessage(), e);
+                                WhitelistSync2.LOGGER.error("Player is null?");
+                                WhitelistSync2.LOGGER.error(e.getMessage(), e);
                             }
                         }
                     } else {
-                        if (localOppedPlayers.stream().anyMatch(o -> o.getUuid().equals(uuid))) {
+                        if (localOppedPlayers.stream().anyMatch(o -> o.getUuid().equals(uuid.toString()))) {
                             onUserRemove.call(uuid, name);
-                            WhitelistSyncLib.LOGGER.debug("Deopped " + name + ".");
+                            WhitelistSync2.LOGGER.debug("Deopped " + name + ".");
                             records++;
                         }
                     }
                 }
                 long timeTaken = System.currentTimeMillis() - startTime;
-                WhitelistSyncLib.LOGGER.debug("Copied op database to local | Took " + timeTaken + "ms | Wrote " + records + " records.");
+                WhitelistSync2.LOGGER.debug("Copied op database to local | Took " + timeTaken + "ms | Wrote " + records + " records.");
 
                 success = true;
             } catch (SQLException e) {
-                WhitelistSyncLib.LOGGER.error("Error querying opped players from database!");
-                WhitelistSyncLib.LOGGER.error(e.getMessage(), e);
+                WhitelistSync2.LOGGER.error("Error querying opped players from database!");
+                WhitelistSync2.LOGGER.error(e.getMessage(), e);
                 success = false;
             } finally {
                 cleanup(rs, stmt, conn);
@@ -406,7 +416,7 @@ public class SqLiteService implements BaseService {
 
             return success;
         } else {
-            WhitelistSyncLib.LOGGER.error("Op list syncing is currently disabled in your config. "
+            WhitelistSync2.LOGGER.error("Op list syncing is currently disabled in your config. "
                     + "Please enable it and restart the server to use this feature.");
         }
 
@@ -433,12 +443,12 @@ public class SqLiteService implements BaseService {
 
             // Time taken.
             long timeTaken = System.currentTimeMillis() - startTime;
-            WhitelistSyncLib.LOGGER.debug("Added " + name + " to whitelist | Took " + timeTaken + "ms");
+            WhitelistSync2.LOGGER.debug("Added " + name + " to whitelist | Took " + timeTaken + "ms");
 
             success = true;
         } catch (SQLException e) {
-            WhitelistSyncLib.LOGGER.error("Error adding " + name + " to whitelist database!");
-            WhitelistSyncLib.LOGGER.error(e.getMessage(), e);
+            WhitelistSync2.LOGGER.error("Error adding " + name + " to whitelist database!");
+            WhitelistSync2.LOGGER.error(e.getMessage(), e);
             success = false;
         } finally {
             cleanup(stmt, conn);
@@ -467,12 +477,12 @@ public class SqLiteService implements BaseService {
 
                 // Time taken.
                 long timeTaken = System.currentTimeMillis() - startTime;
-                WhitelistSyncLib.LOGGER.debug("Database opped " + name + " | Took " + timeTaken + "ms");
+                WhitelistSync2.LOGGER.debug("Database opped " + name + " | Took " + timeTaken + "ms");
 
                 success = true;
             } catch (SQLException e) {
-                WhitelistSyncLib.LOGGER.error("Error opping " + name + " !");
-                WhitelistSyncLib.LOGGER.error(e.getMessage(), e);
+                WhitelistSync2.LOGGER.error("Error opping " + name + " !");
+                WhitelistSync2.LOGGER.error(e.getMessage(), e);
                 success = false;
             } finally {
                 cleanup(stmt, conn);
@@ -480,7 +490,7 @@ public class SqLiteService implements BaseService {
 
             return success;
         } else {
-            WhitelistSyncLib.LOGGER.error("Op list syncing is currently disabled in your config. "
+            WhitelistSync2.LOGGER.error("Op list syncing is currently disabled in your config. "
                     + "Please enable it and restart the server to use this feature.");
         }
 
@@ -506,12 +516,12 @@ public class SqLiteService implements BaseService {
 
             // Time taken.
             long timeTaken = System.currentTimeMillis() - startTime;
-            WhitelistSyncLib.LOGGER.debug("Removed " + name + " from whitelist | Took " + timeTaken + "ms");
+            WhitelistSync2.LOGGER.debug("Removed " + name + " from whitelist | Took " + timeTaken + "ms");
 
             success = true;
         } catch (SQLException e) {
-            WhitelistSyncLib.LOGGER.error("Error removing " + name + " to whitelist database!");
-            WhitelistSyncLib.LOGGER.error(e.getMessage(), e);
+            WhitelistSync2.LOGGER.error("Error removing " + name + " to whitelist database!");
+            WhitelistSync2.LOGGER.error(e.getMessage(), e);
             success = false;
         } finally {
             cleanup(stmt, conn);
@@ -540,12 +550,12 @@ public class SqLiteService implements BaseService {
 
                 // Time taken
                 long timeTaken = System.currentTimeMillis() - startTime;
-                WhitelistSyncLib.LOGGER.debug("Deopped " + name + " | Took " + timeTaken + "ms");
+                WhitelistSync2.LOGGER.debug("Deopped " + name + " | Took " + timeTaken + "ms");
 
                 success = true;
             } catch (SQLException e) {
-                WhitelistSyncLib.LOGGER.error("Error deopping " + name + ".");
-                WhitelistSyncLib.LOGGER.error(e.getMessage(), e);
+                WhitelistSync2.LOGGER.error("Error deopping " + name + ".");
+                WhitelistSync2.LOGGER.error(e.getMessage(), e);
                 success = false;
             } finally {
                 cleanup(stmt, conn);
@@ -553,10 +563,48 @@ public class SqLiteService implements BaseService {
 
             return success;
         } else {
-            WhitelistSyncLib.LOGGER.error("Op list syncing is currently disabled in your config. "
+            WhitelistSync2.LOGGER.error("Op list syncing is currently disabled in your config. "
                     + "Please enable it and restart the server to use this feature.");
         }
 
         return false;
+    }
+
+    private static void migrateOpList(Connection conn) throws SQLException {
+        String sql;
+        PreparedStatement stmt;
+
+        // Add new level field to op table if it doesn't exist
+        sql = "SELECT COUNT(*) AS count FROM pragma_table_info('op') WHERE name='level'";
+        stmt = conn.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery();
+        stmt.close();
+        rs.next();
+
+        if(rs.getInt("count") == 0) {
+            sql = "ALTER TABLE op ADD COLUMN level INTEGER DEFAULT 4";
+            stmt = conn.prepareStatement(sql);
+            stmt.execute();
+            stmt.close();
+            WhitelistSync2.LOGGER.info("Added new op table \"level\" column. Existing entries get set to default level 4.");
+        }
+        rs.close();
+
+
+        // Add new bypassesPlayerLimit field to op table if it doesn't exist
+        sql = "SELECT COUNT(*) AS count FROM pragma_table_info('op') WHERE name='bypassesPlayerLimit'";
+        stmt = conn.prepareStatement(sql);
+        ResultSet rs1 = stmt.executeQuery();
+        stmt.close();
+        rs1.next();
+
+        if(rs1.getInt("count") == 0) {
+            sql = "ALTER TABLE op ADD COLUMN bypassesPlayerLimit INTEGER DEFAULT 0";
+            stmt = conn.prepareStatement(sql);
+            stmt.execute();
+            stmt.close();
+            WhitelistSync2.LOGGER.info("Added new op table \"bypassesPlayerLimit\" column. Existing entries get set to default bypassesPlayerLimit false.");
+        }
+        rs1.close();
     }
 }

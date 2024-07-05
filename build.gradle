@@ -13,6 +13,8 @@ base {
     archivesName = mod_id
 }
 
+jarJar.enable()
+
 // Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
@@ -99,6 +101,15 @@ dependencies {
     // compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api") // Adds JEI API as a compile dependency
     // runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}") // Adds the full JEI mod as a runtime dependency
     // implementation fg.deobf("com.tterrag.registrate:Registrate:MC${mc_version}-${registrate_version}") // Adds registrate as a dependency
+
+    // Database dependencies
+    jarJar(group: 'org.xerial', name: 'sqlite-jdbc', version: '[3.46.0.0,4.0)')
+    jarJar("com.mysql:mysql-connector-j:[9.0.0]")
+
+    // https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
+    implementation(group: 'org.xerial', name: 'sqlite-jdbc', version: '[3.46.0.0,4.0)')
+    // https://mvnrepository.com/artifact/com.mysql/mysql-connector-j
+    implementation "com.mysql:mysql-connector-j:9.0.0"
 
     // Example mod dependency using a mod jar from ./libs with a flat dir repository
     // This maps to ./libs/coolmod-${mc_version}-${coolmod_version}.jar

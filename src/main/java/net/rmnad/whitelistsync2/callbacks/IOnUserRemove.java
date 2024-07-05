@@ -1,4 +1,4 @@
-package net.rmnad.whitelistsynclib.callbacks;
+package net.rmnad.whitelistsync2.callbacks;
 
 import java.util.UUID;
 

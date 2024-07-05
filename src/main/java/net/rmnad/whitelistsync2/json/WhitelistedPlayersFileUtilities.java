@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import net.rmnad.whitelistsynclib.models.WhitelistedPlayer;
+import net.rmnad.whitelistsync2.models.WhitelistedPlayer;
 import net.rmnad.whitelistsync2.WhitelistSync2;
 
 import java.io.FileNotFoundException;
@@ -24,9 +24,9 @@ public class WhitelistedPlayersFileUtilities {
         ArrayList<WhitelistedPlayer> users = new ArrayList<>();
 
         // Get Json data
-        getWhitelistedPlayersFromFile().forEach((user) -> {
-            String uuid = ((JsonObject) user).get("uuid").getAsString();
-            String name = ((JsonObject) user).get("name").getAsString();
+        getWhitelistedPlayersFromFile().forEach((record) -> {
+            String uuid = ((JsonObject) record).get("uuid").getAsString();
+            String name = ((JsonObject) record).get("name").getAsString();
 
             // Create DTO
             WhitelistedPlayer whitelistedPlayer = new WhitelistedPlayer();

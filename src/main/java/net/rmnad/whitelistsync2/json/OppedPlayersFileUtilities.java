@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import net.rmnad.whitelistsynclib.models.OppedPlayer;
+import net.rmnad.whitelistsync2.models.OppedPlayer;
 import net.rmnad.whitelistsync2.WhitelistSync2;
 
 import java.io.FileNotFoundException;
@@ -14,7 +14,6 @@ import java.util.ArrayList;
 
 /**
  * Class to read json data from the server's ops.json file
-
  */
 public class OppedPlayersFileUtilities {
     
@@ -25,9 +24,9 @@ public class OppedPlayersFileUtilities {
         ArrayList<OppedPlayer> users = new ArrayList<>();
 
         // Get Json data
-        getOppedPlayersFromFile().forEach((user) -> {
-            String uuid = ((JsonObject) user).get("uuid").getAsString();
-            String name = ((JsonObject) user).get("name").getAsString();
+        getOppedPlayersFromFile().forEach((record) -> {
+            String uuid = ((JsonObject) record).get("uuid").getAsString();
+            String name = ((JsonObject) record).get("name").getAsString();
 
             // Create DTO
             OppedPlayer oppedPlayer = new OppedPlayer();
