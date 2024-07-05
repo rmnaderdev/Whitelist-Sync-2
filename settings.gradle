@@ -1,13 +1,24 @@
 pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        maven {
-            name = 'MinecraftForge'
-            url = 'https://maven.minecraftforge.net/'
-        }
+  repositories {
+    gradlePluginPortal()
+    maven {
+      name = 'MinecraftForge'
+      url = 'https://maven.minecraftforge.net/'
     }
+    maven { url "https://papermc.io/repo/repository/maven-public/" }
+    maven { url "https://maven.fabricmc.net/" }
+  }
 }
 
 plugins {
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
+  id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
 }
+
+rootProject.name = 'whitelistsync-common'
+
+
+include ':WhitelistSyncCore'
+include ':forge-1.19.2'
+
+project(':WhitelistSyncCore').projectDir = "$rootDir/WhitelistSyncCore" as File
+project(':forge-1.19.2').projectDir = "$rootDir/forge-1.19.2" as File
