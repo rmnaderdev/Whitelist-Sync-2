@@ -1,5 +1,3 @@
-description = "WhitelistSyncCore"
-
 apply plugin: 'eclipse'
 
 eclipse {
@@ -10,55 +8,12 @@ eclipse {
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
-dependencies {
-	// https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
-    implementation(group: 'org.xerial', name: 'sqlite-jdbc', version: '[3.46.0.0,4.0)')
-    // https://mvnrepository.com/artifact/com.mysql/mysql-connector-j
-    implementation(group: 'com.mysql', name: 'mysql-connector-j', version: '[9.0.0,10.0)')
-
-    compileOnly 'org.apache.logging.log4j:log4j-core:2.17.1'
-    compileOnly 'org.apache.logging.log4j:log4j-api:2.17.1'
-}
-
-processResources {
-    // replace stuff in mcmod.info, nothing else
-//    filesMatching([
-//        'core.yml',
-//        'lightings.txt',
-//        'perspectives.txt',
-//        'shaders.txt',
-//        'extracted/web/version.js',
-//        'extracted/web/index.html',
-//        'extracted/web/login.html',
-//    ]) {
-//        // replace version and mcversion
-//        expand(
-//                buildnumber: project.parent.ext.globals.buildNumber,
-//                version: project.version
-//        )
-//    }
-}
+description = "WhitelistSyncCore"
 
 jar {
-   archiveClassifier = 'unshaded'
-}
-
-shadowJar {
-    dependencies {
-        include(dependency('org.xerial:sqlite-jdbc:'))
-        include(dependency('com.mysql:mysql-connector-j:'))
-
-        exclude("META-INF/maven/**")
-        exclude("META-INF/services/**")
-	}
-
-	relocate('org.sqlite', 'net.rmnad.org.sqlite')
-    relocate('com.mysql', 'net.rmnad.com.mysql')
-	
     destinationDirectory = file '../target'
-    archiveClassifier = ''
 }
 
 artifacts {
-    archives shadowJar
+    archives jar
 }

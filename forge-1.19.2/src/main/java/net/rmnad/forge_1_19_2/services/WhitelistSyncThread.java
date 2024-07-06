@@ -7,6 +7,7 @@ import net.rmnad.forge_1_19_2.Config;
 import net.rmnad.forge_1_19_2.WhitelistSync2;
 import net.rmnad.forge_1_19_2.json.OppedPlayersFileUtilities;
 import net.rmnad.forge_1_19_2.json.WhitelistedPlayersFileUtilities;
+import net.rmnad.whitelistsync2.Log;
 import net.rmnad.whitelistsync2.services.BaseService;
 
 /**
@@ -30,22 +31,22 @@ public class WhitelistSyncThread extends Thread {
     @Override
     public void run() {
         // Delay thread start for 5 sec
-        WhitelistSync2.LOGGER.info("Delay start of sync thread, waiting 5 sec...");
+        Log.info("Delay start of sync thread, waiting 5 sec...");
         try {
             Thread.sleep(5000);
         } catch (InterruptedException ignored) {
         }
-        WhitelistSync2.LOGGER.info("Sync thread starting...");
+        Log.info("Sync thread starting...");
 
         if(!this.service.initializeDatabase() || this.errorOnSetup) {
-            WhitelistSync2.LOGGER.error("Error initializing whitelist sync database. Disabling mod functionality. Please correct errors and restart.");
+            Log.error("Error initializing whitelist sync database. Disabling mod functionality. Please correct errors and restart.");
             this.errorOnSetup = true;
         } else {
             // Database is setup!
 
             // Check if whitelisting is enabled.
             if (!server.getPlayerList().isUsingWhitelist()) {
-                WhitelistSync2.LOGGER.info("Oh no! I see whitelisting isn't enabled in the server properties. "
+                Log.info("Oh no! I see whitelisting isn't enabled in the server properties. "
                         + "I assume this is not intentional, I'll enable it for you!");
                 server.getPlayerList().setUsingWhiteList(true);
             }
@@ -89,7 +90,7 @@ public class WhitelistSyncThread extends Thread {
                 }
             }
         } catch (Exception e) {
-            WhitelistSync2.LOGGER.error("Error in the whitelist sync thread! Syncing will stop until the server is restarted.", e);
+            Log.error("Error in the whitelist sync thread! Syncing will stop until the server is restarted.", e);
         }
     }
 

@@ -1,6 +1,6 @@
 package net.rmnad.whitelistsync2.services;
 
-import net.rmnad.whitelistsync2.WhitelistSyncCore;
+import net.rmnad.whitelistsync2.Log;
 import net.rmnad.whitelistsync2.callbacks.IOnUserAdd;
 import net.rmnad.whitelistsync2.callbacks.IOnUserRemove;
 import net.rmnad.whitelistsync2.models.OppedPlayer;
@@ -39,14 +39,14 @@ public class MySqlService implements BaseService {
     // Function used to initialize the database file
     @Override
     public boolean initializeDatabase() {
-        WhitelistSyncCore.LOGGER.info("Setting up the MySQL service...");
+        Log.info("Setting up the MySQL service...");
         boolean isSuccess = true;
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
         } catch (Exception e) {
-            WhitelistSyncCore.LOGGER.error("Failed to init mysql-connector. Is the library missing?");
-            WhitelistSyncCore.LOGGER.error(e.getMessage(), e);
+            Log.error("Failed to init mysql-connector. Is the library missing?");
+            Log.error(e.getMessage());
             isSuccess = false;
         }
 
@@ -54,11 +54,11 @@ public class MySqlService implements BaseService {
         if (isSuccess) {
             try {
                 Connection conn = DriverManager.getConnection(url, username, password);
-                WhitelistSyncCore.LOGGER.debug("Connected to " + url + " successfully!");
+                Log.info("Connected to " + url + " successfully!");
                 conn.close();
             } catch (SQLException e) {
-                WhitelistSyncCore.LOGGER.error("Failed to connect to the mySQL database! Did you set one up in the config?");
-                WhitelistSyncCore.LOGGER.error(e.getMessage(), e);
+                Log.error("Failed to connect to the mySQL database! Did you set one up in the config?");
+                Log.error(e.getMessage());
                 isSuccess = false;
             }
         }
@@ -108,11 +108,11 @@ public class MySqlService implements BaseService {
                     migrateOpList(conn, databaseName);
                 }
 
-                WhitelistSyncCore.LOGGER.info("Setup MySQL database!");
+                Log.info("Setup MySQL database!");
                 conn.close();
             } catch (Exception e) {
-                WhitelistSyncCore.LOGGER.error("Error initializing database and database tables.");
-                WhitelistSyncCore.LOGGER.error(e.getMessage(), e);
+                Log.error("Error initializing database and database tables.");
+                Log.error(e.getMessage());
                 isSuccess = false;
             }
         }
@@ -147,15 +147,15 @@ public class MySqlService implements BaseService {
             // Time taken
             long timeTaken = System.currentTimeMillis() - startTime;
 
-            WhitelistSyncCore.LOGGER.debug("Database pulled whitelisted players | Took " + timeTaken + "ms | Read " + records + " records.");
+            Log.debug("Database pulled whitelisted players | Took " + timeTaken + "ms | Read " + records + " records.");
 
             rs.close();
             stmt.close();
             conn.close();
         } catch (SQLException e) {
             // Something is wrong...
-            WhitelistSyncCore.LOGGER.error("Error querying whitelisted players from database!");
-            WhitelistSyncCore.LOGGER.error(e.getMessage(), e);
+            Log.error("Error querying whitelisted players from database!");
+            Log.error(e.getMessage());
         }
         return whitelistedPlayers;
     }
@@ -194,17 +194,17 @@ public class MySqlService implements BaseService {
                 // Time taken
                 long timeTaken = System.currentTimeMillis() - startTime;
 
-                WhitelistSyncCore.LOGGER.debug("Database pulled opped players | Took " + timeTaken + "ms | Read " + records + " records.");
+                Log.debug("Database pulled opped players | Took " + timeTaken + "ms | Read " + records + " records.");
 
                 rs.close();
                 stmt.close();
                 conn.close();
             } catch (SQLException e) {
-                WhitelistSyncCore.LOGGER.error("Error querying opped players from database!");
-                WhitelistSyncCore.LOGGER.error(e.getMessage(), e);
+                Log.error("Error querying opped players from database!");
+                Log.error(e.getMessage());
             }
         } else {
-            WhitelistSyncCore.LOGGER.error("Op list syncing is currently disabled in your config. "
+            Log.error("Op list syncing is currently disabled in your config. "
                     + "Please enable it and restart the server to use this feature.");
         }
 
@@ -235,13 +235,13 @@ public class MySqlService implements BaseService {
             }
             // Record time taken.
             long timeTaken = System.currentTimeMillis() - startTime;
-            WhitelistSyncCore.LOGGER.debug("Whitelist table updated | Took " + timeTaken + "ms | Wrote " + records + " records.");
+            Log.debug("Whitelist table updated | Took " + timeTaken + "ms | Wrote " + records + " records.");
             conn.close();
 
             return true;
         } catch (SQLException e) {
-            WhitelistSyncCore.LOGGER.error("Failed to update database with local records.");
-            WhitelistSyncCore.LOGGER.error(e.getMessage(), e);
+            Log.error("Failed to update database with local records.");
+            Log.error(e.getMessage());
         }
 
         return false;
@@ -272,16 +272,16 @@ public class MySqlService implements BaseService {
                 }
                 // Record time taken.
                 long timeTaken = System.currentTimeMillis() - startTime;
-                WhitelistSyncCore.LOGGER.debug("Op table updated | Took " + timeTaken + "ms | Wrote " + records + " records.");
+                Log.debug("Op table updated | Took " + timeTaken + "ms | Wrote " + records + " records.");
                 conn.close();
 
                 return true;
             } catch (SQLException e) {
-                WhitelistSyncCore.LOGGER.error("Failed to update database with local records.");
-                WhitelistSyncCore.LOGGER.error(e.getMessage(), e);
+                Log.error("Failed to update database with local records.");
+                Log.error(e.getMessage());
             }
         } else {
-            WhitelistSyncCore.LOGGER.error("Op list syncing is currently disabled in your config. "
+            Log.error("Op list syncing is currently disabled in your config. "
                     + "Please enable it and restart the server to use this feature.");
         }
 
@@ -310,32 +310,32 @@ public class MySqlService implements BaseService {
                     if (localWhitelistedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid.toString()))) {
                         try {
                             onUserAdd.call(uuid, name);
-                            WhitelistSyncCore.LOGGER.debug("Added " + name + " to whitelist.");
+                            Log.debug("Added " + name + " to whitelist.");
                             records++;
                         } catch (NullPointerException e) {
-                            WhitelistSyncCore.LOGGER.error("Player is null?");
-                            WhitelistSyncCore.LOGGER.error(e.getMessage(), e);
+                            Log.error("Player is null?");
+                            Log.error(e.getMessage());
                         }
                     }
                 } else {
                     if (localWhitelistedPlayers.stream().anyMatch(o -> o.getUuid().equals(uuid.toString()))) {
                         onUserRemove.call(uuid, name);
-                        WhitelistSyncCore.LOGGER.debug("Removed " + name + " from whitelist.");
+                        Log.debug("Removed " + name + " from whitelist.");
                         records++;
                     }
                 }
 
             }
             long timeTaken = System.currentTimeMillis() - startTime;
-            WhitelistSyncCore.LOGGER.debug("Copied whitelist database to local | Took " + timeTaken + "ms | Wrote " + records + " records.");
+            Log.debug("Copied whitelist database to local | Took " + timeTaken + "ms | Wrote " + records + " records.");
 
             rs.close();
             stmt.close();
             conn.close();
             return true;
         } catch (SQLException e) {
-            WhitelistSyncCore.LOGGER.error("Error querying whitelisted players from database!");
-            WhitelistSyncCore.LOGGER.error(e.getMessage(), e);
+            Log.error("Error querying whitelisted players from database!");
+            Log.error(e.getMessage());
         }
 
         return false;
@@ -365,35 +365,35 @@ public class MySqlService implements BaseService {
                         if (localOppedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid.toString()))) {
                             try {
                                 onUserAdd.call(uuid, name);
-                                WhitelistSyncCore.LOGGER.debug("Opped " + name + ".");
+                                Log.debug("Opped " + name + ".");
                                 records++;
                             } catch (NullPointerException e) {
-                                WhitelistSyncCore.LOGGER.error("Player is null?");
-                                WhitelistSyncCore.LOGGER.error(e.getMessage(), e);
+                                Log.error("Player is null?");
+                                Log.error(e.getMessage());
                             }
                         }
                     } else {
                         if (localOppedPlayers.stream().anyMatch(o -> o.getUuid().equals(uuid.toString()))) {
                             onUserRemove.call(uuid, name);
-                            WhitelistSyncCore.LOGGER.debug("Deopped " + name + ".");
+                            Log.debug("Deopped " + name + ".");
                             records++;
                         }
                     }
 
                 }
                 long timeTaken = System.currentTimeMillis() - startTime;
-                WhitelistSyncCore.LOGGER.debug("Copied op database to local | Took " + timeTaken + "ms | Wrote " + records + " records.");
+                Log.debug("Copied op database to local | Took " + timeTaken + "ms | Wrote " + records + " records.");
 
                 rs.close();
                 stmt.close();
                 conn.close();
                 return true;
             } catch (SQLException e) {
-                WhitelistSyncCore.LOGGER.error("Error querying opped players from database!");
-                WhitelistSyncCore.LOGGER.error(e.getMessage(), e);
+                Log.error("Error querying opped players from database!");
+                Log.error(e.getMessage());
             }
         } else {
-            WhitelistSyncCore.LOGGER.error("Op list syncing is currently disabled in your config. "
+            Log.error("Op list syncing is currently disabled in your config. "
                     + "Please enable it and restart the server to use this feature.");
         }
 
@@ -415,14 +415,14 @@ public class MySqlService implements BaseService {
 
             // Time taken.
             long timeTaken = System.currentTimeMillis() - startTime;
-            WhitelistSyncCore.LOGGER.debug("Added " + name + " to whitelist | Took " + timeTaken + "ms");
+            Log.debug("Added " + name + " to whitelist | Took " + timeTaken + "ms");
             stmt.close();
             conn.close();
             return true;
 
         } catch (SQLException e) {
-            WhitelistSyncCore.LOGGER.error("Error adding " + name + " to whitelist database!");
-            WhitelistSyncCore.LOGGER.error(e.getMessage(), e);
+            Log.error("Error adding " + name + " to whitelist database!");
+            Log.error(e.getMessage());
         }
 
         return false;
@@ -444,17 +444,17 @@ public class MySqlService implements BaseService {
 
                 // Time taken.
                 long timeTaken = System.currentTimeMillis() - startTime;
-                WhitelistSyncCore.LOGGER.debug("Database opped " + name + " | Took " + timeTaken + "ms");
+                Log.debug("Database opped " + name + " | Took " + timeTaken + "ms");
                 stmt.close();
                 conn.close();
                 return true;
 
             } catch (SQLException e) {
-                WhitelistSyncCore.LOGGER.error("Error opping " + name + " !");
-                WhitelistSyncCore.LOGGER.error(e.getMessage(), e);
+                Log.error("Error opping " + name + " !");
+                Log.error(e.getMessage());
             }
         } else {
-            WhitelistSyncCore.LOGGER.error("Op list syncing is currently disabled in your config. "
+            Log.error("Op list syncing is currently disabled in your config. "
                     + "Please enable it and restart the server to use this feature.");
         }
 
@@ -476,14 +476,14 @@ public class MySqlService implements BaseService {
 
             // Time taken.
             long timeTaken = System.currentTimeMillis() - startTime;
-            WhitelistSyncCore.LOGGER.debug("Removed " + name + " from whitelist | Took " + timeTaken + "ms");
+            Log.debug("Removed " + name + " from whitelist | Took " + timeTaken + "ms");
             stmt.close();
             conn.close();
             return true;
 
         } catch (SQLException e) {
-            WhitelistSyncCore.LOGGER.error("Error removing " + name + " to whitelist database!");
-            WhitelistSyncCore.LOGGER.error(e.getMessage(), e);
+            Log.error("Error removing " + name + " to whitelist database!");
+            Log.error(e.getMessage());
         }
 
         return false;
@@ -505,17 +505,17 @@ public class MySqlService implements BaseService {
 
                 // Time taken.
                 long timeTaken = System.currentTimeMillis() - startTime;
-                WhitelistSyncCore.LOGGER.debug("Deopped " + name + " | Took " + timeTaken + "ms");
+                Log.debug("Deopped " + name + " | Took " + timeTaken + "ms");
                 stmt.close();
                 conn.close();
                 return true;
 
             } catch (SQLException e) {
-                WhitelistSyncCore.LOGGER.error("Error deopping " + name + ".");
-                WhitelistSyncCore.LOGGER.error(e.getMessage(), e);
+                Log.error("Error deopping " + name + ".");
+                Log.error(e.getMessage());
             }
         } else {
-            WhitelistSyncCore.LOGGER.error("Op list syncing is currently disabled in your config. "
+            Log.error("Op list syncing is currently disabled in your config. "
                     + "Please enable it and restart the server to use this feature.");
         }
 
@@ -541,7 +541,7 @@ public class MySqlService implements BaseService {
             stmt = conn.prepareStatement(sql);
             stmt.execute();
             stmt.close();
-            WhitelistSyncCore.LOGGER.info("Added new op table \"level\" column. Existing entries get set to default level 4.");
+            Log.info("Added new op table \"level\" column. Existing entries get set to default level 4.");
         }
         rs.close();
 
@@ -561,7 +561,7 @@ public class MySqlService implements BaseService {
             stmt = conn.prepareStatement(sql);
             stmt.execute();
             stmt.close();
-            WhitelistSyncCore.LOGGER.info("Added new op table \"bypassesPlayerLimit\" column. Existing entries get set to default bypassesPlayerLimit false.");
+            Log.info("Added new op table \"bypassesPlayerLimit\" column. Existing entries get set to default bypassesPlayerLimit false.");
         }
         rs1.close();
     }

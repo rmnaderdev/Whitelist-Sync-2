@@ -7,11 +7,10 @@ import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.rmnad.whitelistsync2.Log;
 import net.rmnad.whitelistsync2.services.BaseService;
 import net.rmnad.whitelistsync2.services.MySqlService;
 import net.rmnad.whitelistsync2.services.SqLiteService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import net.rmnad.forge_1_19_2.commands.op.OpCommands;
 import net.rmnad.forge_1_19_2.commands.whitelist.WhitelistCommands;
 import net.rmnad.forge_1_19_2.services.*;
@@ -20,7 +19,6 @@ import net.rmnad.forge_1_19_2.services.*;
 public class WhitelistSync2
 {
     public static final String MODID = "whitelistsync2";
-    public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static String SERVER_FILEPATH;
 
     // Database Service
@@ -30,7 +28,8 @@ public class WhitelistSync2
         // Register config
         Config.register(ModLoadingContext.get());
         MinecraftForge.EVENT_BUS.register(this);
-        LOGGER.info("Hello from Whitelist Sync 2!");
+        Log.setLogger(new ForgeLogger());
+        Log.info("Hello from Whitelist Sync 2!");
     }
 
     @SubscribeEvent
@@ -38,10 +37,10 @@ public class WhitelistSync2
         new WhitelistCommands(event.getDispatcher());
 
         if(Config.COMMON.SYNC_OP_LIST.get()) {
-            WhitelistSync2.LOGGER.info("Opped Player Sync is enabled");
+            Log.info("Opped Player Sync is enabled");
             new OpCommands(event.getDispatcher());
         } else {
-            WhitelistSync2.LOGGER.info("Opped Player Sync is disabled");
+            Log.info("Opped Player Sync is disabled");
         }
     }
 
@@ -56,9 +55,9 @@ public class WhitelistSync2
         // Server filepath
         SERVER_FILEPATH = server.getServerDirectory().getPath();
 
-        LOGGER.info("----------------------------------------------");
-        LOGGER.info("---------------WHITELIST SYNC 2---------------");
-        LOGGER.info("----------------------------------------------");
+        Log.info("----------------------------------------------");
+        Log.info("---------------WHITELIST SYNC 2---------------");
+        Log.info("----------------------------------------------");
 
         switch (Config.COMMON.DATABASE_MODE.get()) {
             case SQLITE:
@@ -66,12 +65,12 @@ public class WhitelistSync2
                 break;
             case MYSQL:
                 whitelistService = new MySqlService(
-                        Config.COMMON.MYSQL_DB_NAME.get(),
-                        Config.COMMON.MYSQL_IP.get(),
-                        Config.COMMON.MYSQL_PORT.get(),
-                        Config.COMMON.MYSQL_USERNAME.get(),
-                        Config.COMMON.MYSQL_PASSWORD.get(),
-                        Config.COMMON.SYNC_OP_LIST.get()
+                    Config.COMMON.MYSQL_DB_NAME.get(),
+                    Config.COMMON.MYSQL_IP.get(),
+                    Config.COMMON.MYSQL_PORT.get(),
+                    Config.COMMON.MYSQL_USERNAME.get(),
+                    Config.COMMON.MYSQL_PASSWORD.get(),
+                    Config.COMMON.SYNC_OP_LIST.get()
                 );
                 break;
 //            case POSTGRESQL:
@@ -85,21 +84,21 @@ public class WhitelistSync2
 //                );
 //                break;
             default:
-                LOGGER.error("Please check what WHITELIST_MODE is set in the config and make sure it is set to a supported mode.");
+                Log.error("Please check what WHITELIST_MODE is set in the config and make sure it is set to a supported mode.");
                 errorOnSetup = true;
                 break;
         }
 
         StartWhitelistSyncThread(server, whitelistService, errorOnSetup);
 
-        LOGGER.info("----------------------------------------------");
-        LOGGER.info("----------------------------------------------");
-        LOGGER.info("----------------------------------------------");
+        Log.info("----------------------------------------------");
+        Log.info("----------------------------------------------");
+        Log.info("----------------------------------------------");
     }
 
     public static void StartWhitelistSyncThread(MinecraftServer server, BaseService service, boolean errorOnSetup) {
         WhitelistSyncThread syncThread = new WhitelistSyncThread(server, service, Config.COMMON.SYNC_OP_LIST.get(), errorOnSetup);
         syncThread.start();
-        LOGGER.info("WhitelistSync Thread Started!");
+        Log.info("WhitelistSync Thread Started!");
     }
 }

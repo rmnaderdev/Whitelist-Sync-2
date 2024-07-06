@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import net.rmnad.forge_1_19_2.WhitelistSync2;
+import net.rmnad.whitelistsync2.Log;
 import net.rmnad.whitelistsync2.models.OppedPlayer;
 
 import java.io.FileNotFoundException;
@@ -47,12 +48,12 @@ public class OppedPlayersFileUtilities {
             // Read data as Json array from server directory
             oplist = (JsonArray) parser.parse(new FileReader(WhitelistSync2.SERVER_FILEPATH + "/ops.json"));
             
-            // WhitelistSync2.LOGGER.debug("getOppedPlayersFromFile returned an array of " + oplist.size() + " entries.");
+            // Log.debug("getOppedPlayersFromFile returned an array of " + oplist.size() + " entries.");
         } catch (FileNotFoundException e) {
-            WhitelistSync2.LOGGER.error("ops.json file not found.");
+            Log.error("ops.json file not found.");
             e.printStackTrace();
         } catch (JsonParseException e) {
-            WhitelistSync2.LOGGER.error("ops.json parse error.");
+            Log.error("ops.json parse error.");
             e.printStackTrace();
         }
         

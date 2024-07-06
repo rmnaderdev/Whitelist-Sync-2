@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import net.rmnad.forge_1_19_2.WhitelistSync2;
+import net.rmnad.whitelistsync2.Log;
 import net.rmnad.whitelistsync2.models.BannedIp;
 
 import java.io.FileNotFoundException;
@@ -48,10 +49,10 @@ public class BannedIpsFileUtilties {
             // Read data as Json array from server directory
             bannedPlayers = (JsonArray) parser.parse(new FileReader(WhitelistSync2.SERVER_FILEPATH + "/banned-ips.json"));
         } catch (FileNotFoundException e) {
-            WhitelistSync2.LOGGER.error("banned-ips.json file not found.");
+            Log.error("banned-ips.json file not found.");
             e.printStackTrace();
         } catch (JsonParseException e) {
-            WhitelistSync2.LOGGER.error("banned-ips.json parse error.");
+            Log.error("banned-ips.json parse error.");
             e.printStackTrace();
         }
 

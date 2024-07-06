@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import net.rmnad.forge_1_19_2.WhitelistSync2;
+import net.rmnad.whitelistsync2.Log;
 import net.rmnad.whitelistsync2.models.WhitelistedPlayer;
 
 import java.io.FileNotFoundException;
@@ -47,12 +48,12 @@ public class WhitelistedPlayersFileUtilities {
             // Read data as Json array from server directory
             whitelist = (JsonArray) parser.parse(new FileReader(WhitelistSync2.SERVER_FILEPATH + "/whitelist.json"));
 
-            // WhitelistSync2.LOGGER.debug("getWhitelistedPlayersFromFile returned an array of " + whitelist.size() + " entries.");
+            // Log.debug("getWhitelistedPlayersFromFile returned an array of " + whitelist.size() + " entries.");
         } catch (FileNotFoundException e) {
-            WhitelistSync2.LOGGER.error("whitelist.json file not found.");
+            Log.error("whitelist.json file not found.");
             e.printStackTrace();
         } catch (JsonParseException e) {
-            WhitelistSync2.LOGGER.error("whitelist.json parse error.");
+            Log.error("whitelist.json parse error.");
             e.printStackTrace();
         }
 
