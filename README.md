@@ -4,10 +4,8 @@ Introducing Whitelist Sync!
 ===========================
 
 
-### A mod that allows you to sync the whitelists and ops list from multiple Forge and Spigot servers together using one MySQL or SQlite database!
+### A mod that allows you to sync the whitelists and ops list from multiple Minecraft servers together using one MySQL or SQlite database!
 This mod allows you to run a single /wl add &lt;player&gt; or /wlop op &lt;player&gt; on one of your servers and it will update all of your other forge servers running this mod connected to the proper database!
-
-Looking for a spigot plugin? Find it on the [WhitelistSync2-Spigot GitHub](https://github.com/PotatoSauceVFX/Whitelist-Sync-2-Spigot/releases "WhitelistSync2-Spigot GitHub") page.
 
 ## News
 **[7/31/20]** Version 2.2.1 has been released and includes some bug fixes. **PLEASE NOTE: Once you initially run this version on a MySQL database when using the op sync feature, the older versions of the mod will no longer work and will give SQL errors due to changes in the data structure. To still use older versions of this mod, disable the op sync feature of the older versions or contact me for specific changes.**
@@ -30,13 +28,13 @@ Looking for a spigot plugin? Find it on the [WhitelistSync2-Spigot GitHub](https
 ## Installation
 
 #### For SQLite database config:
-- Download this mod and add it to your mods folder.
+- Download this mod AND the [SQLite DB connector](https://modrinth.com/plugin/sqlite-jdbc) mod and add both jar files to your mods folder.
 - Run your server once and setup the config (whitelistsync.cfg/whitelistsync-common.toml located in the config folder) and configure your database settings and timers.
 - NOTE: Be sure to make the database path the same for all of the servers you want to link together!
 - When the server runs it is going to make a new database unless one already exists. If you want to push your current whitelist to the new database use "/wl copyServerToDatabase" then you can start all of your other servers and they will sync to the database.
 
 #### For MySQL server database setup:
-- Download this mod and add it to your mods folder.
+- Download this mod AND the [MySQL DB connector](https://modrinth.com/plugin/mysql-jdbc) mod and add both jar files to your mods folder.
 - Run your server once and setup the config (whitelistsync.cfg/whitelistsync-common.toml located in the config folder) and configure your database settings and timers.
 - Setup your mySQL database IP, port, and authentication as well as the Sync Timer.
 - Run server and make sure the database connects. **Note:** Mod will make it's own database and table for you or connect to an existing one.

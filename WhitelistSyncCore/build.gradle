@@ -1,0 +1,19 @@
+apply plugin: 'eclipse'
+
+eclipse {
+    project {
+        name = "WhitelistSync(WhitelistSyncCore)"
+    }
+}
+
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+
+description = "WhitelistSyncCore"
+
+jar {
+    destinationDirectory = file '../target'
+}
+
+artifacts {
+    archives jar
+}
