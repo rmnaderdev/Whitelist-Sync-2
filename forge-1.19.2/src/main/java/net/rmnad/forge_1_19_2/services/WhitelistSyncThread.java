@@ -15,7 +15,7 @@ public class WhitelistSyncThread extends Thread {
     private final MinecraftServer server;
     private final BaseService service;
     private final boolean syncOpLists;
-    private boolean errorOnSetup;
+    private final boolean errorOnSetup;
 
     public WhitelistSyncThread(MinecraftServer server, BaseService service, boolean syncOpLists, boolean errorOnSetup) {
         this.server = server;
@@ -30,9 +30,6 @@ public class WhitelistSyncThread extends Thread {
 
         if(this.errorOnSetup) {
             Log.error("Error initializing whitelist sync database. Disabling mod functionality. Please correct errors and restart.");
-        }
-
-        if (this.errorOnSetup) {
             return;
         }
 
@@ -67,8 +64,7 @@ public class WhitelistSyncThread extends Thread {
 
                 try {
                     Thread.sleep(Config.COMMON.SYNC_TIMER.get() * 1000);
-                } catch (InterruptedException ignored) {
-                }
+                } catch (InterruptedException ignored) {}
             }
         } catch (Exception e) {
             Log.error("Error in the whitelist sync thread! Syncing will stop until the server is restarted.", e);

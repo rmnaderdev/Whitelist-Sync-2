@@ -32,6 +32,7 @@ public class WhitelistSync2
         Log.info("Hello from Whitelist Sync 2!");
     }
 
+    // Command Registration
     @SubscribeEvent
     public void registerCommands(RegisterCommandsEvent event){
         new WhitelistCommands(event.getDispatcher());
@@ -44,6 +45,7 @@ public class WhitelistSync2
         }
     }
 
+    // Server Started Event
     @SubscribeEvent
     public void onServerStarted(ServerStartedEvent event) {
         WhitelistSync2.SetupWhitelistSync(event.getServer());
