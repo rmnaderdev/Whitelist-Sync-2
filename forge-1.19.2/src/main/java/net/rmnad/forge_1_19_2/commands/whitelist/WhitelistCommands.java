@@ -13,7 +13,7 @@ public class WhitelistCommands {
                         .then(CommandAdd.register())
                         .then(CommandRemove.register())
                         .then(CommandSync.register())
-                        .then(CommandCopyToDatabase.register())
+                        .then(CommandPush.register())
         );
     }
 }

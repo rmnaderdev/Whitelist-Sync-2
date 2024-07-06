@@ -1,9 +1,11 @@
 package net.rmnad.whitelistsync2.services;
 
-import net.rmnad.whitelistsync2.callbacks.IOnUserAdd;
+import net.rmnad.whitelistsync2.callbacks.IOnUserOpAdd;
+import net.rmnad.whitelistsync2.callbacks.IOnUserOpRemove;
+import net.rmnad.whitelistsync2.callbacks.IOnUserWhitelistAdd;
 import net.rmnad.whitelistsync2.models.OppedPlayer;
 import net.rmnad.whitelistsync2.models.WhitelistedPlayer;
-import net.rmnad.whitelistsync2.callbacks.IOnUserRemove;
+import net.rmnad.whitelistsync2.callbacks.IOnUserWhitelistRemove;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -21,11 +23,11 @@ public interface BaseService {
     public ArrayList<OppedPlayer> getOppedPlayersFromDatabase();
 
     // Syncing functions
-    public boolean copyLocalWhitelistedPlayersToDatabase(ArrayList<WhitelistedPlayer> whitelistedPlayers);
-    public boolean copyLocalOppedPlayersToDatabase(ArrayList<OppedPlayer> oppedPlayers);
+    public boolean pushLocalWhitelistToDatabase(ArrayList<WhitelistedPlayer> whitelistedPlayers);
+    public boolean pushLocalOpsToDatabase(ArrayList<OppedPlayer> oppedPlayers);
 
-    public boolean copyDatabaseWhitelistedPlayersToLocal(ArrayList<WhitelistedPlayer> localWhitelistedPlayers, IOnUserAdd onUserAdd, IOnUserRemove onUserRemove);
-    public boolean copyDatabaseOppedPlayersToLocal(ArrayList<OppedPlayer> localOppedPlayers, IOnUserAdd onUserAdd, IOnUserRemove onUserRemove);
+    public boolean pullDatabaseWhitelistToLocal(ArrayList<WhitelistedPlayer> localWhitelistedPlayers, IOnUserWhitelistAdd onUserAdd, IOnUserWhitelistRemove onUserRemove);
+    public boolean pullDatabaseOpsToLocal(ArrayList<OppedPlayer> localOppedPlayers, IOnUserOpAdd onUserAdd, IOnUserOpRemove onUserRemove);
 
 
     // Addition functions

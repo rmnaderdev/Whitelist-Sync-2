@@ -1,8 +1,10 @@
 package net.rmnad.whitelistsync2.services;
 
 import net.rmnad.whitelistsync2.Log;
-import net.rmnad.whitelistsync2.callbacks.IOnUserAdd;
-import net.rmnad.whitelistsync2.callbacks.IOnUserRemove;
+import net.rmnad.whitelistsync2.callbacks.IOnUserOpAdd;
+import net.rmnad.whitelistsync2.callbacks.IOnUserOpRemove;
+import net.rmnad.whitelistsync2.callbacks.IOnUserWhitelistAdd;
+import net.rmnad.whitelistsync2.callbacks.IOnUserWhitelistRemove;
 import net.rmnad.whitelistsync2.models.OppedPlayer;
 import net.rmnad.whitelistsync2.models.WhitelistedPlayer;
 
@@ -46,7 +48,7 @@ public class MySqlService implements BaseService {
             Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             Log.error("Failed to init com.mysql.cj.jdbc.Driver. Is the MySQL library missing? Try downloading it from https://modrinth.com/plugin/mysql-jdbc and add it to your mods folder.");
-            Log.error(e.getMessage());
+            Log.error(e.getMessage(), e);
             isSuccess = false;
         }
 
@@ -58,7 +60,7 @@ public class MySqlService implements BaseService {
                 conn.close();
             } catch (SQLException e) {
                 Log.error("Failed to connect to the mySQL database! Did you set one up in the config?");
-                Log.error(e.getMessage());
+                Log.error(e.getMessage(), e);
                 isSuccess = false;
             }
         }
@@ -94,8 +96,6 @@ public class MySqlService implements BaseService {
                     sql = "CREATE TABLE IF NOT EXISTS " + databaseName + ".op ("
                             + "`uuid` VARCHAR(60) NOT NULL,"
                             + "`name` VARCHAR(20) NOT NULL,"
-                            + "`level` INTEGER NOT NULL,"
-                            + "`bypassesPlayerLimit` TINYINT NOT NULL,"
                             + "`isOp` TINYINT NOT NULL DEFAULT 1,"
                             + "PRIMARY KEY (`uuid`)"
                             + ")";
@@ -105,14 +105,15 @@ public class MySqlService implements BaseService {
 
 
                     // Execute migration
-                    migrateOpList(conn, databaseName);
+                    // TODO: Handle migration for level and bypassesPlayerLimit in the future
+                    //migrateOpList(conn, databaseName);
                 }
 
                 Log.info("Setup MySQL database!");
                 conn.close();
             } catch (Exception e) {
                 Log.error("Error initializing database and database tables.");
-                Log.error(e.getMessage());
+                Log.error(e.getMessage(), e);
                 isSuccess = false;
             }
         }
@@ -155,7 +156,7 @@ public class MySqlService implements BaseService {
         } catch (SQLException e) {
             // Something is wrong...
             Log.error("Error querying whitelisted players from database!");
-            Log.error(e.getMessage());
+            Log.error(e.getMessage(), e);
         }
         return whitelistedPlayers;
     }
@@ -174,7 +175,7 @@ public class MySqlService implements BaseService {
                 Connection conn = DriverManager.getConnection(url, username, password);
                 long startTime = System.currentTimeMillis();
 
-                String sql = "SELECT uuid, name, level, bypassesPlayerLimit FROM " + databaseName + ".op WHERE isOp = true;";
+                String sql = "SELECT uuid, name FROM " + databaseName + ".op WHERE isOp = true;";
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 ResultSet rs = stmt.executeQuery();
 
@@ -184,8 +185,6 @@ public class MySqlService implements BaseService {
                     oppedPlayer.setIsOp(true);
                     oppedPlayer.setUuid(rs.getString("uuid"));
                     oppedPlayer.setName(rs.getString("name"));
-                    oppedPlayer.setLevel(rs.getInt("level"));
-                    oppedPlayer.setBypassesPlayerLimit(rs.getBoolean("bypassesPlayerLimit"));
 
                     oppedPlayers.add(oppedPlayer);
                     records++;
@@ -201,7 +200,7 @@ public class MySqlService implements BaseService {
                 conn.close();
             } catch (SQLException e) {
                 Log.error("Error querying opped players from database!");
-                Log.error(e.getMessage());
+                Log.error(e.getMessage(), e);
             }
         } else {
             Log.error("Op list syncing is currently disabled in your config. "
@@ -212,7 +211,7 @@ public class MySqlService implements BaseService {
     }
 
     @Override
-    public boolean copyLocalWhitelistedPlayersToDatabase(ArrayList<WhitelistedPlayer> whitelistedPlayers) {
+    public boolean pushLocalWhitelistToDatabase(ArrayList<WhitelistedPlayer> whitelistedPlayers) {
         // TODO: Start job on thread to avoid lag?
         // Keep track of records.
         int records = 0;
@@ -241,14 +240,14 @@ public class MySqlService implements BaseService {
             return true;
         } catch (SQLException e) {
             Log.error("Failed to update database with local records.");
-            Log.error(e.getMessage());
+            Log.error(e.getMessage(), e);
         }
 
         return false;
     }
 
     @Override
-    public boolean copyLocalOppedPlayersToDatabase(ArrayList<OppedPlayer> oppedPlayers) {
+    public boolean pushLocalOpsToDatabase(ArrayList<OppedPlayer> oppedPlayers) {
         if (this.syncingOpList) {
             // TODO: Start job on thread to avoid lag?
             // Keep track of records.
@@ -278,7 +277,7 @@ public class MySqlService implements BaseService {
                 return true;
             } catch (SQLException e) {
                 Log.error("Failed to update database with local records.");
-                Log.error(e.getMessage());
+                Log.error(e.getMessage(), e);
             }
         } else {
             Log.error("Op list syncing is currently disabled in your config. "
@@ -289,7 +288,7 @@ public class MySqlService implements BaseService {
     }
 
     @Override
-    public boolean copyDatabaseWhitelistedPlayersToLocal(ArrayList<WhitelistedPlayer> localWhitelistedPlayers, IOnUserAdd onUserAdd, IOnUserRemove onUserRemove) {
+    public boolean pullDatabaseWhitelistToLocal(ArrayList<WhitelistedPlayer> localWhitelistedPlayers, IOnUserWhitelistAdd onUserAdd, IOnUserWhitelistRemove onUserRemove) {
         try {
             int records = 0;
 
@@ -314,7 +313,7 @@ public class MySqlService implements BaseService {
                             records++;
                         } catch (NullPointerException e) {
                             Log.error("Player is null?");
-                            Log.error(e.getMessage());
+                            Log.error(e.getMessage(), e);
                         }
                     }
                 } else {
@@ -335,16 +334,17 @@ public class MySqlService implements BaseService {
             return true;
         } catch (SQLException e) {
             Log.error("Error querying whitelisted players from database!");
-            Log.error(e.getMessage());
+            Log.error(e.getMessage(), e);
         }
 
         return false;
     }
 
     @Override
-    public boolean copyDatabaseOppedPlayersToLocal(ArrayList<OppedPlayer> localOppedPlayers, IOnUserAdd onUserAdd, IOnUserRemove onUserRemove) {
+    public boolean pullDatabaseOpsToLocal(ArrayList<OppedPlayer> localOppedPlayers, IOnUserOpAdd onUserAdd, IOnUserOpRemove onUserRemove) {
         if (this.syncingOpList) {
 
+            // TODO: Compare level and bypassesPlayerLimit, sync if needed
             try {
                 int records = 0;
 
@@ -352,7 +352,7 @@ public class MySqlService implements BaseService {
                 Connection conn = DriverManager.getConnection(url, username, password);
                 long startTime = System.currentTimeMillis();
 
-                String sql = "SELECT uuid, name, level, bypassesPlayerLimit, isOp FROM " + databaseName + ".op";
+                String sql = "SELECT uuid, name, isOp FROM " + databaseName + ".op";
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 ResultSet rs = stmt.executeQuery();
 
@@ -369,7 +369,7 @@ public class MySqlService implements BaseService {
                                 records++;
                             } catch (NullPointerException e) {
                                 Log.error("Player is null?");
-                                Log.error(e.getMessage());
+                                Log.error(e.getMessage(), e);
                             }
                         }
                     } else {
@@ -390,7 +390,7 @@ public class MySqlService implements BaseService {
                 return true;
             } catch (SQLException e) {
                 Log.error("Error querying opped players from database!");
-                Log.error(e.getMessage());
+                Log.error(e.getMessage(), e);
             }
         } else {
             Log.error("Op list syncing is currently disabled in your config. "
@@ -422,7 +422,7 @@ public class MySqlService implements BaseService {
 
         } catch (SQLException e) {
             Log.error("Error adding " + name + " to whitelist database!");
-            Log.error(e.getMessage());
+            Log.error(e.getMessage(), e);
         }
 
         return false;
@@ -451,7 +451,7 @@ public class MySqlService implements BaseService {
 
             } catch (SQLException e) {
                 Log.error("Error opping " + name + " !");
-                Log.error(e.getMessage());
+                Log.error(e.getMessage(), e);
             }
         } else {
             Log.error("Op list syncing is currently disabled in your config. "
@@ -483,7 +483,7 @@ public class MySqlService implements BaseService {
 
         } catch (SQLException e) {
             Log.error("Error removing " + name + " to whitelist database!");
-            Log.error(e.getMessage());
+            Log.error(e.getMessage(), e);
         }
 
         return false;
@@ -512,7 +512,7 @@ public class MySqlService implements BaseService {
 
             } catch (SQLException e) {
                 Log.error("Error deopping " + name + ".");
-                Log.error(e.getMessage());
+                Log.error(e.getMessage(), e);
             }
         } else {
             Log.error("Op list syncing is currently disabled in your config. "
@@ -522,47 +522,47 @@ public class MySqlService implements BaseService {
         return false;
     }
 
-    private static void migrateOpList(Connection conn, String databaseName) throws SQLException {
-        String sql;
-        PreparedStatement stmt;
-
-        // Add new level field to op table if it doesn't exist
-        sql =
-                "SELECT COUNT(*) AS count " +
-                        "FROM INFORMATION_SCHEMA.COLUMNS " +
-                        "WHERE TABLE_SCHEMA = '" + databaseName + "' AND TABLE_NAME = 'op' AND COLUMN_NAME = 'level'";
-        stmt = conn.prepareStatement(sql);
-        ResultSet rs = stmt.executeQuery();
-        stmt.close();
-        rs.next();
-
-        if(rs.getInt("count") == 0) {
-            sql = "ALTER TABLE " + databaseName + ".op ADD COLUMN level INTEGER NOT NULL DEFAULT 4";
-            stmt = conn.prepareStatement(sql);
-            stmt.execute();
-            stmt.close();
-            Log.info("Added new op table \"level\" column. Existing entries get set to default level 4.");
-        }
-        rs.close();
-
-
-        // Add new bypassesPlayerLimit field to op table if it doesn't exist
-        sql =
-                "SELECT COUNT(*) AS count " +
-                        "FROM INFORMATION_SCHEMA.COLUMNS " +
-                        "WHERE TABLE_SCHEMA = '" + databaseName + "' AND TABLE_NAME = 'op' AND COLUMN_NAME = 'bypassesPlayerLimit'";
-        stmt = conn.prepareStatement(sql);
-        ResultSet rs1 = stmt.executeQuery();
-        stmt.close();
-        rs1.next();
-
-        if(rs1.getInt("count") == 0) {
-            sql = "ALTER TABLE " + databaseName + ".op ADD COLUMN bypassesPlayerLimit TINYINT NOT NULL DEFAULT 0";
-            stmt = conn.prepareStatement(sql);
-            stmt.execute();
-            stmt.close();
-            Log.info("Added new op table \"bypassesPlayerLimit\" column. Existing entries get set to default bypassesPlayerLimit false.");
-        }
-        rs1.close();
-    }
+    // TODO: Handle migration for level and bypassesPlayerLimit in the future
+//    private static void migrateOpList(Connection conn, String databaseName) throws SQLException {
+//        String sql;
+//        PreparedStatement stmt;
+//
+//        // Add new level field to op table if it doesn't exist
+//        sql = "SELECT COUNT(*) AS count " +
+//                "FROM INFORMATION_SCHEMA.COLUMNS " +
+//                "WHERE TABLE_SCHEMA = '" + databaseName + "' AND TABLE_NAME = 'op' AND COLUMN_NAME = 'level'";
+//        stmt = conn.prepareStatement(sql);
+//        ResultSet rs = stmt.executeQuery();
+//        rs.next();
+//
+//        if(rs.getInt("count") == 0) {
+//            sql = "ALTER TABLE " + databaseName + ".op ADD COLUMN level INTEGER NOT NULL DEFAULT 4";
+//            PreparedStatement stmt2 = conn.prepareStatement(sql);
+//            stmt2.execute();
+//            stmt2.close();
+//            Log.info("Added new op table \"level\" column. Existing entries get set to default level 4.");
+//        }
+//        rs.close();
+//        stmt.close();
+//
+//
+//        // Add new bypassesPlayerLimit field to op table if it doesn't exist
+//        sql =
+//                "SELECT COUNT(*) AS count " +
+//                        "FROM INFORMATION_SCHEMA.COLUMNS " +
+//                        "WHERE TABLE_SCHEMA = '" + databaseName + "' AND TABLE_NAME = 'op' AND COLUMN_NAME = 'bypassesPlayerLimit'";
+//        stmt = conn.prepareStatement(sql);
+//        ResultSet rs1 = stmt.executeQuery();
+//        rs1.next();
+//
+//        if(rs1.getInt("count") == 0) {
+//            sql = "ALTER TABLE " + databaseName + ".op ADD COLUMN bypassesPlayerLimit TINYINT NOT NULL DEFAULT 0";
+//            PreparedStatement stmt2 = conn.prepareStatement(sql);
+//            stmt2.execute();
+//            stmt2.close();
+//            Log.info("Added new op table \"bypassesPlayerLimit\" column. Existing entries get set to default bypassesPlayerLimit false.");
+//        }
+//        rs1.close();
+//        stmt.close();
+//    }
 }

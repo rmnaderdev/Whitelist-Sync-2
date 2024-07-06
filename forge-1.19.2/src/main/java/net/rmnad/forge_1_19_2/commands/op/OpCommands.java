@@ -13,7 +13,7 @@ public class OpCommands {
                         .then(CommandOp.register())
                         .then(CommandDeop.register())
                         .then(CommandSync.register())
-                        .then(CommandCopyToDatabase.register())
+                        .then(CommandPush.register())
         );
     }
 }

@@ -1,4 +1,4 @@
-package net.rmnad.forge_1_19_2;
+package net.rmnad.whitelistsync2;
 
 import net.rmnad.whitelistsync2.models.OppedPlayer;
 import net.rmnad.whitelistsync2.models.WhitelistedPlayer;

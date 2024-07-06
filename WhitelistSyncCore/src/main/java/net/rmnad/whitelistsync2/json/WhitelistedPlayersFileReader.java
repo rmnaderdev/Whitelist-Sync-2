@@ -1,10 +1,9 @@
-package net.rmnad.forge_1_19_2.json;
+package net.rmnad.whitelistsync2.json;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import net.rmnad.forge_1_19_2.WhitelistSync2;
 import net.rmnad.whitelistsync2.Log;
 import net.rmnad.whitelistsync2.models.WhitelistedPlayer;
 
@@ -16,16 +15,16 @@ import java.util.ArrayList;
 /**
  * Class to read json data from the server's whitelist.json file
  */
-public class WhitelistedPlayersFileUtilities {
+public class WhitelistedPlayersFileReader {
 
     private static JsonParser parser = new JsonParser();
 
     // Get Arraylist of whitelisted players on server.
-    public static ArrayList<WhitelistedPlayer> getWhitelistedPlayers() {
+    public static ArrayList<WhitelistedPlayer> getWhitelistedPlayers(String serverRootPath) {
         ArrayList<WhitelistedPlayer> users = new ArrayList<>();
 
         // Get Json data
-        getWhitelistedPlayersFromFile().forEach((record) -> {
+        getWhitelistedPlayersFromFile(serverRootPath).forEach((record) -> {
             String uuid = ((JsonObject) record).get("uuid").getAsString();
             String name = ((JsonObject) record).get("name").getAsString();
 
@@ -42,19 +41,17 @@ public class WhitelistedPlayersFileUtilities {
         return users;
     }
 
-    private static JsonArray getWhitelistedPlayersFromFile() {
+    private static JsonArray getWhitelistedPlayersFromFile(String serverRootPath) {
         JsonArray whitelist = null;
         try {
             // Read data as Json array from server directory
-            whitelist = (JsonArray) parser.parse(new FileReader(WhitelistSync2.SERVER_FILEPATH + "/whitelist.json"));
+            whitelist = (JsonArray) parser.parse(new FileReader(serverRootPath + "/whitelist.json"));
 
-            // Log.debug("getWhitelistedPlayersFromFile returned an array of " + whitelist.size() + " entries.");
+            Log.debug("getWhitelistedPlayersFromFile returned an array of " + whitelist.size() + " entries.");
         } catch (FileNotFoundException e) {
-            Log.error("whitelist.json file not found.");
-            e.printStackTrace();
+            Log.error("whitelist.json file not found.", e);
         } catch (JsonParseException e) {
-            Log.error("whitelist.json parse error.");
-            e.printStackTrace();
+            Log.error("whitelist.json parse error.", e);
         }
 
         return whitelist;

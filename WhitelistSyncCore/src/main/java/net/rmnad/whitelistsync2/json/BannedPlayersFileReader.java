@@ -1,10 +1,9 @@
-package net.rmnad.forge_1_19_2.json;
+package net.rmnad.whitelistsync2.json;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import net.rmnad.forge_1_19_2.WhitelistSync2;
 import net.rmnad.whitelistsync2.Log;
 import net.rmnad.whitelistsync2.models.BannedPlayer;
 
@@ -15,14 +14,14 @@ import java.util.ArrayList;
 /**
  * Class to read json data from the server's banned-players.json file
  */
-public class BannedPlayersFileUtilties {
+public class BannedPlayersFileReader {
     private static JsonParser parser = new JsonParser();
 
-    public static ArrayList<BannedPlayer> getBannedPlayers() {
+    public static ArrayList<BannedPlayer> getBannedPlayers(String serverRootPath) {
         ArrayList<BannedPlayer> bannedPlayers = new ArrayList<>();
 
         // Get Json data
-        getBannedPlayersFromFile().forEach((record) -> {
+        getBannedPlayersFromFile(serverRootPath).forEach((record) -> {
             String uuid = ((JsonObject) record).get("uuid").getAsString();
             String name = ((JsonObject) record).get("name").getAsString();
             String created = ((JsonObject) record).get("created").getAsString();
@@ -45,17 +44,15 @@ public class BannedPlayersFileUtilties {
         return bannedPlayers;
     }
 
-    private static JsonArray getBannedPlayersFromFile() {
+    private static JsonArray getBannedPlayersFromFile(String serverRootPath) {
         JsonArray bannedPlayers = null;
         try {
             // Read data as Json array from server directory
-            bannedPlayers = (JsonArray) parser.parse(new FileReader(WhitelistSync2.SERVER_FILEPATH + "/banned-players.json"));
+            bannedPlayers = (JsonArray) parser.parse(new FileReader(serverRootPath + "/banned-players.json"));
         } catch (FileNotFoundException e) {
-            Log.error("banned-players.json file not found.");
-            e.printStackTrace();
+            Log.error("banned-players.json file not found.", e);
         } catch (JsonParseException e) {
-            Log.error("banned-players.json parse error.");
-            e.printStackTrace();
+            Log.error("banned-players.json parse error.", e);
         }
 
         return bannedPlayers;

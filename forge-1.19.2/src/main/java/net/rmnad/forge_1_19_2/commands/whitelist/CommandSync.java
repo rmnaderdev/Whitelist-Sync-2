@@ -8,7 +8,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.players.UserWhiteListEntry;
 import net.rmnad.forge_1_19_2.WhitelistSync2;
-import net.rmnad.forge_1_19_2.json.WhitelistedPlayersFileUtilities;
+import net.rmnad.whitelistsync2.json.WhitelistedPlayersFileReader;
 
 public class CommandSync {
     // Name of the command
@@ -23,8 +23,8 @@ public class CommandSync {
                 .requires(cs -> cs.hasPermission(permissionLevel))
                 .executes(context -> {
 
-                    boolean status = WhitelistSync2.whitelistService.copyDatabaseWhitelistedPlayersToLocal(
-                            WhitelistedPlayersFileUtilities.getWhitelistedPlayers(),
+                    boolean status = WhitelistSync2.whitelistService.pullDatabaseWhitelistToLocal(
+                            WhitelistedPlayersFileReader.getWhitelistedPlayers(WhitelistSync2.SERVER_FILEPATH),
                             (uuid, name)->{
                                 // Called when user added to whitelist
                                 context.getSource().getServer().getPlayerList().getWhiteList().add(new UserWhiteListEntry(new GameProfile(uuid, name)));

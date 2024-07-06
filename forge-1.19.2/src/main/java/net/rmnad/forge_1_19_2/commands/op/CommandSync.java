@@ -7,7 +7,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.rmnad.forge_1_19_2.WhitelistSync2;
-import net.rmnad.forge_1_19_2.json.OppedPlayersFileUtilities;
+import net.rmnad.whitelistsync2.json.OppedPlayersFileReader;
 
 public class CommandSync {
     // Name of the command
@@ -23,10 +23,11 @@ public class CommandSync {
                 .requires(cs -> cs.hasPermission(permissionLevel))
                 .executes(context -> {
 
-                    boolean status = WhitelistSync2.whitelistService.copyDatabaseOppedPlayersToLocal(
-                            OppedPlayersFileUtilities.getOppedPlayers(),
+                    boolean status = WhitelistSync2.whitelistService.pullDatabaseOpsToLocal(
+                            OppedPlayersFileReader.getOppedPlayers(WhitelistSync2.SERVER_FILEPATH),
                             (uuid, name)->{
                                 // Called when user added to op list
+                                // TODO: Add level and bypassesPlayerLimit
                                 context.getSource().getServer().getPlayerList().op(new GameProfile(uuid, name));
                             },
                             (uuid, name) -> {

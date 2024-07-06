@@ -2,8 +2,10 @@ package net.rmnad.whitelistsync2.services;
 
 
 import net.rmnad.whitelistsync2.Log;
-import net.rmnad.whitelistsync2.callbacks.IOnUserAdd;
-import net.rmnad.whitelistsync2.callbacks.IOnUserRemove;
+import net.rmnad.whitelistsync2.callbacks.IOnUserOpAdd;
+import net.rmnad.whitelistsync2.callbacks.IOnUserOpRemove;
+import net.rmnad.whitelistsync2.callbacks.IOnUserWhitelistAdd;
+import net.rmnad.whitelistsync2.callbacks.IOnUserWhitelistRemove;
 import net.rmnad.whitelistsync2.models.OppedPlayer;
 import net.rmnad.whitelistsync2.models.WhitelistedPlayer;
 
@@ -71,7 +73,7 @@ public class SqLiteService implements BaseService {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException e) {
             Log.error("Failed to init org.sqlite.JDBC driver. Is the SQLite library missing? Try downloading it from https://modrinth.com/plugin/sqlite-jdbc and add it to your mods folder.");
-            Log.error(e.getMessage());
+            Log.error(e.getMessage(), e);
             success = false;
         }
 
@@ -98,18 +100,17 @@ public class SqLiteService implements BaseService {
                     sql = "CREATE TABLE IF NOT EXISTS op (\n"
                             + "	uuid text NOT NULL PRIMARY KEY,\n"
                             + "	name text NOT NULL,\n"
-                            + "	level integer NOT NULL,\n"
-                            + "	bypassesPlayerLimit integer NOT NULL,\n"
                             + " isOp integer NOT NULL);";
                     stmt = conn.createStatement();
                     stmt.executeUpdate(sql);
 
                     // Execute migration
-                    migrateOpList(conn);
+                    // TODO: Handle migration for level and bypassesPlayerLimit in the future
+                    //migrateOpList(conn);
                 }
             } catch (SQLException e) {
                 Log.error("Error creating whitelist or op table!");
-                Log.error(e.getMessage());
+                Log.error(e.getMessage(), e);
                 success = false;
             } finally {
                 cleanup(stmt, conn);
@@ -151,7 +152,7 @@ public class SqLiteService implements BaseService {
             Log.debug("Database pulled whitelisted players | Took " + timeTaken + "ms | Read " + records + " records.");
         } catch (SQLException e) {
             Log.error("Error querying whitelisted players from database!");
-            Log.error(e.getMessage());
+            Log.error(e.getMessage(), e);
         } finally {
             cleanup(rs, stmt, conn);
         }
@@ -176,7 +177,7 @@ public class SqLiteService implements BaseService {
                 conn = getConnection();
                 long startTime = System.currentTimeMillis();
 
-                String sql = "SELECT uuid, name, level, bypassesPlayerLimit FROM op WHERE isOp = 1;";
+                String sql = "SELECT uuid, name FROM op WHERE isOp = 1;";
                 stmt = conn.prepareStatement(sql);
                 rs = stmt.executeQuery();
 
@@ -186,8 +187,6 @@ public class SqLiteService implements BaseService {
                     oppedPlayer.setIsOp(true);
                     oppedPlayer.setUuid(rs.getString("uuid"));
                     oppedPlayer.setName(rs.getString("name"));
-                    oppedPlayer.setLevel(rs.getInt("level"));
-                    oppedPlayer.setBypassesPlayerLimit(rs.getBoolean("bypassesPlayerLimit"));
 
                     oppedPlayers.add(oppedPlayer);
                     records++;
@@ -199,7 +198,7 @@ public class SqLiteService implements BaseService {
                 Log.debug("Database pulled opped players | Took " + timeTaken + "ms | Read " + records + " records.");
             } catch (SQLException e) {
                 Log.error("Error querying opped players from database!");
-                Log.error(e.getMessage());
+                Log.error(e.getMessage(), e);
             } finally {
                 cleanup(rs, stmt, conn);
             }
@@ -213,7 +212,7 @@ public class SqLiteService implements BaseService {
     }
 
     @Override
-    public boolean copyLocalWhitelistedPlayersToDatabase(ArrayList<WhitelistedPlayer> whitelistedPlayers) {
+    public boolean pushLocalWhitelistToDatabase(ArrayList<WhitelistedPlayer> whitelistedPlayers) {
         // TODO: Start job on thread to avoid lag?
         // Keep track of records.
         int records = 0;
@@ -245,7 +244,7 @@ public class SqLiteService implements BaseService {
             success = true;
         } catch (SQLException e) {
             Log.error("Failed to update database with local records.");
-            Log.error(e.getMessage());
+            Log.error(e.getMessage(), e);
             success = false;
         } finally {
             cleanup(stmt, conn);
@@ -255,7 +254,7 @@ public class SqLiteService implements BaseService {
     }
 
     @Override
-    public boolean copyLocalOppedPlayersToDatabase(ArrayList<OppedPlayer> oppedPlayers) {
+    public boolean pushLocalOpsToDatabase(ArrayList<OppedPlayer> oppedPlayers) {
         if (this.syncingOpList) {
             // TODO: Start job on thread to avoid lag?
             // Keep track of records.
@@ -288,7 +287,7 @@ public class SqLiteService implements BaseService {
                 success = true;
             } catch (SQLException e) {
                 Log.error("Failed to update database with local records.");
-                Log.error(e.getMessage());
+                Log.error(e.getMessage(), e);
                 success = false;
             } finally {
                 cleanup(stmt, conn);
@@ -304,7 +303,7 @@ public class SqLiteService implements BaseService {
     }
 
     @Override
-    public boolean copyDatabaseWhitelistedPlayersToLocal(ArrayList<WhitelistedPlayer> localWhitelistedPlayers, IOnUserAdd onUserAdd, IOnUserRemove onUserRemove) {
+    public boolean pullDatabaseWhitelistToLocal(ArrayList<WhitelistedPlayer> localWhitelistedPlayers, IOnUserWhitelistAdd onUserAdd, IOnUserWhitelistRemove onUserRemove) {
         int records = 0;
         boolean success;
 
@@ -332,7 +331,7 @@ public class SqLiteService implements BaseService {
                             records++;
                         } catch (NullPointerException e) {
                             Log.error("Player is null?");
-                            Log.error(e.getMessage());
+                            Log.error(e.getMessage(), e);
                         }
                     }
                 } else {
@@ -350,7 +349,7 @@ public class SqLiteService implements BaseService {
             success = true;
         } catch (SQLException e) {
             Log.error("Error querying whitelisted players from database!");
-            Log.error(e.getMessage());
+            Log.error(e.getMessage(), e);
             success = false;
         } finally {
             cleanup(rs, stmt, conn);
@@ -360,8 +359,9 @@ public class SqLiteService implements BaseService {
     }
 
     @Override
-    public boolean copyDatabaseOppedPlayersToLocal(ArrayList<OppedPlayer> localOppedPlayers, IOnUserAdd onUserAdd, IOnUserRemove onUserRemove) {
+    public boolean pullDatabaseOpsToLocal(ArrayList<OppedPlayer> localOppedPlayers, IOnUserOpAdd onUserAdd, IOnUserOpRemove onUserRemove) {
 
+        // TODO: Compare level and bypassesPlayerLimit, sync if needed
         if (this.syncingOpList) {
             int records = 0;
             boolean success;
@@ -374,7 +374,7 @@ public class SqLiteService implements BaseService {
                 conn = getConnection();
                 long startTime = System.currentTimeMillis();
 
-                String sql = "SELECT uuid, name, level, bypassesPlayerLimit, isOp FROM op;";
+                String sql = "SELECT uuid, name, isOp FROM op;";
                 stmt = conn.prepareStatement(sql);
                 rs = stmt.executeQuery();
 
@@ -391,7 +391,7 @@ public class SqLiteService implements BaseService {
                                 records++;
                             } catch (NullPointerException e) {
                                 Log.error("Player is null?");
-                                Log.error(e.getMessage());
+                                Log.error(e.getMessage(), e);
                             }
                         }
                     } else {
@@ -408,7 +408,7 @@ public class SqLiteService implements BaseService {
                 success = true;
             } catch (SQLException e) {
                 Log.error("Error querying opped players from database!");
-                Log.error(e.getMessage());
+                Log.error(e.getMessage(), e);
                 success = false;
             } finally {
                 cleanup(rs, stmt, conn);
@@ -448,7 +448,7 @@ public class SqLiteService implements BaseService {
             success = true;
         } catch (SQLException e) {
             Log.error("Error adding " + name + " to whitelist database!");
-            Log.error(e.getMessage());
+            Log.error(e.getMessage(), e);
             success = false;
         } finally {
             cleanup(stmt, conn);
@@ -482,7 +482,7 @@ public class SqLiteService implements BaseService {
                 success = true;
             } catch (SQLException e) {
                 Log.error("Error opping " + name + " !");
-                Log.error(e.getMessage());
+                Log.error(e.getMessage(), e);
                 success = false;
             } finally {
                 cleanup(stmt, conn);
@@ -521,7 +521,7 @@ public class SqLiteService implements BaseService {
             success = true;
         } catch (SQLException e) {
             Log.error("Error removing " + name + " to whitelist database!");
-            Log.error(e.getMessage());
+            Log.error(e.getMessage(), e);
             success = false;
         } finally {
             cleanup(stmt, conn);
@@ -555,7 +555,7 @@ public class SqLiteService implements BaseService {
                 success = true;
             } catch (SQLException e) {
                 Log.error("Error deopping " + name + ".");
-                Log.error(e.getMessage());
+                Log.error(e.getMessage(), e);
                 success = false;
             } finally {
                 cleanup(stmt, conn);
@@ -570,41 +570,42 @@ public class SqLiteService implements BaseService {
         return false;
     }
 
-    private static void migrateOpList(Connection conn) throws SQLException {
-        String sql;
-        PreparedStatement stmt;
-
-        // Add new level field to op table if it doesn't exist
-        sql = "SELECT COUNT(*) AS count FROM pragma_table_info('op') WHERE name='level'";
-        stmt = conn.prepareStatement(sql);
-        ResultSet rs = stmt.executeQuery();
-        stmt.close();
-        rs.next();
-
-        if(rs.getInt("count") == 0) {
-            sql = "ALTER TABLE op ADD COLUMN level INTEGER DEFAULT 4";
-            stmt = conn.prepareStatement(sql);
-            stmt.execute();
-            stmt.close();
-            Log.info("Added new op table \"level\" column. Existing entries get set to default level 4.");
-        }
-        rs.close();
-
-
-        // Add new bypassesPlayerLimit field to op table if it doesn't exist
-        sql = "SELECT COUNT(*) AS count FROM pragma_table_info('op') WHERE name='bypassesPlayerLimit'";
-        stmt = conn.prepareStatement(sql);
-        ResultSet rs1 = stmt.executeQuery();
-        stmt.close();
-        rs1.next();
-
-        if(rs1.getInt("count") == 0) {
-            sql = "ALTER TABLE op ADD COLUMN bypassesPlayerLimit INTEGER DEFAULT 0";
-            stmt = conn.prepareStatement(sql);
-            stmt.execute();
-            stmt.close();
-            Log.info("Added new op table \"bypassesPlayerLimit\" column. Existing entries get set to default bypassesPlayerLimit false.");
-        }
-        rs1.close();
-    }
+    // TODO: Handle migration for level and bypassesPlayerLimit in the future
+//    private static void migrateOpList(Connection conn) throws SQLException {
+//        String sql;
+//        PreparedStatement stmt;
+//
+//        // Add new level field to op table if it doesn't exist
+//        sql = "SELECT COUNT(*) AS count FROM pragma_table_info('op') WHERE name='level'";
+//        stmt = conn.prepareStatement(sql);
+//        ResultSet rs = stmt.executeQuery();
+//        stmt.close();
+//        rs.next();
+//
+//        if(rs.getInt("count") == 0) {
+//            sql = "ALTER TABLE op ADD COLUMN level INTEGER NULL DEFAULT 4";
+//            stmt = conn.prepareStatement(sql);
+//            stmt.execute();
+//            stmt.close();
+//            Log.info("Added new op table \"level\" column. Existing entries get set to default level 4.");
+//        }
+//        rs.close();
+//
+//
+//        // Add new bypassesPlayerLimit field to op table if it doesn't exist
+//        sql = "SELECT COUNT(*) AS count FROM pragma_table_info('op') WHERE name='bypassesPlayerLimit'";
+//        stmt = conn.prepareStatement(sql);
+//        ResultSet rs1 = stmt.executeQuery();
+//        stmt.close();
+//        rs1.next();
+//
+//        if(rs1.getInt("count") == 0) {
+//            sql = "ALTER TABLE op ADD COLUMN bypassesPlayerLimit INTEGER NULL DEFAULT 0";
+//            stmt = conn.prepareStatement(sql);
+//            stmt.execute();
+//            stmt.close();
+//            Log.info("Added new op table \"bypassesPlayerLimit\" column. Existing entries get set to default bypassesPlayerLimit false.");
+//        }
+//        rs1.close();
+//    }
 }

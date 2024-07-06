@@ -50,6 +50,8 @@ public class WhitelistSync2
     }
 
     public static void SetupWhitelistSync(MinecraftServer server) {
+        Log.verbose = Config.COMMON.VERBOSE_LOGGING.get();
+
         boolean errorOnSetup = false;
 
         // Server filepath
@@ -73,20 +75,22 @@ public class WhitelistSync2
                     Config.COMMON.SYNC_OP_LIST.get()
                 );
                 break;
-//            case POSTGRESQL:
-//                whitelistService = new PostgreSqlService(
-//                        Config.POSTGRESQL_DB_NAME.get(),
-//                        Config.POSTGRESQL_IP.get(),
-//                        Config.POSTGRESQL_PORT.get(),
-//                        Config.POSTGRESQL_USERNAME.get(),
-//                        Config.POSTGRESQL_PASSWORD.get(),
-//                        Config.SYNC_OP_LIST.get()
-//                );
-//                break;
             default:
                 Log.error("Please check what WHITELIST_MODE is set in the config and make sure it is set to a supported mode.");
                 errorOnSetup = true;
                 break;
+        }
+
+        if (!errorOnSetup) {
+            if (whitelistService.initializeDatabase()) {
+                // Database is setup!
+                // Check if whitelisting is enabled.
+                if (!server.getPlayerList().isUsingWhitelist()) {
+                    Log.info("Oh no! I see whitelisting isn't enabled in the server properties. "
+                            + "I assume this is not intentional, I'll enable it for you!");
+                    server.getPlayerList().setUsingWhiteList(true);
+                }
+            }
         }
 
         StartWhitelistSyncThread(server, whitelistService, errorOnSetup);

@@ -6,11 +6,11 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.rmnad.forge_1_19_2.WhitelistSync2;
-import net.rmnad.forge_1_19_2.json.WhitelistedPlayersFileUtilities;
+import net.rmnad.whitelistsync2.json.WhitelistedPlayersFileReader;
 
-public class CommandCopyToDatabase {
+public class CommandPush {
     // Name of the command
-    private static final String commandName = "copyServerToDatabase";
+    private static final String commandName = "push";
     private static final int permissionLevel = 4;
 
     // Errors
@@ -20,7 +20,7 @@ public class CommandCopyToDatabase {
         return Commands.literal(commandName)
                 .requires(cs -> cs.hasPermission(permissionLevel))
                 .executes(context -> {
-                    if(WhitelistSync2.whitelistService.copyLocalWhitelistedPlayersToDatabase(WhitelistedPlayersFileUtilities.getWhitelistedPlayers())) {
+                    if(WhitelistSync2.whitelistService.pushLocalWhitelistToDatabase(WhitelistedPlayersFileReader.getWhitelistedPlayers(WhitelistSync2.SERVER_FILEPATH))) {
                         context.getSource().sendSuccess(Component.literal("Pushed local whitelist to database."), false);
                     } else {
                         throw DB_ERROR.create();

@@ -2,6 +2,6 @@ package net.rmnad.whitelistsync2.callbacks;
 
 import java.util.UUID;
 
-public interface IOnUserAdd {
+public interface IOnUserOpRemove {
     void call(UUID uuid, String name);
 }

@@ -10,6 +10,10 @@ sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = co
 
 description = "WhitelistSyncCore"
 
+dependencies {
+    compileOnly "com.google.code.gson:gson:2.8.9"
+}
+
 jar {
     destinationDirectory = file '../target'
 }

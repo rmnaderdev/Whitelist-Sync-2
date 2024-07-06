@@ -11,18 +11,17 @@ public class Config {
         public enum DatabaseMode {
             MYSQL,
             SQLITE
-//        POSTGRESQL
         }
 
         public final String CATEGORY_GENERAL = "general";
         public final String CATEGORY_MYSQL = "mySQL";
         public final String CATEGORY_SQLITE = "sqlite";
-//    public static final String CATEGORY_POSTGRESQL = "postgresql";
 
         // General Settings
         public ForgeConfigSpec.EnumValue<DatabaseMode> DATABASE_MODE;
         public ForgeConfigSpec.BooleanValue SYNC_OP_LIST;
         public ForgeConfigSpec.IntValue SYNC_TIMER;
+        public ForgeConfigSpec.BooleanValue VERBOSE_LOGGING;
 
         // MYSQL Settings
         public ForgeConfigSpec.ConfigValue<String> MYSQL_DB_NAME;
@@ -33,13 +32,6 @@ public class Config {
 
         // SQLITE Settings
         public ForgeConfigSpec.ConfigValue<String> SQLITE_DATABASE_PATH;
-
-        // POSTGRESQL Settings
-        //    public static ForgeConfigSpec.ConfigValue<String> POSTGRESQL_DB_NAME;
-        //    public static ForgeConfigSpec.ConfigValue<String> POSTGRESQL_IP;
-        //    public static ForgeConfigSpec.IntValue POSTGRESQL_PORT;
-        //    public static ForgeConfigSpec.ConfigValue<String> POSTGRESQL_USERNAME;
-        //    public static ForgeConfigSpec.ConfigValue<String> POSTGRESQL_PASSWORD;
 
         Common(final ForgeConfigSpec.Builder builder) {
             // General Settings
@@ -55,6 +47,9 @@ public class Config {
                     "(Warning! Time lower than 5 sec may affect performace.)")
                     .worldRestart()
                     .defineInRange("syncTimer", 60, 1, Integer.MAX_VALUE);
+            VERBOSE_LOGGING = builder.comment("Enable verbose logging.")
+                    .worldRestart()
+                    .define("verboseLogging", false);
             builder.pop();
 
 

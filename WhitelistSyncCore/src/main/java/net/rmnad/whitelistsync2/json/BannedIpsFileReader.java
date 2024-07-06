@@ -1,10 +1,9 @@
-package net.rmnad.forge_1_19_2.json;
+package net.rmnad.whitelistsync2.json;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import net.rmnad.forge_1_19_2.WhitelistSync2;
 import net.rmnad.whitelistsync2.Log;
 import net.rmnad.whitelistsync2.models.BannedIp;
 
@@ -15,14 +14,14 @@ import java.util.ArrayList;
 /**
  * Class to read json data from the server's banned-ips.json file
  */
-public class BannedIpsFileUtilties {
+public class BannedIpsFileReader {
     private static JsonParser parser = new JsonParser();
 
-    public static ArrayList<BannedIp> getBannedIps() {
+    public static ArrayList<BannedIp> getBannedIps(String serverRootPath) {
         ArrayList<BannedIp> bannedPlayers = new ArrayList<>();
 
         // Get Json data
-        getBannedIpsFromFile().forEach((record) -> {
+        getBannedIpsFromFile(serverRootPath).forEach((record) -> {
             String ip = ((JsonObject) record).get("ip").getAsString();
             String created = ((JsonObject) record).get("created").getAsString();
             String source = ((JsonObject) record).get("source").getAsString();
@@ -43,17 +42,15 @@ public class BannedIpsFileUtilties {
         return bannedPlayers;
     }
 
-    private static JsonArray getBannedIpsFromFile() {
+    private static JsonArray getBannedIpsFromFile(String serverRootPath) {
         JsonArray bannedPlayers = null;
         try {
             // Read data as Json array from server directory
-            bannedPlayers = (JsonArray) parser.parse(new FileReader(WhitelistSync2.SERVER_FILEPATH + "/banned-ips.json"));
+            bannedPlayers = (JsonArray) parser.parse(new FileReader(serverRootPath + "/banned-ips.json"));
         } catch (FileNotFoundException e) {
-            Log.error("banned-ips.json file not found.");
-            e.printStackTrace();
+            Log.error("banned-ips.json file not found.", e);
         } catch (JsonParseException e) {
-            Log.error("banned-ips.json parse error.");
-            e.printStackTrace();
+            Log.error("banned-ips.json parse error.", e);
         }
 
         return bannedPlayers;
