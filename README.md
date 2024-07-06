@@ -28,13 +28,13 @@ This mod allows you to run a single /wl add &lt;player&gt; or /wlop op &lt;playe
 ## Installation
 
 #### For SQLite database config:
-- Download this mod AND the [SQLite DB connector](https://www.curseforge.com/minecraft/mc-mods/sqlite-jdbc) mod and add both jar files to your mods folder.
+- Download this mod AND the [SQLite DB connector](https://modrinth.com/plugin/sqlite-jdbc) mod and add both jar files to your mods folder.
 - Run your server once and setup the config (whitelistsync.cfg/whitelistsync-common.toml located in the config folder) and configure your database settings and timers.
 - NOTE: Be sure to make the database path the same for all of the servers you want to link together!
 - When the server runs it is going to make a new database unless one already exists. If you want to push your current whitelist to the new database use "/wl copyServerToDatabase" then you can start all of your other servers and they will sync to the database.
 
 #### For MySQL server database setup:
-- Download this mod AND the [MySQL DB connector](https://www.curseforge.com/minecraft/mc-mods/mysql-jdbc) mod and add both jar files to your mods folder.
+- Download this mod AND the [MySQL DB connector](https://modrinth.com/plugin/mysql-jdbc) mod and add both jar files to your mods folder.
 - Run your server once and setup the config (whitelistsync.cfg/whitelistsync-common.toml located in the config folder) and configure your database settings and timers.
 - Setup your mySQL database IP, port, and authentication as well as the Sync Timer.
 - Run server and make sure the database connects. **Note:** Mod will make it's own database and table for you or connect to an existing one.
