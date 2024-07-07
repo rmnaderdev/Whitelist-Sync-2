@@ -5,10 +5,10 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.players.UserWhiteListEntry;
 import net.rmnad.forge_1_19_2.Config;
 import net.rmnad.forge_1_19_2.WhitelistSync2;
-import net.rmnad.whitelistsync2.json.OppedPlayersFileReader;
-import net.rmnad.whitelistsync2.json.WhitelistedPlayersFileReader;
-import net.rmnad.whitelistsync2.Log;
-import net.rmnad.whitelistsync2.services.BaseService;
+import net.rmnad.json.OppedPlayersFileReader;
+import net.rmnad.json.WhitelistedPlayersFileReader;
+import net.rmnad.Log;
+import net.rmnad.services.BaseService;
 
 public class WhitelistSyncThread extends Thread {
     

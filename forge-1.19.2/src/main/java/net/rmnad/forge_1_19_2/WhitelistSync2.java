@@ -7,10 +7,10 @@ import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.rmnad.whitelistsync2.Log;
-import net.rmnad.whitelistsync2.services.BaseService;
-import net.rmnad.whitelistsync2.services.MySqlService;
-import net.rmnad.whitelistsync2.services.SqLiteService;
+import net.rmnad.Log;
+import net.rmnad.services.BaseService;
+import net.rmnad.services.MySqlService;
+import net.rmnad.services.SqLiteService;
 import net.rmnad.forge_1_19_2.commands.op.OpCommands;
 import net.rmnad.forge_1_19_2.commands.whitelist.WhitelistCommands;
 import net.rmnad.forge_1_19_2.services.*;
@@ -92,6 +92,8 @@ public class WhitelistSync2
                             + "I assume this is not intentional, I'll enable it for you!");
                     server.getPlayerList().setUsingWhiteList(true);
                 }
+            } else {
+                errorOnSetup = true;
             }
         }
 

@@ -7,7 +7,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.rmnad.forge_1_19_2.WhitelistSync2;
-import net.rmnad.whitelistsync2.json.OppedPlayersFileReader;
+import net.rmnad.json.OppedPlayersFileReader;
 
 public class CommandPush {
 

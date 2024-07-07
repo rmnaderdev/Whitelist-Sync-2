@@ -4,7 +4,7 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
-import net.rmnad.whitelistsync2.Utilities;
+import net.rmnad.Utilities;
 import net.rmnad.forge_1_19_2.WhitelistSync2;
 
 public class CommandList {

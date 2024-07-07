@@ -1,0 +1,97 @@
+// Add shadow plugin
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+}
+
+eclipse {
+    project {
+        name = "WhitelistSync(Forge-1.12.2)"
+    }
+}
+
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+
+println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
+
+ext.buildNumber = System.getenv().BUILD_NUMBER ?: "Dev"
+
+minecraft {
+    mappings channel: mapping_channel, version: mapping_version
+
+    copyIdeResources = true
+
+    // Default run configurations.
+    // These can be tweaked, removed, or duplicated as needed.
+    runs {
+        server {
+            workingDirectory project.file('run').canonicalPath
+            args '--nogui'
+        }
+    }
+}
+
+project.archivesBaseName = "${project.archivesBaseName}-forge-${minecraft_version}"
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+
+    // Core library dependency
+    implementation project(path: ':WhitelistSyncCore', configuration: "shadow")
+
+    // Used for development. These are added by the user later.
+    runtimeOnly "curse.maven:mysqlconnector-561280:4684944"
+    runtimeOnly "curse.maven:sqliteconnector-560832:3582173"
+}
+
+// This block of code expands all declared replace properties in the specified resource targets.
+// A missing property will result in an error. Properties are expanded using ${} Groovy notation.
+// When "copyIdeResources" is enabled, this will also run before the game launches in IDE environments.
+// See https://docs.gradle.org/current/dsl/org.gradle.language.jvm.tasks.ProcessResources.html
+tasks.named('processResources', ProcessResources).configure {
+    var replaceProperties = [
+        minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
+        forge_version: forge_version, forge_version_range: forge_version_range,
+        loader_version_range: loader_version_range,
+        mod_id: project.mod_id, mod_name: project.mod_name, mod_license: project.mod_license, mod_version: project.version + '-' + project.ext.buildNumber,
+        mod_authors: project.mod_authors, mod_description: project.mod_description,
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+        expand replaceProperties + [project: project]
+    }
+}
+
+shadowJar {
+    dependencies {
+        include(dependency(':WhitelistSyncCore'))
+        exclude("META-INF/maven/**")
+        exclude("META-INF/services/**")
+    }
+
+    archiveBaseName = "WhitelistSync"
+    archiveClassifier = "forge-${minecraft_version}"
+    destinationDirectory = file '../target'
+}
+
+afterEvaluate {
+    reobf {
+        shadowJar {
+            mappings = createMcpToSrg.output
+        }
+    }
+}
+
+task deobfJar(type: Jar) {
+    from sourceSets.main.output
+    archiveClassifier = 'dev'
+}
+
+artifacts {
+    archives deobfJar
+}
+
+build.dependsOn(shadowJar)
