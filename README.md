@@ -24,6 +24,7 @@ If you like this project and want to support it, consider donating to my [PayPal
 ## Supported Versions
 - 1.20.6
 - 1.20.2
+- 1.20.1
 - 1.19.2
 - 1.19
 - 1.18.2
