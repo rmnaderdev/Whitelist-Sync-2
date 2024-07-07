@@ -19,6 +19,7 @@ All releases can be found on the [Modrinth](https://modrinth.com/mod/wlsync2) pa
 If you like this project and want to support it, consider donating to my [PayPal](https://www.paypal.com/paypalme/PSVFX)! Any amount is appreciated!
 
 ## Supported Versions
+- 1.20.6
 - 1.20.2
 - 1.19.2
 - 1.19
