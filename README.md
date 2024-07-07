@@ -4,16 +4,19 @@ Introducing Whitelist Sync!
 ===========================
 
 
-
 ### A mod that allows you to sync the whitelists and ops list from multiple Minecraft servers together using one MySQL or SQLite database!
 This mod allows you to run a single /wl add &lt;player&gt; or /wlop op &lt;player&gt; on one of your servers and it will update all of your other forge servers running this mod connected to the proper database!
 
 ## New in v2.5.0
 - No more shadowed JDBC dependencies! **MANUAL STEP REQUIRED for v2.5.0.** See Installation section below.
 - `copyServerToDatabase` commands have been changed to `push`.
+- 
 
 ## Download
 All releases can be found on the [Modrinth](https://modrinth.com/mod/wlsync2) page.
+
+## Discord
+Whitelist Sync has a discord server. I plan to post updates and supply support for the mod there. [Join Here](https://discord.gg/PXTuaTp2a8)
 
 ## Support the project
 If you like this project and want to support it, consider donating to my [PayPal](https://www.paypal.com/paypalme/PSVFX)! Any amount is appreciated!
