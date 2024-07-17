@@ -10,12 +10,14 @@ public class Config {
     public static class Common {
         public enum DatabaseMode {
             MYSQL,
-            SQLITE
+            SQLITE,
+            WEB
         }
 
         public final String CATEGORY_GENERAL = "general";
         public final String CATEGORY_MYSQL = "mySQL";
         public final String CATEGORY_SQLITE = "sqlite";
+        public final String CATEGORY_WEB = "web";
 
         // General Settings
         public ForgeConfigSpec.EnumValue<DatabaseMode> DATABASE_MODE;
@@ -33,6 +35,9 @@ public class Config {
         // SQLITE Settings
         public ForgeConfigSpec.ConfigValue<String> SQLITE_DATABASE_PATH;
 
+        // WEB Settings
+        public ForgeConfigSpec.ConfigValue<String> WEB_API_KEY;
+
         Common(final ForgeConfigSpec.Builder builder) {
             // General Settings
             builder.comment("General configuration").push(CATEGORY_GENERAL);
@@ -43,8 +48,8 @@ public class Config {
                     .worldRestart()
                     .define("syncOpList", false);
             SYNC_TIMER = builder.comment("Time Interval in seconds for when the server " +
-                    "polls the whitelist changes from the database. " +
-                    "(Warning! Time lower than 5 sec may affect performace.)")
+                            "polls the whitelist changes from the database. " +
+                            "(Warning! Time lower than 5 sec may affect performace.)")
                     .worldRestart()
                     .defineInRange("syncTimer", 60, 1, Integer.MAX_VALUE);
             VERBOSE_LOGGING = builder.comment("Enable verbose logging.")
@@ -82,9 +87,19 @@ public class Config {
                             "refer to the mode setting in the general configuration)."
             ).push(CATEGORY_SQLITE);
             SQLITE_DATABASE_PATH = builder.comment("Insert System Path for your SQLite database file. " +
-                    "This should be the same for all your servers you want to sync!")
+                            "This should be the same for all your servers you want to sync!")
                     .worldRestart()
                     .define("sqliteDatabasePath", "./whitelistSync.db");
+            builder.pop();
+
+            // WEB Config
+            builder.comment(
+                    "Web configuration (To enable Web, " +
+                            "refer to the mode setting in the general configuration)."
+            ).push(CATEGORY_WEB);
+            WEB_API_KEY = builder.comment("API Key for the web service. You can generate one by logging into the web service and adding a new API key to your account.")
+                    .worldRestart()
+                    .define("webApiKey", "");
             builder.pop();
         }
     }

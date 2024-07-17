@@ -14,6 +14,7 @@ import net.rmnad.Log;
 import net.rmnad.services.BaseService;
 import net.rmnad.services.MySqlService;
 import net.rmnad.services.SqLiteService;
+import net.rmnad.services.WebService;
 
 @Mod(WhitelistSync2.MODID)
 public class WhitelistSync2
@@ -76,6 +77,9 @@ public class WhitelistSync2
                     Config.COMMON.MYSQL_PASSWORD.get(),
                     Config.COMMON.SYNC_OP_LIST.get()
                 );
+                break;
+            case WEB:
+                whitelistService = new WebService(Config.COMMON.WEB_API_KEY.get());
                 break;
             default:
                 Log.error("Please check what WHITELIST_MODE is set in the config and make sure it is set to a supported mode.");

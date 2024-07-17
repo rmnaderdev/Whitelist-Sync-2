@@ -6,12 +6,18 @@ eclipse {
     }
 }
 
+repositories {
+    mavenCentral()
+}
+
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
 description = "WhitelistSyncCore"
 
 dependencies {
     compileOnly "com.google.code.gson:gson:2.8.9"
+    compileOnly 'org.apache.httpcomponents:httpclient:4.3.3'
+    compileOnly 'org.apache.httpcomponents:httpcore:4.3.2'
 }
 
 jar {
