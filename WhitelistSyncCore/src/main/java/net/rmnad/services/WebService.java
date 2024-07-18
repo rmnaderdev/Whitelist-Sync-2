@@ -32,9 +32,8 @@ public class WebService implements BaseService {
         this.apiKey = apiKey;
     }
 
-    private boolean isAuthenticated() {
-        try {
-            TrustManager[] trustAllCerts = new TrustManager[]{
+    private CloseableHttpClient getClient() throws NoSuchAlgorithmException, KeyManagementException {
+        TrustManager[] trustAllCerts = new TrustManager[]{
                 new X509TrustManager() {
                     public java.security.cert.X509Certificate[] getAcceptedIssuers() {
                         return null;
@@ -46,16 +45,21 @@ public class WebService implements BaseService {
                             java.security.cert.X509Certificate[] certs, String authType) {
                     }
                 }
-            };
+        };
 
-            SSLContext sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(null, trustAllCerts, new SecureRandom());
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(null, trustAllCerts, new SecureRandom());
 
-            CloseableHttpClient client = HttpClients.custom()
-                    .setSslcontext(sslContext)
-                    .setHostnameVerifier(new AllowAllHostnameVerifier())
-                    .build();
+        return HttpClients.custom()
+                .setSslcontext(sslContext)
+                .setHostnameVerifier(new AllowAllHostnameVerifier())
+                .build();
+    }
 
+    private boolean isAuthenticated() {
+        try {
+
+            CloseableHttpClient client = getClient();
             HttpGet request = new HttpGet("https://localhost:3000/api/v1/authenticate");
             request.addHeader("content-type", "application/json");
             request.addHeader("Authorization", apiKey);
@@ -69,9 +73,7 @@ public class WebService implements BaseService {
             return response.getStatusLine().getStatusCode() == 200;
         } catch (IOException e) {
             Log.error(e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (KeyManagementException e) {
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
             throw new RuntimeException(e);
         }
 

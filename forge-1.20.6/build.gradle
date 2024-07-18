@@ -123,6 +123,13 @@ repositories {
     // }
 }
 
+configurations {
+    shade
+    implementation.extendsFrom shade
+}
+
+project.archivesBaseName = "${project.archivesBaseName}-forge-${minecraft_version}"
+
 dependencies {
     // Specify the version of Minecraft to use.
     // Any artifact can be supplied so long as it has a "userdev" classifier artifact and is a compatible patcher artifact.
@@ -133,7 +140,7 @@ dependencies {
 
 
     // Core library dependency
-    implementation project(path: ':WhitelistSyncCore')
+    shade project(path: ':WhitelistSyncCore')
 
     // Used for development. These are added by the user later.
     runtimeOnly "curse.maven:mysqlconnector-561280:4684944"
@@ -164,6 +171,7 @@ tasks.named('processResources', ProcessResources).configure {
 
 // Example for how to get properties into the manifest for reading at runtime.
 tasks.named('jar', Jar).configure {
+    archiveClassifier = 'slim'
     manifest {
         attributes([
                 'Specification-Title'     : mod_id,
@@ -174,6 +182,21 @@ tasks.named('jar', Jar).configure {
                 'Implementation-Vendor'   : mod_authors
         ])
     }
+}
+
+shadowJar {
+    archiveBaseName = "WhitelistSync"
+    archiveClassifier = "forge-${minecraft_version}"
+    destinationDirectory = file '../target'
+
+    configurations = [project.configurations.shade]
+    finalizedBy 'reobfShadowJar'
+}
+
+assemble.dependsOn shadowJar
+
+reobf {
+    shadowJar {}
 }
 
 // Example configuration to allow publishing using the maven-publish plugin
