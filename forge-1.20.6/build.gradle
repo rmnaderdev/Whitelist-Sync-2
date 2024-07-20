@@ -185,7 +185,7 @@ tasks.named('jar', Jar).configure {
 }
 
 shadowJar {
-    archiveBaseName = "WhitelistSync"
+    archiveBaseName = mod_id
     archiveClassifier = "forge-${minecraft_version}"
     destinationDirectory = file '../target'
 
