@@ -22,6 +22,8 @@ ext.buildNumber = System.getenv().BUILD_NUMBER ?: "Dev"
 minecraft {
     mappings channel: mapping_channel, version: mapping_version
 
+    reobf = false
+
     copyIdeResources = true
 
     // Default run configurations.
@@ -36,11 +38,16 @@ minecraft {
 
 project.archivesBaseName = "${project.archivesBaseName}-forge-${minecraft_version}"
 
+configurations {
+    shade
+    implementation.extendsFrom shade
+}
+
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
     // Core library dependency
-    implementation project(path: ':WhitelistSyncCore', configuration: "shadow")
+    shade project(':WhitelistSyncCore')
 
     // Used for development. These are added by the user later.
     runtimeOnly "curse.maven:mysqlconnector-561280:4684944"
@@ -69,25 +76,32 @@ tasks.named('processResources', ProcessResources).configure {
     }
 }
 
-shadowJar {
-    dependencies {
-        include(dependency(':WhitelistSyncCore'))
-        exclude("META-INF/maven/**")
-        exclude("META-INF/services/**")
-    }
-
-    archiveBaseName = "WhitelistSync"
-    archiveClassifier = "forge-${minecraft_version}"
-    destinationDirectory = file '../target'
+// Merge the resources and classes into the same directory.
+// This is done because java expects modules to be in a single directory.
+// And if we have it in multiple we have to do performance intensive hacks like having the UnionFileSystem
+// This will eventually be migrated to ForgeGradle so modders don't need to manually do it. But that is later.
+// WITHOUT THIS, THE MOD WILL NOT BE FOUND DURING THE MOD LOADING PHASE
+sourceSets.each {
+    def dir = layout.buildDirectory.dir("sourcesSets/$it.name")
+    it.output.resourcesDir = dir
+    it.java.destinationDirectory = dir
 }
 
-task deobfJar(type: Jar) {
-    from sourceSets.main.output
-    archiveClassifier = 'dev'
+shadowJar {
+    archiveBaseName = mod_id
+    archiveClassifier = "forge-${minecraft_version}"
+    destinationDirectory = file '../target'
+    configurations = [project.configurations.shade]
 }
 
 artifacts {
-    archives deobfJar
+    archives shadowJar
+    shadow shadowJar
 }
 
-build.dependsOn(shadowJar)
+reobf {
+    shadowJar {
+        dependsOn createMcpToSrg
+        mappings = createMcpToSrg.outputs.files.singleFile
+    }
+}
