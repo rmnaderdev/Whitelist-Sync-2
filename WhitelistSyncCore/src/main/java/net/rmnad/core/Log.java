@@ -1,4 +1,4 @@
-package net.rmnad;
+package net.rmnad.core;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

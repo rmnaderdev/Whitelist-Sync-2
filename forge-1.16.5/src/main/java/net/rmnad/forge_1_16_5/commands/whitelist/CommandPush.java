@@ -6,7 +6,7 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.util.text.StringTextComponent;
 import net.rmnad.forge_1_16_5.WhitelistSync2;
-import net.rmnad.json.WhitelistedPlayersFileReader;
+import net.rmnad.core.json.WhitelistedPlayersFileReader;
 
 public class CommandPush {
     // Name of the command

@@ -1,4 +1,4 @@
-package net.rmnad.callbacks;
+package net.rmnad.core.callbacks;
 
 import java.util.UUID;
 

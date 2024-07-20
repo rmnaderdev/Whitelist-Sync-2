@@ -9,11 +9,11 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
-import net.rmnad.Log;
-import net.rmnad.Utilities;
+import net.rmnad.core.Log;
+import net.rmnad.core.Utilities;
 import net.rmnad.forge_1_12_2.WhitelistSync2;
-import net.rmnad.json.OppedPlayersFileReader;
-import net.rmnad.services.BaseService;
+import net.rmnad.core.json.OppedPlayersFileReader;
+import net.rmnad.core.services.BaseService;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;

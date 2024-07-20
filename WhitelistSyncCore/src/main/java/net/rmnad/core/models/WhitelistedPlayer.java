@@ -1,4 +1,4 @@
-package net.rmnad.models;
+package net.rmnad.core.models;
 /**
  * DAO for a whitelisted user
  */

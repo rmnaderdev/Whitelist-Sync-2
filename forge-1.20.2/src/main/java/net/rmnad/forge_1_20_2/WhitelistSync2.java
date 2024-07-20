@@ -10,10 +10,10 @@ import net.minecraftforge.fml.common.Mod;
 import net.rmnad.forge_1_20_2.commands.op.OpCommands;
 import net.rmnad.forge_1_20_2.commands.whitelist.WhitelistCommands;
 import net.rmnad.forge_1_20_2.services.WhitelistSyncThread;
-import net.rmnad.Log;
-import net.rmnad.services.BaseService;
-import net.rmnad.services.MySqlService;
-import net.rmnad.services.SqLiteService;
+import net.rmnad.core.Log;
+import net.rmnad.core.services.BaseService;
+import net.rmnad.core.services.MySqlService;
+import net.rmnad.core.services.SqLiteService;
 
 @Mod(WhitelistSync2.MODID)
 public class WhitelistSync2

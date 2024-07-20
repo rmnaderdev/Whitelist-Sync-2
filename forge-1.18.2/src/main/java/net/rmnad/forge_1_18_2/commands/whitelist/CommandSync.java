@@ -5,11 +5,10 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.players.UserWhiteListEntry;
 import net.rmnad.forge_1_18_2.WhitelistSync2;
-import net.rmnad.json.WhitelistedPlayersFileReader;
+import net.rmnad.core.json.WhitelistedPlayersFileReader;
 
 public class CommandSync {
     // Name of the command

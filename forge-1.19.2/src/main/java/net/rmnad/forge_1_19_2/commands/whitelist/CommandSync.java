@@ -8,7 +8,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.players.UserWhiteListEntry;
 import net.rmnad.forge_1_19_2.WhitelistSync2;
-import net.rmnad.json.WhitelistedPlayersFileReader;
+import net.rmnad.core.json.WhitelistedPlayersFileReader;
 
 public class CommandSync {
     // Name of the command

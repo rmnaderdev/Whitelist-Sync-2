@@ -1,6 +1,6 @@
 package net.rmnad.forge_1_20_2;
 
-import net.rmnad.WhitelistSyncLogger;
+import net.rmnad.core.WhitelistSyncLogger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

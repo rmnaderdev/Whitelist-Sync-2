@@ -1,7 +1,7 @@
-package net.rmnad;
+package net.rmnad.core;
 
-import net.rmnad.models.OppedPlayer;
-import net.rmnad.models.WhitelistedPlayer;
+import net.rmnad.core.models.OppedPlayer;
+import net.rmnad.core.models.WhitelistedPlayer;
 
 import java.util.ArrayList;
 

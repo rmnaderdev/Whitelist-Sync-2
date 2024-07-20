@@ -1,4 +1,4 @@
-package net.rmnad.models;
+package net.rmnad.core.models;
 
 
 public class OppedPlayer {

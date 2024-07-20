@@ -1,11 +1,11 @@
-package net.rmnad.json;
+package net.rmnad.core.json;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import net.rmnad.Log;
-import net.rmnad.models.OppedPlayer;
+import net.rmnad.core.Log;
+import net.rmnad.core.models.OppedPlayer;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;

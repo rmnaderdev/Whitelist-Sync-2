@@ -1,4 +1,4 @@
-package net.rmnad;
+package net.rmnad.core;
 
 // Ideas borrowed from Dynmap's Logging implementation
 public interface WhitelistSyncLogger {
