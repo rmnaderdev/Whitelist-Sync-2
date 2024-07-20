@@ -1,21 +1,6 @@
 plugins {
-    id 'eclipse'
-    id 'idea'
-    id 'maven-publish'
+    id 'io.github.goooler.shadow' version '8.1.7'
     id 'net.minecraftforge.gradle' version '[6.0.24,6.2)'
-}
-
-version = mod_version
-group = mod_group_id
-
-base {
-    archivesName = mod_id
-}
-
-eclipse {
-    project {
-        name = "WhitelistSync(Forge-1.20.6)"
-    }
 }
 
 // Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
@@ -187,49 +172,17 @@ tasks.named('jar', Jar).configure {
 shadowJar {
     archiveBaseName = mod_id
     archiveClassifier = "forge-${minecraft_version}"
-    destinationDirectory = file '../target'
-
     configurations = [project.configurations.shade]
-    finalizedBy 'reobfShadowJar'
 }
 
-assemble.dependsOn shadowJar
+artifacts {
+    archives shadowJar
+    shadow shadowJar
+}
 
 reobf {
-    shadowJar {}
-}
-
-// Example configuration to allow publishing using the maven-publish plugin
-publishing {
-    publications {
-        register('mavenJava', MavenPublication) {
-            artifact jar
-        }
+    shadowJar {
+        dependsOn createMcpToSrg
+        mappings = createMcpToSrg.outputs.files.singleFile
     }
-    repositories {
-        maven {
-            url "file://${project.projectDir}/mcmodsrepo"
-        }
-    }
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
-}
-
-eclipse {
-    // Run everytime eclipse builds the code
-    //autoBuildTasks genEclipseRuns
-    // Run when importing the project
-    synchronizationTasks 'genEclipseRuns'
-}
-
-// Merge the resources and classes into the same directory.
-// This is done because java expects modules to be in a single directory.
-// And if we have it in multiple we have to do performance intensive hacks like having the UnionFileSystem
-// This will eventually be migrated to ForgeGradle so modders don't need to manually do it. But that is later.
-sourceSets.each {
-    def dir = layout.buildDirectory.dir("sourcesSets/$it.name")
-    it.output.resourcesDir = dir
-    it.java.destinationDirectory = dir
 }

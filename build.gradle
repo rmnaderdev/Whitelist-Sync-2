@@ -1,15 +1,6 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'java'
     id 'maven-publish'
-}
-
-apply plugin: 'eclipse'
-
-eclipse {
-    project {
-        name = "WhitelistSync"
-    }
 }
 
 allprojects {
@@ -25,16 +16,7 @@ allprojects {
     version = mod_version
 }
 
-class Globals {
-    String buildNumber = System.getenv().BUILD_NUMBER ?: "Dev"
-}
-
-ext {
-    globals = new Globals()
-}
-
 subprojects {
-    apply plugin: "com.github.johnrengelman.shadow"
     apply plugin: 'java'
     apply plugin: 'maven-publish'
 
@@ -43,11 +25,4 @@ subprojects {
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
     }
-}
-
-clean {
-    delete "target"
-}
-
-task setupCIWorkspace {
 }

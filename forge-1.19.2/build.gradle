@@ -1,15 +1,7 @@
 // Add shadow plugin
 plugins {
-    id 'eclipse'
-    id 'idea'
-    id 'maven-publish'
+    id 'io.github.goooler.shadow' version '8.1.7'
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
-}
-
-eclipse {
-    project {
-        name = "WhitelistSync(Forge-1.19.2)"
-    }
 }
 
 // Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
@@ -36,11 +28,16 @@ minecraft {
 
 project.archivesBaseName = "${project.archivesBaseName}-forge-${minecraft_version}"
 
+configurations {
+    shade
+    implementation.extendsFrom shade
+}
+
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
     // Core library dependency
-    implementation project(path: ':WhitelistSyncCore', configuration: "shadow")
+    shade project(':WhitelistSyncCore')
 
     // Used for development. These are added by the user later.
     runtimeOnly "curse.maven:mysqlconnector-561280:4684944"
@@ -67,32 +64,19 @@ tasks.named('processResources', ProcessResources).configure {
 }
 
 shadowJar {
-    dependencies {
-        include(dependency(':WhitelistSyncCore'))
-        exclude("META-INF/maven/**")
-        exclude("META-INF/services/**")
-    }
-
     archiveBaseName = mod_id
     archiveClassifier = "forge-${minecraft_version}"
-    destinationDirectory = file '../target'
-}
-
-afterEvaluate {
-    reobf {
-        shadowJar {
-            mappings = createMcpToSrg.output
-        }
-    }
-}
-
-task deobfJar(type: Jar) {
-    from sourceSets.main.output
-    archiveClassifier = 'dev'
+    configurations = [project.configurations.shade]
 }
 
 artifacts {
-    archives deobfJar
+    archives shadowJar
+    shadow shadowJar
 }
 
-build.dependsOn(shadowJar)
+reobf {
+    shadowJar {
+        dependsOn createMcpToSrg
+        mappings = createMcpToSrg.outputs.files.singleFile
+    }
+}
