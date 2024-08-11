@@ -41,6 +41,7 @@ dependencies {
 
     // Core library dependency
     implementation project(path: ':WhitelistSyncCore', configuration: "shadow")
+    minecraftLibrary project(path: ':WhitelistSyncCore')
 
     // Used for development. These are added by the user later.
     runtimeOnly "curse.maven:mysqlconnector-561280:4684944"

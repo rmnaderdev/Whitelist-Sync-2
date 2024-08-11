@@ -52,8 +52,8 @@ dependencies {
     // Used for development. These are added by the user later.
     runtimeOnly "curse.maven:mysqlconnector-561280:4684944"
     runtimeOnly "curse.maven:sqliteconnector-560832:3582173"
-	
-	// Hack fix for now, force jopt-simple to be exactly 5.0.4 because Mojang ships that version, but some transitive dependencies request 6.0+ 
+
+    // Hack fix for now, force jopt-simple to be exactly 5.0.4 because Mojang ships that version, but some transitive dependencies request 6.0+
     implementation('net.sf.jopt-simple:jopt-simple:5.0.4') { version { strictly '5.0.4' } }
 }
 
@@ -63,11 +63,11 @@ dependencies {
 // See https://docs.gradle.org/current/dsl/org.gradle.language.jvm.tasks.ProcessResources.html
 tasks.named('processResources', ProcessResources).configure {
     var replaceProperties = [
-        minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
-        forge_version: forge_version, forge_version_range: forge_version_range,
-        loader_version_range: loader_version_range,
-        mod_id: project.mod_id, mod_name: project.mod_name, mod_license: project.mod_license, mod_version: project.version + '-' + project.ext.buildNumber,
-        mod_authors: project.mod_authors, mod_description: project.mod_description,
+            minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
+            forge_version: forge_version, forge_version_range: forge_version_range,
+            loader_version_range: loader_version_range,
+            mod_id: project.mod_id, mod_name: project.mod_name, mod_license: project.mod_license, mod_version: project.version + '-' + project.ext.buildNumber,
+            mod_authors: project.mod_authors, mod_description: project.mod_description,
     ]
     inputs.properties replaceProperties
 
