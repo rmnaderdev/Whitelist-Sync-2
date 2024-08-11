@@ -41,17 +41,8 @@ minecraft {
     // Simply re-run your setup task after changing the mappings to update your workspace.
     mappings channel: mapping_channel, version: mapping_version
 
-    // Tell FG to not automtically create the reobf tasks, as we now use Official mappings at runtime, If you don't use them at dev time then you'll have to fix your reobf yourself.
     reobf = false
 
-    // When true, this property will have all Eclipse/IntelliJ IDEA run configurations run the "prepareX" task for the given run configuration before launching the game.
-    // In most cases, it is not necessary to enable.
-    // enableEclipsePrepareRuns = true
-    // enableIdeaPrepareRuns = true
-
-    // This property allows configuring Gradle's ProcessResources task(s) to run on IDE output locations before launching the game.
-    // It is REQUIRED to be set to true for this template to function.
-    // See https://docs.gradle.org/current/dsl/org.gradle.language.jvm.tasks.ProcessResources.html
     copyIdeResources = true
 
     // When true, this property will add the folder name of all declared run configurations to generated IDE run configurations.
@@ -130,6 +121,11 @@ configurations {
 
 project.archivesBaseName = "${project.archivesBaseName}-forge-${minecraft_version}"
 
+configurations {
+    shade
+    implementation.extendsFrom shade
+}
+
 dependencies {
     // Specify the version of Minecraft to use.
     // Any artifact can be supplied so long as it has a "userdev" classifier artifact and is a compatible patcher artifact.
@@ -140,7 +136,7 @@ dependencies {
 
 
     // Core library dependency
-    shade project(path: ':WhitelistSyncCore')
+    shade project(':WhitelistSyncCore')
 
     // Used for development. These are added by the user later.
     runtimeOnly "curse.maven:mysqlconnector-561280:4684944"
@@ -159,8 +155,8 @@ tasks.named('processResources', ProcessResources).configure {
             minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
             forge_version: forge_version, forge_version_range: forge_version_range,
             loader_version_range: loader_version_range,
-            mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
-            mod_authors: mod_authors, mod_description: mod_description,
+            mod_id: project.mod_id, mod_name: project.mod_name, mod_license: project.mod_license, mod_version: project.version + '-' + project.ext.buildNumber,
+            mod_authors: project.mod_authors, mod_description: project.mod_description,
     ]
     inputs.properties replaceProperties
 
@@ -169,67 +165,32 @@ tasks.named('processResources', ProcessResources).configure {
     }
 }
 
-// Example for how to get properties into the manifest for reading at runtime.
-tasks.named('jar', Jar).configure {
-    archiveClassifier = 'slim'
-    manifest {
-        attributes([
-                'Specification-Title'     : mod_id,
-                'Specification-Vendor'    : mod_authors,
-                'Specification-Version'   : '1', // We are version 1 of ourselves
-                'Implementation-Title'    : project.name,
-                'Implementation-Version'  : project.jar.archiveVersion,
-                'Implementation-Vendor'   : mod_authors
-        ])
-    }
-}
-
-shadowJar {
-    archiveBaseName = mod_id
-    archiveClassifier = "forge-${minecraft_version}"
-    destinationDirectory = file '../target'
-
-    configurations = [project.configurations.shade]
-    finalizedBy 'reobfShadowJar'
-}
-
-assemble.dependsOn shadowJar
-
-reobf {
-    shadowJar {}
-}
-
-// Example configuration to allow publishing using the maven-publish plugin
-publishing {
-    publications {
-        register('mavenJava', MavenPublication) {
-            artifact jar
-        }
-    }
-    repositories {
-        maven {
-            url "file://${project.projectDir}/mcmodsrepo"
-        }
-    }
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
-}
-
-eclipse {
-    // Run everytime eclipse builds the code
-    //autoBuildTasks genEclipseRuns
-    // Run when importing the project
-    synchronizationTasks 'genEclipseRuns'
-}
-
 // Merge the resources and classes into the same directory.
 // This is done because java expects modules to be in a single directory.
 // And if we have it in multiple we have to do performance intensive hacks like having the UnionFileSystem
 // This will eventually be migrated to ForgeGradle so modders don't need to manually do it. But that is later.
+// WITHOUT THIS, THE MOD WILL NOT BE FOUND DURING THE MOD LOADING PHASE
 sourceSets.each {
     def dir = layout.buildDirectory.dir("sourcesSets/$it.name")
     it.output.resourcesDir = dir
     it.java.destinationDirectory = dir
+}
+
+shadowJar {
+    archiveBaseName = "WhitelistSync"
+    archiveClassifier = "forge-${minecraft_version}"
+    destinationDirectory = file '../target'
+    configurations = [project.configurations.shade]
+}
+
+artifacts {
+    archives shadowJar
+    shadow shadowJar
+}
+
+reobf {
+    shadowJar {
+        dependsOn createMcpToSrg
+        mappings = createMcpToSrg.outputs.files.singleFile
+    }
 }

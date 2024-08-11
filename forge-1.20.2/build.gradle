@@ -3,7 +3,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'net.minecraftforge.gradle' version '[6.0.16,6.2)'
 }
 
 eclipse {
@@ -41,6 +41,7 @@ dependencies {
 
     // Core library dependency
     implementation project(path: ':WhitelistSyncCore', configuration: "shadow")
+    minecraftLibrary project(path: ':WhitelistSyncCore')
 
     // Used for development. These are added by the user later.
     runtimeOnly "curse.maven:mysqlconnector-561280:4684944"
@@ -53,11 +54,11 @@ dependencies {
 // See https://docs.gradle.org/current/dsl/org.gradle.language.jvm.tasks.ProcessResources.html
 tasks.named('processResources', ProcessResources).configure {
     var replaceProperties = [
-        minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
-        forge_version: forge_version, forge_version_range: forge_version_range,
-        loader_version_range: loader_version_range,
-        mod_id: project.mod_id, mod_name: project.mod_name, mod_license: project.mod_license, mod_version: project.version + '-' + project.ext.buildNumber,
-        mod_authors: project.mod_authors, mod_description: project.mod_description,
+            minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
+            forge_version: forge_version, forge_version_range: forge_version_range,
+            loader_version_range: loader_version_range,
+            mod_id: project.mod_id, mod_name: project.mod_name, mod_license: project.mod_license, mod_version: project.version + '-' + project.ext.buildNumber,
+            mod_authors: project.mod_authors, mod_description: project.mod_description,
     ]
     inputs.properties replaceProperties
 

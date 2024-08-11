@@ -3,7 +3,6 @@ package net.rmnad.forge_1_18_2.commands.whitelist;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.rmnad.Utilities;
 import net.rmnad.forge_1_18_2.WhitelistSync2;

@@ -1,3 +1,5 @@
+description = "WhitelistSyncCore"
+
 apply plugin: 'eclipse'
 
 eclipse {
@@ -12,8 +14,6 @@ repositories {
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
-description = "WhitelistSyncCore"
-
 dependencies {
     compileOnly "com.google.code.gson:gson:2.8.9"
     compileOnly 'org.apache.httpcomponents:httpclient:4.3.3'
@@ -21,9 +21,15 @@ dependencies {
 }
 
 jar {
+    archiveClassifier = 'unshaded'
+}
+
+
+shadowJar {
     destinationDirectory = file '../target'
+    archiveClassifier = ''
 }
 
 artifacts {
-    archives jar
+    archives shadowJar
 }

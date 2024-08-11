@@ -22,6 +22,7 @@ Whitelist Sync has a discord server. I plan to post updates and supply support f
 If you like this project and want to support it, consider donating to my [PayPal](https://www.paypal.com/paypalme/PSVFX)! Any amount is appreciated!
 
 ## Supported Versions
+- 1.21 (WIP: planned and coming soon...)
 - 1.20.6
 - 1.20.2
 - 1.20.1
@@ -29,7 +30,7 @@ If you like this project and want to support it, consider donating to my [PayPal
 - 1.19
 - 1.18.2
 - 1.16.5
-- 1.12.2 (WIP: Currently not working for v2.5.0)
+- 1.12.2 (no longer supported)
 
 *Versions not listed above can be requested as an issue. I will try my best to accommodate.*
 
