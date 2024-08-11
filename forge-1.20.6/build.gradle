@@ -88,7 +88,7 @@ sourceSets.each {
 }
 
 shadowJar {
-    archiveBaseName = mod_id
+    archiveBaseName = "WhitelistSync"
     archiveClassifier = "forge-${minecraft_version}"
     destinationDirectory = file '../target'
     configurations = [project.configurations.shade]

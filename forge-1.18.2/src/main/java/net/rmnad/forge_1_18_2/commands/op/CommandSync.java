@@ -7,7 +7,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.TextComponent;
 import net.rmnad.forge_1_18_2.WhitelistSync2;
-import net.rmnad.core.json.OppedPlayersFileReader;
+import net.rmnad.json.OppedPlayersFileReader;
 
 public class CommandSync {
     // Name of the command

@@ -108,16 +108,11 @@ minecraft {
 
 project.archivesBaseName = "${project.archivesBaseName}-forge-${minecraft_version}"
 
-configurations {
-    shade
-    implementation.extendsFrom shade
-}
-
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
     // Core library dependency
-    shadow project(':WhitelistSyncCore')
+    implementation project(path: ':WhitelistSyncCore', configuration: "shadow")
 
     // Used for development. These are added by the user later.
     runtimeOnly "curse.maven:mysqlconnector-561280:4684944"
@@ -162,20 +157,37 @@ tasks.named('jar', Jar).configure {
 }
 
 shadowJar {
-    archiveBaseName = mod_id
+    dependencies {
+        include(dependency(':WhitelistSyncCore'))
+        exclude("META-INF/maven/**")
+        exclude("META-INF/services/**")
+    }
+
+    archiveBaseName = "WhitelistSync"
     archiveClassifier = "forge-${minecraft_version}"
     destinationDirectory = file '../target'
-    configurations = [project.configurations.shade]
+}
+
+shadowJar.doLast {
+    task ->
+        ant.checksum file: task.archivePath
+}
+
+afterEvaluate {
+    reobf {
+        shadowJar {
+            mappings = createMcpToSrg.output
+        }
+    }
+}
+
+task deobfJar(type: Jar) {
+    from sourceSets.main.output
+    archiveClassifier = 'dev'
 }
 
 artifacts {
-    archives shadowJar
-    shadow shadowJar
+    archives deobfJar
 }
 
-reobf {
-    shadowJar {
-        dependsOn createMcpToSrg
-        mappings = createMcpToSrg.outputs.files.singleFile
-    }
-}
+build.dependsOn(shadowJar)

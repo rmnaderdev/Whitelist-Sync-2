@@ -8,12 +8,12 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.rmnad.core.Log;
+import net.rmnad.Log;
 import net.rmnad.forge_1_12_2.commands.CommandOp;
 import net.rmnad.forge_1_12_2.commands.CommandWhitelist;
-import net.rmnad.core.services.BaseService;
-import net.rmnad.core.services.MySqlService;
-import net.rmnad.core.services.SqLiteService;
+import net.rmnad.services.BaseService;
+import net.rmnad.services.MySqlService;
+import net.rmnad.services.SqLiteService;
 import net.rmnad.forge_1_12_2.services.*;
 
 import java.io.File;

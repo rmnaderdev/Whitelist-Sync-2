@@ -2,7 +2,7 @@ package net.rmnad.forge_1_12_2;
 
 
 import net.minecraftforge.common.config.Configuration;
-import net.rmnad.core.Log;
+import net.rmnad.Log;
 
 import static net.minecraftforge.common.config.Configuration.CATEGORY_GENERAL;
 

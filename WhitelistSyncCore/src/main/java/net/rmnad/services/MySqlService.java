@@ -1,123 +1,125 @@
-package net.rmnad.core.services;
+package net.rmnad.services;
 
-
-import net.rmnad.core.Log;
-import net.rmnad.core.callbacks.IOnUserOpAdd;
-import net.rmnad.core.callbacks.IOnUserOpRemove;
-import net.rmnad.core.callbacks.IOnUserWhitelistAdd;
-import net.rmnad.core.callbacks.IOnUserWhitelistRemove;
-import net.rmnad.core.models.OppedPlayer;
-import net.rmnad.core.models.WhitelistedPlayer;
+import net.rmnad.Log;
+import net.rmnad.callbacks.IOnUserOpAdd;
+import net.rmnad.callbacks.IOnUserOpRemove;
+import net.rmnad.callbacks.IOnUserWhitelistAdd;
+import net.rmnad.callbacks.IOnUserWhitelistRemove;
+import net.rmnad.models.OppedPlayer;
+import net.rmnad.models.WhitelistedPlayer;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.UUID;
 
 /**
- * Service for SQLITE Databases
+ * Service for MYSQL Databases
  */
-public class SqLiteService implements BaseService {
+public class MySqlService implements BaseService {
 
     private final boolean syncingOpList;
-    private final String databasePath;
-    
-    public SqLiteService(String databasePath, boolean syncingOpList) {
-        this.databasePath = databasePath;
+
+    private final String databaseName;
+    private final String url;
+    private final String username;
+    private final String password;
+
+    public MySqlService(String databaseName, String ip, int port, String username, String password, boolean syncingOpList) {
+        this.databaseName = databaseName;
+        this.url = "jdbc:mysql://" + ip + ":" + port + "/?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC";
+        this.username = username;
+        this.password = password;
+        
         this.syncingOpList = syncingOpList;
-    }
-
-    public Connection getConnection() throws SQLException {
-        String url = "jdbc:sqlite:" + this.databasePath;
-        return DriverManager.getConnection(url);
-    }
-
-    public void cleanup(Statement stmt, Connection conn) {
-        cleanup(null, stmt, conn);
-    }
-
-    public void cleanup(ResultSet rs, Statement stmt, Connection conn) {
-        try {
-            if(rs != null) {
-                rs.close();
-                rs = null;
-            }
-        } catch (SQLException ignored){}
-
-        try {
-            if(stmt != null) {
-                stmt.close();
-                stmt = null;
-            }
-        } catch (SQLException ignored){}
-
-        try {
-            if(conn != null) {
-                conn.close();
-                conn = null;
-            }
-        } catch (SQLException ignored){}
     }
 
     @Override
     public boolean requiresSyncing() {
-        return false;
+        return true;
     }
 
     // Function used to initialize the database file
     @Override
     public boolean initializeDatabase() {
-        Log.info("Setting up the SQLite service...");
-        boolean success = true;
+        Log.info("Setting up the MySQL service...");
+        boolean isSuccess = true;
 
         try {
-            Class.forName("org.sqlite.JDBC");
-        } catch (ClassNotFoundException e) {
-            Log.error("Failed to init org.sqlite.JDBC driver. Is the SQLite library missing? Try downloading it from https://modrinth.com/plugin/sqlite-jdbc and add it to your mods folder.");
+            Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            Log.error("Failed to init com.mysql.cj.jdbc.Driver. Is the MySQL library missing? Try downloading it from https://modrinth.com/plugin/mysql-jdbc and add it to your mods folder.");
             Log.error(e.getMessage(), e);
-            success = false;
+            isSuccess = false;
         }
 
-        if(success) {
-            Connection conn = null;
-            Statement stmt = null;
+
+        if (isSuccess) {
             try {
-                conn = getConnection();
-
-                // If the conn is valid, everything below this will run
-                Log.info("Connected to SQLite database successfully!");
-
-                // Create whitelist table if it doesn't exist.
-                // SQL statement for creating a new table
-                String sql = "CREATE TABLE IF NOT EXISTS whitelist (\n"
-                        + "	uuid text NOT NULL PRIMARY KEY,\n"
-                        + "	name text,\n"
-                        + " whitelisted integer NOT NULL);";
-                stmt = conn.createStatement();
-                stmt.executeUpdate(sql);
-
-                if (this.syncingOpList) {
-                    // SQL statement for creating a new table
-                    sql = "CREATE TABLE IF NOT EXISTS op (\n"
-                            + "	uuid text NOT NULL PRIMARY KEY,\n"
-                            + "	name text NOT NULL,\n"
-                            + " isOp integer NOT NULL);";
-                    stmt = conn.createStatement();
-                    stmt.executeUpdate(sql);
-
-                    // Execute migration
-                    // TODO: Handle migration for level and bypassesPlayerLimit in the future
-                    //migrateOpList(conn);
-                }
+                Connection conn = DriverManager.getConnection(url, username, password);
+                Log.info("Connected to " + url + " successfully!");
+                conn.close();
             } catch (SQLException e) {
-                Log.error("Error creating whitelist or op table!");
+                Log.error("Failed to connect to the mySQL database! Did you set one up in the config?");
                 Log.error(e.getMessage(), e);
-                success = false;
-            } finally {
-                cleanup(stmt, conn);
+                isSuccess = false;
             }
         }
 
-        return success;
+        if (isSuccess) {
+            // Create database
+            try {
+                PreparedStatement stmt;
+
+
+                // Create database
+                String sql = "CREATE DATABASE IF NOT EXISTS " + databaseName + ";";
+
+                // Create statement
+                Connection conn = DriverManager.getConnection(url, username, password);
+                stmt = conn.prepareStatement(sql);
+                stmt.execute();
+                stmt.close();
+
+                // Create whitelist table
+                sql = "CREATE TABLE IF NOT EXISTS " + databaseName + ".whitelist ("
+                        + "`uuid` VARCHAR(60) NOT NULL,"
+                        + "`name` VARCHAR(20) NOT NULL,"
+                        + "`whitelisted` TINYINT NOT NULL DEFAULT 1,"
+                        + "PRIMARY KEY (`uuid`)"
+                        + ")";
+                stmt = conn.prepareStatement(sql);
+                stmt.execute();
+                stmt.close();
+
+                // Create opped players table if enabled
+                if (this.syncingOpList) {
+                    sql = "CREATE TABLE IF NOT EXISTS " + databaseName + ".op ("
+                            + "`uuid` VARCHAR(60) NOT NULL,"
+                            + "`name` VARCHAR(20) NOT NULL,"
+                            + "`isOp` TINYINT NOT NULL DEFAULT 1,"
+                            + "PRIMARY KEY (`uuid`)"
+                            + ")";
+                    stmt = conn.prepareStatement(sql);
+                    stmt.execute();
+                    stmt.close();
+
+
+                    // Execute migration
+                    // TODO: Handle migration for level and bypassesPlayerLimit in the future
+                    //migrateOpList(conn, databaseName);
+                }
+
+                Log.info("Setup MySQL database!");
+                conn.close();
+            } catch (Exception e) {
+                Log.error("Error initializing database and database tables.");
+                Log.error(e.getMessage(), e);
+                isSuccess = false;
+            }
+        }
+
+
+        return isSuccess;
     }
 
     @Override
@@ -125,38 +127,37 @@ public class SqLiteService implements BaseService {
         // ArrayList for whitelisted players.
         ArrayList<WhitelistedPlayer> whitelistedPlayers = new ArrayList<>();
 
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
         try {
             // Keep track of records.
             int records = 0;
 
             // Connect to database.
-            conn = getConnection();
+            Connection conn = DriverManager.getConnection(url, username, password);
             long startTime = System.currentTimeMillis();
 
-            String sql = "SELECT uuid, name, whitelisted FROM whitelist WHERE whitelisted = 1;";
-            stmt = conn.prepareStatement(sql);
-            rs = stmt.executeQuery();
+            String sql = "SELECT uuid, name FROM " + databaseName + ".whitelist WHERE whitelisted = true;";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
 
-            // Save queried return to names list.
+            // Add queried results to arraylist.
             while (rs.next()) {
                 whitelistedPlayers.add(new WhitelistedPlayer(rs.getString("uuid"), rs.getString("name"), true));
                 records++;
             }
 
-            // Total time taken.
+            // Time taken
             long timeTaken = System.currentTimeMillis() - startTime;
 
             Log.debug("Database pulled whitelisted players | Took " + timeTaken + "ms | Read " + records + " records.");
+
+            rs.close();
+            stmt.close();
+            conn.close();
         } catch (SQLException e) {
+            // Something is wrong...
             Log.error("Error querying whitelisted players from database!");
             Log.error(e.getMessage(), e);
-        } finally {
-            cleanup(rs, stmt, conn);
         }
-
         return whitelistedPlayers;
     }
 
@@ -166,22 +167,19 @@ public class SqLiteService implements BaseService {
         ArrayList<OppedPlayer> oppedPlayers = new ArrayList<>();
 
         if (this.syncingOpList) {
-            Connection conn = null;
-            PreparedStatement stmt = null;
-            ResultSet rs = null;
             try {
                 // Keep track of records.
                 int records = 0;
 
                 // Connect to database.
-                conn = getConnection();
+                Connection conn = DriverManager.getConnection(url, username, password);
                 long startTime = System.currentTimeMillis();
 
-                String sql = "SELECT uuid, name FROM op WHERE isOp = 1;";
-                stmt = conn.prepareStatement(sql);
-                rs = stmt.executeQuery();
+                String sql = "SELECT uuid, name FROM " + databaseName + ".op WHERE isOp = true;";
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery();
 
-                // Save queried return to names list.
+                // Add queried results to arraylist.
                 while (rs.next()) {
                     OppedPlayer oppedPlayer = new OppedPlayer();
                     oppedPlayer.setIsOp(true);
@@ -192,17 +190,18 @@ public class SqLiteService implements BaseService {
                     records++;
                 }
 
-                // Total time taken.
+                // Time taken
                 long timeTaken = System.currentTimeMillis() - startTime;
 
                 Log.debug("Database pulled opped players | Took " + timeTaken + "ms | Read " + records + " records.");
+
+                rs.close();
+                stmt.close();
+                conn.close();
             } catch (SQLException e) {
                 Log.error("Error querying opped players from database!");
                 Log.error(e.getMessage(), e);
-            } finally {
-                cleanup(rs, stmt, conn);
             }
-
         } else {
             Log.error("Op list syncing is currently disabled in your config. "
                     + "Please enable it and restart the server to use this feature.");
@@ -216,19 +215,15 @@ public class SqLiteService implements BaseService {
         // TODO: Start job on thread to avoid lag?
         // Keep track of records.
         int records = 0;
-        boolean success;
-
-        Connection conn = null;
-        PreparedStatement stmt = null;
         try {
             // Connect to database.
-            conn = getConnection();
+            Connection conn = DriverManager.getConnection(url, username, password);
             long startTime = System.currentTimeMillis();
             // Loop through local whitelist and insert into database.
             for (WhitelistedPlayer player : whitelistedPlayers) {
 
                 if (player.getUuid() != null && player.getName() != null) {
-                    stmt = conn.prepareStatement("INSERT OR REPLACE INTO whitelist(uuid, name, whitelisted) VALUES (?, ?, 1)");
+                    PreparedStatement stmt = conn.prepareStatement("INSERT IGNORE INTO " + databaseName + ".whitelist(uuid, name, whitelisted) VALUES (?, ?, true)");
                     stmt.setString(1, player.getUuid());
                     stmt.setString(2, player.getName());
                     stmt.executeUpdate();
@@ -240,17 +235,15 @@ public class SqLiteService implements BaseService {
             // Record time taken.
             long timeTaken = System.currentTimeMillis() - startTime;
             Log.debug("Whitelist table updated | Took " + timeTaken + "ms | Wrote " + records + " records.");
+            conn.close();
 
-            success = true;
+            return true;
         } catch (SQLException e) {
             Log.error("Failed to update database with local records.");
             Log.error(e.getMessage(), e);
-            success = false;
-        } finally {
-            cleanup(stmt, conn);
         }
 
-        return success;
+        return false;
     }
 
     @Override
@@ -259,19 +252,15 @@ public class SqLiteService implements BaseService {
             // TODO: Start job on thread to avoid lag?
             // Keep track of records.
             int records = 0;
-            boolean success;
-
-            Connection conn = null;
-            PreparedStatement stmt = null;
             try {
                 // Connect to database.
-                conn = getConnection();
+                Connection conn = DriverManager.getConnection(url, username, password);
                 long startTime = System.currentTimeMillis();
-                // Loop through local opped players and insert into database.
+                // Loop through local whitelist and insert into database.
                 for (OppedPlayer player : oppedPlayers) {
 
                     if (player.getUuid() != null && player.getName() != null) {
-                        stmt = conn.prepareStatement("INSERT OR REPLACE INTO op(uuid, name, isOp) VALUES (?, ?, 1)");
+                        PreparedStatement stmt = conn.prepareStatement("INSERT IGNORE INTO " + databaseName + ".op(uuid, name, isOp) VALUES (?, ?, true)");
                         stmt.setString(1, player.getUuid());
                         stmt.setString(2, player.getName());
                         stmt.executeUpdate();
@@ -283,17 +272,13 @@ public class SqLiteService implements BaseService {
                 // Record time taken.
                 long timeTaken = System.currentTimeMillis() - startTime;
                 Log.debug("Op table updated | Took " + timeTaken + "ms | Wrote " + records + " records.");
+                conn.close();
 
-                success = true;
+                return true;
             } catch (SQLException e) {
                 Log.error("Failed to update database with local records.");
                 Log.error(e.getMessage(), e);
-                success = false;
-            } finally {
-                cleanup(stmt, conn);
             }
-
-            return success;
         } else {
             Log.error("Op list syncing is currently disabled in your config. "
                     + "Please enable it and restart the server to use this feature.");
@@ -304,19 +289,16 @@ public class SqLiteService implements BaseService {
 
     @Override
     public boolean pullDatabaseWhitelistToLocal(ArrayList<WhitelistedPlayer> localWhitelistedPlayers, IOnUserWhitelistAdd onUserAdd, IOnUserWhitelistRemove onUserRemove) {
-        int records = 0;
-        boolean success;
-
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
         try {
-            conn = getConnection();
+            int records = 0;
+
+            // Open connection
+            Connection conn = DriverManager.getConnection(url, username, password);
             long startTime = System.currentTimeMillis();
 
-            String sql = "SELECT name, uuid, whitelisted FROM whitelist;";
-            stmt = conn.prepareStatement(sql);
-            rs = stmt.executeQuery();
+            String sql = "SELECT name, uuid, whitelisted FROM " + databaseName + ".whitelist";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
                 UUID uuid = UUID.fromString(rs.getString("uuid"));
@@ -346,37 +328,33 @@ public class SqLiteService implements BaseService {
             long timeTaken = System.currentTimeMillis() - startTime;
             Log.debug("Copied whitelist database to local | Took " + timeTaken + "ms | Wrote " + records + " records.");
 
-            success = true;
+            rs.close();
+            stmt.close();
+            conn.close();
+            return true;
         } catch (SQLException e) {
             Log.error("Error querying whitelisted players from database!");
             Log.error(e.getMessage(), e);
-            success = false;
-        } finally {
-            cleanup(rs, stmt, conn);
         }
 
-        return success;
+        return false;
     }
 
     @Override
     public boolean pullDatabaseOpsToLocal(ArrayList<OppedPlayer> localOppedPlayers, IOnUserOpAdd onUserAdd, IOnUserOpRemove onUserRemove) {
-
-        // TODO: Compare level and bypassesPlayerLimit, sync if needed
         if (this.syncingOpList) {
-            int records = 0;
-            boolean success;
 
-            Connection conn = null;
-            PreparedStatement stmt = null;
-            ResultSet rs = null;
-
+            // TODO: Compare level and bypassesPlayerLimit, sync if needed
             try {
-                conn = getConnection();
+                int records = 0;
+
+                // Open connection
+                Connection conn = DriverManager.getConnection(url, username, password);
                 long startTime = System.currentTimeMillis();
 
-                String sql = "SELECT uuid, name, isOp FROM op;";
-                stmt = conn.prepareStatement(sql);
-                rs = stmt.executeQuery();
+                String sql = "SELECT uuid, name, isOp FROM " + databaseName + ".op";
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery();
 
                 while (rs.next()) {
                     UUID uuid = UUID.fromString(rs.getString("uuid"));
@@ -401,20 +379,19 @@ public class SqLiteService implements BaseService {
                             records++;
                         }
                     }
+
                 }
                 long timeTaken = System.currentTimeMillis() - startTime;
                 Log.debug("Copied op database to local | Took " + timeTaken + "ms | Wrote " + records + " records.");
 
-                success = true;
+                rs.close();
+                stmt.close();
+                conn.close();
+                return true;
             } catch (SQLException e) {
                 Log.error("Error querying opped players from database!");
                 Log.error(e.getMessage(), e);
-                success = false;
-            } finally {
-                cleanup(rs, stmt, conn);
             }
-
-            return success;
         } else {
             Log.error("Op list syncing is currently disabled in your config. "
                     + "Please enable it and restart the server to use this feature.");
@@ -425,18 +402,13 @@ public class SqLiteService implements BaseService {
 
     @Override
     public boolean addWhitelistPlayer(UUID uuid, String name) {
-        boolean success;
-        Connection conn = null;
-        PreparedStatement stmt = null;
         try {
-            // Open connection
-            conn = getConnection();
-
-            // Start time.
+            // Open connection=
+            Connection conn = DriverManager.getConnection(url, username, password);
             long startTime = System.currentTimeMillis();
 
-            String sql = "INSERT OR REPLACE INTO whitelist(uuid, name, whitelisted) VALUES (?, ?, 1)";
-            stmt = conn.prepareStatement(sql);
+            String sql = "REPLACE INTO " + databaseName + ".whitelist(uuid, name, whitelisted) VALUES (?, ?, true)";
+            PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, uuid.toString());
             stmt.setString(2, name);
             stmt.executeUpdate();
@@ -444,33 +416,28 @@ public class SqLiteService implements BaseService {
             // Time taken.
             long timeTaken = System.currentTimeMillis() - startTime;
             Log.debug("Added " + name + " to whitelist | Took " + timeTaken + "ms");
+            stmt.close();
+            conn.close();
+            return true;
 
-            success = true;
         } catch (SQLException e) {
             Log.error("Error adding " + name + " to whitelist database!");
             Log.error(e.getMessage(), e);
-            success = false;
-        } finally {
-            cleanup(stmt, conn);
         }
 
-        return success;
+        return false;
     }
 
     @Override
     public boolean addOppedPlayer(UUID uuid, String name) {
         if (this.syncingOpList) {
-            boolean success;
-            Connection conn = null;
-            PreparedStatement stmt = null;
             try {
-                // Open connection
-                conn = getConnection();
-
-                // Start time.
+                // Open connection=
+                Connection conn = DriverManager.getConnection(url, username, password);
                 long startTime = System.currentTimeMillis();
 
-                stmt = conn.prepareStatement("INSERT OR REPLACE INTO op(uuid, name, isOp) VALUES (?, ?, 1)");
+                String sql = "REPLACE INTO " + databaseName + ".op(uuid, name, isOp) VALUES (?, ?, true)";
+                PreparedStatement stmt = conn.prepareStatement(sql);
                 stmt.setString(1, uuid.toString());
                 stmt.setString(2, name);
                 stmt.executeUpdate();
@@ -478,17 +445,14 @@ public class SqLiteService implements BaseService {
                 // Time taken.
                 long timeTaken = System.currentTimeMillis() - startTime;
                 Log.debug("Database opped " + name + " | Took " + timeTaken + "ms");
+                stmt.close();
+                conn.close();
+                return true;
 
-                success = true;
             } catch (SQLException e) {
                 Log.error("Error opping " + name + " !");
                 Log.error(e.getMessage(), e);
-                success = false;
-            } finally {
-                cleanup(stmt, conn);
             }
-
-            return success;
         } else {
             Log.error("Op list syncing is currently disabled in your config. "
                     + "Please enable it and restart the server to use this feature.");
@@ -499,17 +463,13 @@ public class SqLiteService implements BaseService {
 
     @Override
     public boolean removeWhitelistPlayer(UUID uuid, String name) {
-        boolean success;
-        Connection conn = null;
-        PreparedStatement stmt = null;
         try {
-            // Open connection
-            conn = getConnection();
-
-            // Start time.
+            // Open connection=
+            Connection conn = DriverManager.getConnection(url, username, password);
             long startTime = System.currentTimeMillis();
 
-            stmt = conn.prepareStatement("INSERT OR REPLACE INTO whitelist(uuid, name, whitelisted) VALUES (?, ?, 0)");
+            String sql = "REPLACE INTO " + databaseName + ".whitelist(uuid, name, whitelisted) VALUES (?, ?, false)";
+            PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, uuid.toString());
             stmt.setString(2, name);
             stmt.executeUpdate();
@@ -517,51 +477,43 @@ public class SqLiteService implements BaseService {
             // Time taken.
             long timeTaken = System.currentTimeMillis() - startTime;
             Log.debug("Removed " + name + " from whitelist | Took " + timeTaken + "ms");
+            stmt.close();
+            conn.close();
+            return true;
 
-            success = true;
         } catch (SQLException e) {
             Log.error("Error removing " + name + " to whitelist database!");
             Log.error(e.getMessage(), e);
-            success = false;
-        } finally {
-            cleanup(stmt, conn);
         }
 
-        return success;
+        return false;
     }
 
     @Override
     public boolean removeOppedPlayer(UUID uuid, String name) {
         if (this.syncingOpList) {
-            boolean success;
-            Connection conn = null;
-            PreparedStatement stmt = null;
             try {
-                // Open connection
-                conn = getConnection();
-
-                // Start time.
+                // Open connection=
+                Connection conn = DriverManager.getConnection(url, username, password);
                 long startTime = System.currentTimeMillis();
 
-                stmt = conn.prepareStatement("INSERT OR REPLACE INTO op(uuid, name, isOp) VALUES (?, ?, 0)");
+                String sql = "REPLACE INTO " + databaseName + ".op(uuid, name, isOp) VALUES (?, ?, false)";
+                PreparedStatement stmt = conn.prepareStatement(sql);
                 stmt.setString(1, uuid.toString());
                 stmt.setString(2, name);
                 stmt.executeUpdate();
 
-                // Time taken
+                // Time taken.
                 long timeTaken = System.currentTimeMillis() - startTime;
                 Log.debug("Deopped " + name + " | Took " + timeTaken + "ms");
+                stmt.close();
+                conn.close();
+                return true;
 
-                success = true;
             } catch (SQLException e) {
                 Log.error("Error deopping " + name + ".");
                 Log.error(e.getMessage(), e);
-                success = false;
-            } finally {
-                cleanup(stmt, conn);
             }
-
-            return success;
         } else {
             Log.error("Op list syncing is currently disabled in your config. "
                     + "Please enable it and restart the server to use this feature.");
@@ -571,41 +523,46 @@ public class SqLiteService implements BaseService {
     }
 
     // TODO: Handle migration for level and bypassesPlayerLimit in the future
-//    private static void migrateOpList(Connection conn) throws SQLException {
+//    private static void migrateOpList(Connection conn, String databaseName) throws SQLException {
 //        String sql;
 //        PreparedStatement stmt;
 //
 //        // Add new level field to op table if it doesn't exist
-//        sql = "SELECT COUNT(*) AS count FROM pragma_table_info('op') WHERE name='level'";
+//        sql = "SELECT COUNT(*) AS count " +
+//                "FROM INFORMATION_SCHEMA.COLUMNS " +
+//                "WHERE TABLE_SCHEMA = '" + databaseName + "' AND TABLE_NAME = 'op' AND COLUMN_NAME = 'level'";
 //        stmt = conn.prepareStatement(sql);
 //        ResultSet rs = stmt.executeQuery();
-//        stmt.close();
 //        rs.next();
 //
 //        if(rs.getInt("count") == 0) {
-//            sql = "ALTER TABLE op ADD COLUMN level INTEGER NULL DEFAULT 4";
-//            stmt = conn.prepareStatement(sql);
-//            stmt.execute();
-//            stmt.close();
+//            sql = "ALTER TABLE " + databaseName + ".op ADD COLUMN level INTEGER NOT NULL DEFAULT 4";
+//            PreparedStatement stmt2 = conn.prepareStatement(sql);
+//            stmt2.execute();
+//            stmt2.close();
 //            Log.info("Added new op table \"level\" column. Existing entries get set to default level 4.");
 //        }
 //        rs.close();
+//        stmt.close();
 //
 //
 //        // Add new bypassesPlayerLimit field to op table if it doesn't exist
-//        sql = "SELECT COUNT(*) AS count FROM pragma_table_info('op') WHERE name='bypassesPlayerLimit'";
+//        sql =
+//                "SELECT COUNT(*) AS count " +
+//                        "FROM INFORMATION_SCHEMA.COLUMNS " +
+//                        "WHERE TABLE_SCHEMA = '" + databaseName + "' AND TABLE_NAME = 'op' AND COLUMN_NAME = 'bypassesPlayerLimit'";
 //        stmt = conn.prepareStatement(sql);
 //        ResultSet rs1 = stmt.executeQuery();
-//        stmt.close();
 //        rs1.next();
 //
 //        if(rs1.getInt("count") == 0) {
-//            sql = "ALTER TABLE op ADD COLUMN bypassesPlayerLimit INTEGER NULL DEFAULT 0";
-//            stmt = conn.prepareStatement(sql);
-//            stmt.execute();
-//            stmt.close();
+//            sql = "ALTER TABLE " + databaseName + ".op ADD COLUMN bypassesPlayerLimit TINYINT NOT NULL DEFAULT 0";
+//            PreparedStatement stmt2 = conn.prepareStatement(sql);
+//            stmt2.execute();
+//            stmt2.close();
 //            Log.info("Added new op table \"bypassesPlayerLimit\" column. Existing entries get set to default bypassesPlayerLimit false.");
 //        }
 //        rs1.close();
+//        stmt.close();
 //    }
 }

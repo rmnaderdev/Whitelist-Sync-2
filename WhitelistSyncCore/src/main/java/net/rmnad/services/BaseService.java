@@ -1,11 +1,11 @@
-package net.rmnad.core.services;
+package net.rmnad.services;
 
-import net.rmnad.core.callbacks.IOnUserOpAdd;
-import net.rmnad.core.callbacks.IOnUserOpRemove;
-import net.rmnad.core.callbacks.IOnUserWhitelistAdd;
-import net.rmnad.core.models.OppedPlayer;
-import net.rmnad.core.models.WhitelistedPlayer;
-import net.rmnad.core.callbacks.IOnUserWhitelistRemove;
+import net.rmnad.callbacks.IOnUserOpAdd;
+import net.rmnad.callbacks.IOnUserOpRemove;
+import net.rmnad.callbacks.IOnUserWhitelistAdd;
+import net.rmnad.models.OppedPlayer;
+import net.rmnad.models.WhitelistedPlayer;
+import net.rmnad.callbacks.IOnUserWhitelistRemove;
 
 import java.util.ArrayList;
 import java.util.UUID;
