@@ -139,8 +139,9 @@ dependencies {
     shade project(':WhitelistSyncCore')
 
     // Used for development. These are added by the user later.
-    runtimeOnly "curse.maven:mysqlconnector-561280:4684944"
-    runtimeOnly "curse.maven:sqliteconnector-560832:3582173"
+    // Need "minecraftLibrary" so the libraries are used in the dev environment. Without them, the JDBC drivers won't be loaded.
+    minecraftLibrary "curse.maven:mysqlconnector-561280:4684944"
+    minecraftLibrary "curse.maven:sqliteconnector-560832:3582173"
 
     // Hack fix for now, force jopt-simple to be exactly 5.0.4 because Mojang ships that version, but some transitive dependencies request 6.0+
     implementation('net.sf.jopt-simple:jopt-simple:5.0.4') { version { strictly '5.0.4' } }
@@ -186,11 +187,4 @@ shadowJar {
 artifacts {
     archives shadowJar
     shadow shadowJar
-}
-
-reobf {
-    shadowJar {
-        dependsOn createMcpToSrg
-        mappings = createMcpToSrg.outputs.files.singleFile
-    }
 }
