@@ -43,8 +43,9 @@ dependencies {
     minecraftLibrary project(path: ':WhitelistSyncCore')
 
     // Used for development. These are added by the user later.
-    runtimeOnly "curse.maven:mysqlconnector-561280:4684944"
-    runtimeOnly "curse.maven:sqliteconnector-560832:3582173"
+    // Need "minecraftLibrary" so the libraries are used in the dev environment. Without them, the JDBC drivers won't be loaded.
+    minecraftLibrary "curse.maven:mysqlconnector-561280:4684944"
+    minecraftLibrary "curse.maven:sqliteconnector-560832:3582173"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

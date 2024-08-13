@@ -57,7 +57,7 @@ public class WhitelistSync2
         boolean errorOnSetup = false;
 
         // Server filepath
-        SERVER_FILEPATH = server.getServerDirectory().getRoot().toString();
+        SERVER_FILEPATH = server.getServerDirectory().toFile().getAbsolutePath();
 
         Log.info("----------------------------------------------");
         Log.info("---------------WHITELIST SYNC 2---------------");
