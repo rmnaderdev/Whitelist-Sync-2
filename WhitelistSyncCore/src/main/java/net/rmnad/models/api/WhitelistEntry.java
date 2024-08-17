@@ -7,6 +7,8 @@ package net.rmnad.models.api;
 //    name: string;
 //}
 
+import net.rmnad.models.WhitelistedPlayer;
+
 import java.util.Objects;
 
 public class WhitelistEntry {
@@ -15,7 +17,7 @@ public class WhitelistEntry {
     private String accountId;
     private String uuid;
     private String name;
-    private Boolean isWhitelisted;
+    private boolean isWhitelisted;
 
     public WhitelistEntry() {
     }
@@ -59,11 +61,11 @@ public class WhitelistEntry {
         this.name = name;
     }
 
-    public Boolean getWhitelisted() {
+    public boolean getWhitelisted() {
         return isWhitelisted;
     }
 
-    public void setWhitelisted(Boolean whitelisted) {
+    public void setWhitelisted(boolean whitelisted) {
         isWhitelisted = whitelisted;
     }
 
@@ -89,5 +91,9 @@ public class WhitelistEntry {
     @Override
     public int hashCode() {
         return Objects.hashCode(_id);
+    }
+
+    public WhitelistedPlayer toWhitelistedPlayer() {
+        return new WhitelistedPlayer(this.uuid, this.name, this.isWhitelisted);
     }
 }

@@ -33,11 +33,6 @@ public class MySqlService implements BaseService {
         this.syncingOpList = syncingOpList;
     }
 
-    @Override
-    public boolean requiresSyncing() {
-        return true;
-    }
-
     // Function used to initialize the database file
     @Override
     public boolean initializeDatabase() {
@@ -430,32 +425,33 @@ public class MySqlService implements BaseService {
 
     @Override
     public boolean addOppedPlayer(UUID uuid, String name) {
-        if (this.syncingOpList) {
-            try {
-                // Open connection=
-                Connection conn = DriverManager.getConnection(url, username, password);
-                long startTime = System.currentTimeMillis();
-
-                String sql = "REPLACE INTO " + databaseName + ".op(uuid, name, isOp) VALUES (?, ?, true)";
-                PreparedStatement stmt = conn.prepareStatement(sql);
-                stmt.setString(1, uuid.toString());
-                stmt.setString(2, name);
-                stmt.executeUpdate();
-
-                // Time taken.
-                long timeTaken = System.currentTimeMillis() - startTime;
-                Log.debug("Database opped " + name + " | Took " + timeTaken + "ms");
-                stmt.close();
-                conn.close();
-                return true;
-
-            } catch (SQLException e) {
-                Log.error("Error opping " + name + " !");
-                Log.error(e.getMessage(), e);
-            }
-        } else {
+        if (!this.syncingOpList) {
             Log.error("Op list syncing is currently disabled in your config. "
                     + "Please enable it and restart the server to use this feature.");
+            return false;
+        }
+
+        try {
+            // Open connection=
+            Connection conn = DriverManager.getConnection(url, username, password);
+            long startTime = System.currentTimeMillis();
+
+            String sql = "REPLACE INTO " + databaseName + ".op(uuid, name, isOp) VALUES (?, ?, true)";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, uuid.toString());
+            stmt.setString(2, name);
+            stmt.executeUpdate();
+
+            // Time taken.
+            long timeTaken = System.currentTimeMillis() - startTime;
+            Log.debug("Database opped " + name + " | Took " + timeTaken + "ms");
+            stmt.close();
+            conn.close();
+            return true;
+
+        } catch (SQLException e) {
+            Log.error("Error opping " + name + " !");
+            Log.error(e.getMessage(), e);
         }
 
         return false;
@@ -482,7 +478,7 @@ public class MySqlService implements BaseService {
             return true;
 
         } catch (SQLException e) {
-            Log.error("Error removing " + name + " to whitelist database!");
+            Log.error("Error removing " + name + " from whitelist database!");
             Log.error(e.getMessage(), e);
         }
 

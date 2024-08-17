@@ -1,5 +1,7 @@
 package net.rmnad.models.api;
 
+import net.rmnad.models.OppedPlayer;
+
 import java.util.Objects;
 
 public class OpEntry {
@@ -8,7 +10,7 @@ public class OpEntry {
     private String accountId;
     private String uuid;
     private String name;
-    private Boolean isOpped;
+    private boolean isOpped;
 
     public String get_id() {
         return _id;
@@ -42,6 +44,14 @@ public class OpEntry {
         this.name = name;
     }
 
+    public boolean getOpped() {
+        return isOpped;
+    }
+
+    public void setOpped(boolean opped) {
+        isOpped = opped;
+    }
+
     @Override
     public String toString() {
         return "OpEntry{" +
@@ -63,5 +73,9 @@ public class OpEntry {
     @Override
     public int hashCode() {
         return Objects.hashCode(_id);
+    }
+
+    public OppedPlayer toOppedPlayer() {
+        return new OppedPlayer(uuid, name, isOpped);
     }
 }

@@ -79,7 +79,7 @@ public class WhitelistSync2
                 );
                 break;
             case WEB:
-                whitelistService = new WebService(Config.COMMON.WEB_API_KEY.get());
+                whitelistService = new WebService(Config.COMMON.WEB_API_KEY.get(), Config.COMMON.SYNC_OP_LIST.get());
                 break;
             default:
                 Log.error("Please check what WHITELIST_MODE is set in the config and make sure it is set to a supported mode.");

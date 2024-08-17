@@ -7,7 +7,26 @@ public class OppedPlayer {
     private String uuid;
     private String name;
     private int level;
-    private Boolean bypassesPlayerLimit;
+    private boolean bypassesPlayerLimit;
+
+    public OppedPlayer() {
+    }
+
+    public OppedPlayer(String uuid, String name, boolean isOp) {
+        this.isOp = isOp;
+        this.uuid = uuid;
+        this.name = name;
+        this.level = 5;
+        this.bypassesPlayerLimit = false;
+    }
+
+    public OppedPlayer(String uuid, String name, boolean isOp, int level, boolean bypassesPlayerLimit) {
+        this.isOp = isOp;
+        this.uuid = uuid;
+        this.name = name;
+        this.level = level;
+        this.bypassesPlayerLimit = bypassesPlayerLimit;
+    }
 
     public boolean isOp() {
         return isOp;
@@ -41,11 +60,11 @@ public class OppedPlayer {
         this.level = level;
     }
 
-    public Boolean getBypassesPlayerLimit() {
+    public boolean getBypassesPlayerLimit() {
         return bypassesPlayerLimit;
     }
 
-    public void setBypassesPlayerLimit(Boolean bypassesPlayerLimit) {
+    public void setBypassesPlayerLimit(boolean bypassesPlayerLimit) {
         this.bypassesPlayerLimit = bypassesPlayerLimit;
     }
 

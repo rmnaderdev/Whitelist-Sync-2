@@ -58,11 +58,6 @@ public class SqLiteService implements BaseService {
         } catch (SQLException ignored){}
     }
 
-    @Override
-    public boolean requiresSyncing() {
-        return false;
-    }
-
     // Function used to initialize the database file
     @Override
     public boolean initializeDatabase() {
