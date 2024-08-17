@@ -13,6 +13,7 @@ import net.minecraft.server.management.WhiteList;
 import net.minecraft.server.management.WhitelistEntry;
 import net.minecraft.util.text.StringTextComponent;
 import net.rmnad.forge_1_16_5.WhitelistSync2;
+import net.rmnad.logging.CommandMessages;
 
 import java.util.Collection;
 
@@ -61,7 +62,7 @@ public class CommandAdd {
                                 WhitelistEntry whitelistentry = new WhitelistEntry(gameProfile);
                                 whiteList.add(whitelistentry);
 
-                                context.getSource().sendSuccess(new StringTextComponent(String.format("Added %s to whitelist database.", playerName)), true);
+                                context.getSource().sendSuccess(new StringTextComponent(CommandMessages.AddedToWhitelist(playerName)), true);
                                 ++i;
                                 // Everything is kosher!
                             } else {
@@ -70,7 +71,7 @@ public class CommandAdd {
                             }
                         } else {
                             // Player already whitelisted
-                            context.getSource().sendSuccess(new StringTextComponent(String.format("%s is already whitelisted.", playerName)), true);
+                            context.getSource().sendSuccess(new StringTextComponent(CommandMessages.AlreadyWhitelist(playerName)), true);
                         }
                     }
 

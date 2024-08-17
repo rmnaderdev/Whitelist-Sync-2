@@ -66,6 +66,10 @@ The mod uses polling to check for changes in the database and will update the lo
 
 ## To-Do
 - [x] Get the damn gradle project structure to work
+- [ ] Add hashing algorithm for checking if this client needs to pull from the web api to reduce load on the web servers
+- [ ] Add min timer for polling from Web API
+
+## Future Plans
 - [ ] Add support for Fabric
 - [ ] Add support for level and bypassPlayerLimit for op lists
 - [ ] Add support for syncing ban lists

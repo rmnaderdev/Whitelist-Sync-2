@@ -11,6 +11,7 @@ import net.rmnad.forge_1_21.commands.op.OpCommands;
 import net.rmnad.forge_1_21.commands.whitelist.WhitelistCommands;
 import net.rmnad.forge_1_21.services.WhitelistSyncThread;
 import net.rmnad.Log;
+import net.rmnad.logging.LogMessages;
 import net.rmnad.services.BaseService;
 import net.rmnad.services.MySqlService;
 import net.rmnad.services.SqLiteService;
@@ -29,7 +30,7 @@ public class WhitelistSync2
         Config.register(ModLoadingContext.get());
         MinecraftForge.EVENT_BUS.register(this);
         Log.setLogger(new ForgeLogger());
-        Log.info("Hello from Whitelist Sync 2!");
+        Log.info(LogMessages.HELLO_MESSAGE);
     }
 
     // Command Registration
@@ -38,10 +39,10 @@ public class WhitelistSync2
         new WhitelistCommands(event.getDispatcher());
 
         if(Config.COMMON.SYNC_OP_LIST.get()) {
-            Log.info("Opped Player Sync is enabled");
+            Log.info(LogMessages.OP_SYNC_ENABLED);
             new OpCommands(event.getDispatcher());
         } else {
-            Log.info("Opped Player Sync is disabled");
+            Log.info(LogMessages.OP_SYNC_DISABLED);
         }
     }
 
@@ -59,9 +60,7 @@ public class WhitelistSync2
         // Server filepath
         SERVER_FILEPATH = server.getServerDirectory().toFile().getAbsolutePath();
 
-        Log.info("----------------------------------------------");
-        Log.info("---------------WHITELIST SYNC 2---------------");
-        Log.info("----------------------------------------------");
+        LogMessages.ShowModStartupHeaderMessage();
 
         switch (Config.COMMON.DATABASE_MODE.get()) {
             case SQLITE:
@@ -78,7 +77,7 @@ public class WhitelistSync2
                 );
                 break;
             default:
-                Log.error("Please check what WHITELIST_MODE is set in the config and make sure it is set to a supported mode.");
+                Log.error(LogMessages.ERROR_WHITELIST_MODE);
                 errorOnSetup = true;
                 break;
         }
@@ -88,8 +87,7 @@ public class WhitelistSync2
                 // Database is setup!
                 // Check if whitelisting is enabled.
                 if (!server.getPlayerList().isUsingWhitelist()) {
-                    Log.info("Oh no! I see whitelisting isn't enabled in the server properties. "
-                            + "I assume this is not intentional, I'll enable it for you!");
+                    Log.info(LogMessages.WARN_WHITELIST_NOT_ENABLED);
                     server.getPlayerList().setUsingWhiteList(true);
                 }
             } else {
@@ -99,14 +97,11 @@ public class WhitelistSync2
 
         StartWhitelistSyncThread(server, whitelistService, errorOnSetup);
 
-        Log.info("----------------------------------------------");
-        Log.info("----------------------------------------------");
-        Log.info("----------------------------------------------");
+        LogMessages.ShowModStartupFooterMessage();
     }
 
     public static void StartWhitelistSyncThread(MinecraftServer server, BaseService service, boolean errorOnSetup) {
         WhitelistSyncThread syncThread = new WhitelistSyncThread(server, service, Config.COMMON.SYNC_OP_LIST.get(), errorOnSetup);
         syncThread.start();
-        Log.info("WhitelistSync Thread Started!");
     }
 }

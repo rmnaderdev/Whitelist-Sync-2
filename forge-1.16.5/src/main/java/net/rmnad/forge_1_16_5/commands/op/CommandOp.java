@@ -11,6 +11,7 @@ import net.minecraft.command.arguments.GameProfileArgument;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.util.text.StringTextComponent;
 import net.rmnad.forge_1_16_5.WhitelistSync2;
+import net.rmnad.logging.CommandMessages;
 
 import java.util.Collection;
 
@@ -59,7 +60,7 @@ public class CommandOp {
                                     if(WhitelistSync2.whitelistService.addOppedPlayer(gameProfile.getId(), gameProfile.getName())) {
                                         playerList.op(gameProfile);
 
-                                        context.getSource().sendSuccess(new StringTextComponent(String.format("Opped %s in database.", playerName)), true);
+                                        context.getSource().sendSuccess(new StringTextComponent(CommandMessages.AddedToOpList(playerName)), true);
                                         ++i;
                                         // Everything is kosher!
                                     } else {
@@ -68,7 +69,7 @@ public class CommandOp {
                                     }
                                 } else {
                                     // Player already whitelisted
-                                    context.getSource().sendSuccess(new StringTextComponent(String.format("%s is already opped.", playerName)), true);
+                                    context.getSource().sendSuccess(new StringTextComponent(CommandMessages.AlreadyInOpList(playerName)), true);
                                 }
                             }
 

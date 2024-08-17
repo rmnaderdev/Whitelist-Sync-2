@@ -8,6 +8,7 @@ import net.rmnad.forge_1_19.WhitelistSync2;
 import net.rmnad.json.OppedPlayersFileReader;
 import net.rmnad.json.WhitelistedPlayersFileReader;
 import net.rmnad.Log;
+import net.rmnad.logging.LogMessages;
 import net.rmnad.services.BaseService;
 
 public class WhitelistSyncThread extends Thread {
@@ -26,10 +27,14 @@ public class WhitelistSyncThread extends Thread {
     
     @Override
     public void run() {
-        Log.info("Sync thread starting...");
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ignored) {}
+
+        Log.info(LogMessages.SYNC_THREAD_STARTING);
 
         if(this.errorOnSetup) {
-            Log.error("Error initializing whitelist sync database. Disabling mod functionality. Please correct errors and restart.");
+            Log.error(LogMessages.ERROR_INITIALIZING_WHITELIST_SYNC_DATABASE);
             return;
         }
 
@@ -67,7 +72,7 @@ public class WhitelistSyncThread extends Thread {
                 } catch (InterruptedException ignored) {}
             }
         } catch (Exception e) {
-            Log.error("Error in the whitelist sync thread! Syncing will stop until the server is restarted.", e);
+            Log.error(LogMessages.ERROR_WHITELIST_SYNC_THREAD, e);
         }
     }
 

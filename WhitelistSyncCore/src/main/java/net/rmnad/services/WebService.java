@@ -8,6 +8,7 @@ import net.rmnad.callbacks.IOnUserOpAdd;
 import net.rmnad.callbacks.IOnUserOpRemove;
 import net.rmnad.callbacks.IOnUserWhitelistAdd;
 import net.rmnad.callbacks.IOnUserWhitelistRemove;
+import net.rmnad.logging.LogMessages;
 import net.rmnad.models.OppedPlayer;
 import net.rmnad.models.WhitelistedPlayer;
 import net.rmnad.models.api.OpEntry;
@@ -16,6 +17,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -86,6 +88,11 @@ public class WebService implements BaseService {
 
             return response.getStatusLine().getStatusCode() == 200;
         }
+        catch (HttpHostConnectException e) {
+            Log.warning("Failed to connect to Whitelist Sync Web API.");
+            // Return true to try again later.
+            return true;
+        }
         catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
             Log.error("Error authenticating with Web API.", e);
         }
@@ -109,7 +116,12 @@ public class WebService implements BaseService {
             } else {
                 Log.error("Failed to get whitelist entries from API. Response Code: " + response.getStatusLine().getStatusCode());
             }
-        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+
+        }
+        catch (HttpHostConnectException e) {
+            Log.warning("Failed to connect to Whitelist Sync Web API.");
+        }
+        catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
             Log.error("Error getting whitelisted players from Web API.", e);
         }
 
@@ -132,7 +144,11 @@ public class WebService implements BaseService {
             } else {
                 Log.error("Failed to get op entries from API. Response Code: " + response.getStatusLine().getStatusCode());
             }
-        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+        }
+        catch (HttpHostConnectException e) {
+            Log.warning("Failed to connect to Whitelist Sync Web API.");
+        }
+        catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
             Log.error("Error getting opped players from Web API.", e);
         }
 
@@ -141,6 +157,11 @@ public class WebService implements BaseService {
 
     @Override
     public boolean initializeDatabase() {
+        if (apiKey.isEmpty()) {
+            Log.error("API Key is not set. Please set the API Key in the configuration file.");
+            return false;
+        }
+
         if (isAuthenticated()) {
             Log.info("Database Initialized");
             return true;
@@ -152,6 +173,8 @@ public class WebService implements BaseService {
     @Override
     public ArrayList<WhitelistedPlayer> getWhitelistedPlayersFromDatabase() {
         ArrayList<WhitelistedPlayer> whitelistedPlayers = new ArrayList<>();
+        long startTime = System.currentTimeMillis();
+
         WhitelistEntry[] entries = getWhitelistEntries();
 
         for (WhitelistEntry entry : entries) {
@@ -162,12 +185,22 @@ public class WebService implements BaseService {
             whitelistedPlayers.add(entry.toWhitelistedPlayer());
         }
 
+        long timeTaken = System.currentTimeMillis() - startTime;
+        Log.debug(LogMessages.SuccessGetWhitelistedPlayersFromDatabase(timeTaken, entries.length));
+
         return whitelistedPlayers;
     }
 
     @Override
     public ArrayList<OppedPlayer> getOppedPlayersFromDatabase() {
         ArrayList<OppedPlayer> oppedPlayers = new ArrayList<>();
+
+        if (!this.syncingOpList) {
+            Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
+            return oppedPlayers;
+        }
+
+        long startTime = System.currentTimeMillis();
         OpEntry[] entries = getOpEntries();
 
         for (OpEntry entry : entries) {
@@ -177,6 +210,9 @@ public class WebService implements BaseService {
 
             oppedPlayers.add(entry.toOppedPlayer());
         }
+
+        long timeTaken = System.currentTimeMillis() - startTime;
+        Log.debug(LogMessages.SuccessGetOppedPlayersFromDatabase(timeTaken, entries.length));
 
         return oppedPlayers;
     }
@@ -211,13 +247,17 @@ public class WebService implements BaseService {
             if (response.getStatusLine().getStatusCode() == 200) {
                 // Record time taken.
                 long timeTaken = System.currentTimeMillis() - startTime;
-                Log.debug("Whitelist table updated | Took " + timeTaken + "ms | Wrote " + records + " records.");
+                Log.debug(LogMessages.SuccessPushLocalWhitelistToDatabase(timeTaken, records));
                 return true;
             } else {
                 Log.error("Failed to update database with local records. Response Code: " + response.getStatusLine().getStatusCode());
             }
-        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
-            Log.error("Failed to update database with local records.", e);
+        }
+        catch (HttpHostConnectException e) {
+            Log.warning("Failed to connect to Whitelist Sync Web API.");
+        }
+        catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+            Log.error(LogMessages.ERROR_PushLocalWhitelistToDatabase, e);
         }
 
         return false;
@@ -253,13 +293,17 @@ public class WebService implements BaseService {
             if (response.getStatusLine().getStatusCode() == 200) {
                 // Record time taken.
                 long timeTaken = System.currentTimeMillis() - startTime;
-                Log.debug("Op table updated | Took " + timeTaken + "ms | Wrote " + records + " records.");
+                Log.debug(LogMessages.SuccessPushLocalOpsToDatabase(timeTaken, records));
                 return true;
             } else {
                 Log.error("Failed to update database with local records. Response Code: " + response.getStatusLine().getStatusCode());
             }
-        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
-            Log.error("Failed to update database with local records.", e);
+        }
+        catch (HttpHostConnectException e) {
+            Log.warning("Failed to connect to Whitelist Sync Web API.");
+        }
+        catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+            Log.error(LogMessages.ERROR_PushLocalOpsToDatabase, e);
         }
 
         return false;
@@ -282,24 +326,23 @@ public class WebService implements BaseService {
                 if (localWhitelistedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid.toString()))) {
                     try {
                         onUserAdd.call(uuid, name);
-                        Log.debug("Added " + name + " to whitelist.");
+                        Log.debug(LogMessages.AddedUserToWhitelist(name));
                         records++;
                     } catch (NullPointerException e) {
-                        Log.error("Player is null?");
                         Log.error(e.getMessage(), e);
                     }
                 }
             } else {
                 if (localWhitelistedPlayers.stream().anyMatch(o -> o.getUuid().equals(uuid.toString()))) {
                     onUserRemove.call(uuid, name);
-                    Log.debug("Removed " + name + " from whitelist.");
+                    Log.debug(LogMessages.RemovedUserToWhitelist(name));
                     records++;
                 }
             }
         }
 
         long timeTaken = System.currentTimeMillis() - startTime;
-        Log.debug("Copied whitelist database to local | Took " + timeTaken + "ms | Wrote " + records + " records.");
+        Log.debug(LogMessages.SuccessPullDatabaseWhitelistToLocal( timeTaken, records));
 
         return true;
     }
@@ -321,24 +364,23 @@ public class WebService implements BaseService {
                 if (localOppedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid.toString()))) {
                     try {
                         onUserAdd.call(uuid, name);
-                        Log.debug("Opped " + name + ".");
+                        Log.debug(LogMessages.OppedUser(name));
                         records++;
                     } catch (NullPointerException e) {
-                        Log.error("Player is null?");
                         Log.error(e.getMessage(), e);
                     }
                 }
             } else {
                 if (localOppedPlayers.stream().anyMatch(o -> o.getUuid().equals(uuid.toString()))) {
                     onUserRemove.call(uuid, name);
-                    Log.debug("Deopped " + name + ".");
+                    Log.debug(LogMessages.DeopUser(name));
                     records++;
                 }
             }
         }
 
         long timeTaken = System.currentTimeMillis() - startTime;
-        Log.debug("Copied op database to local | Took " + timeTaken + "ms | Wrote " + records + " records.");
+        Log.debug(LogMessages.SuccessPullDatabaseOpsToLocal(timeTaken, records));
 
         return true;
     }
@@ -371,7 +413,11 @@ public class WebService implements BaseService {
                 Log.error("Error adding " + name + " to whitelist database! Response Code: " + response.getStatusLine().getStatusCode());
             }
 
-        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+        }
+        catch (HttpHostConnectException e) {
+            Log.warning("Failed to connect to Whitelist Sync Web API.");
+        }
+        catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
             Log.error("Error adding " + name + " to whitelist database!", e);
         }
 
@@ -381,8 +427,7 @@ public class WebService implements BaseService {
     @Override
     public boolean addOppedPlayer(UUID uuid, String name) {
         if (!syncingOpList) {
-            Log.error("Op list syncing is currently disabled in your config. "
-                    + "Please enable it and restart the server to use this feature.");
+            Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return false;
         }
 
@@ -412,7 +457,11 @@ public class WebService implements BaseService {
                 Log.error("Error opping " + name + " in database! Response Code: " + response.getStatusLine().getStatusCode());
             }
 
-        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+        }
+        catch (HttpHostConnectException e) {
+            Log.warning("Failed to connect to Whitelist Sync Web API.");
+        }
+        catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
             Log.error("Error opping " + name + " in database!", e);
         }
 
@@ -439,7 +488,11 @@ public class WebService implements BaseService {
                 Log.error("Error removing " + name + " from whitelist database! Response Code: " + response.getStatusLine().getStatusCode());
             }
 
-        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+        }
+        catch (HttpHostConnectException e) {
+            Log.warning("Failed to connect to Whitelist Sync Web API.");
+        }
+        catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
             Log.error("Error removing " + name + " from whitelist database!", e);
         }
 
@@ -449,8 +502,7 @@ public class WebService implements BaseService {
     @Override
     public boolean removeOppedPlayer(UUID uuid, String name) {
         if (!syncingOpList) {
-            Log.error("Op list syncing is currently disabled in your config. "
-                    + "Please enable it and restart the server to use this feature.");
+            Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return false;
         }
 
@@ -471,13 +523,14 @@ public class WebService implements BaseService {
             } else {
                 Log.error("Error opping " + name + " in database! Response Code: " + response.getStatusLine().getStatusCode());
             }
-
-        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+        }
+        catch (HttpHostConnectException e) {
+            Log.warning("Failed to connect to Whitelist Sync Web API.");
+        }
+        catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
             Log.error("Error opping " + name + " in database!", e);
         }
 
         return false;
     }
-
-    private void log
 }

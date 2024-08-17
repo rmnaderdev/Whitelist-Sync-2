@@ -10,12 +10,14 @@ public class Config {
     public static class Common {
         public enum DatabaseMode {
             MYSQL,
-            SQLITE
+            SQLITE,
+            WEB
         }
 
         public final String CATEGORY_GENERAL = "general";
         public final String CATEGORY_MYSQL = "mySQL";
         public final String CATEGORY_SQLITE = "sqlite";
+        public final String CATEGORY_WEB = "web";
 
         // General Settings
         public ForgeConfigSpec.EnumValue<DatabaseMode> DATABASE_MODE;
@@ -32,6 +34,9 @@ public class Config {
 
         // SQLITE Settings
         public ForgeConfigSpec.ConfigValue<String> SQLITE_DATABASE_PATH;
+
+        // WEB Settings
+        public ForgeConfigSpec.ConfigValue<String> WEB_API_KEY;
 
         Common(final ForgeConfigSpec.Builder builder) {
             // General Settings
@@ -85,6 +90,16 @@ public class Config {
                     "This should be the same for all your servers you want to sync!")
                     .worldRestart()
                     .define("sqliteDatabasePath", "./whitelistSync.db");
+            builder.pop();
+
+            // WEB Config
+            builder.comment(
+                    "Web configuration (To enable Web, " +
+                            "refer to the mode setting in the general configuration)."
+            ).push(CATEGORY_WEB);
+            WEB_API_KEY = builder.comment("API Key for the web service. You can generate one by logging into the web service and adding a new API key to your account.")
+                    .worldRestart()
+                    .define("webApiKey", "");
             builder.pop();
         }
     }

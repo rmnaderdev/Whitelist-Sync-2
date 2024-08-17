@@ -5,6 +5,7 @@ import net.rmnad.callbacks.IOnUserOpAdd;
 import net.rmnad.callbacks.IOnUserOpRemove;
 import net.rmnad.callbacks.IOnUserWhitelistAdd;
 import net.rmnad.callbacks.IOnUserWhitelistRemove;
+import net.rmnad.logging.LogMessages;
 import net.rmnad.models.OppedPlayer;
 import net.rmnad.models.WhitelistedPlayer;
 
@@ -143,7 +144,7 @@ public class MySqlService implements BaseService {
             // Time taken
             long timeTaken = System.currentTimeMillis() - startTime;
 
-            Log.debug("Database pulled whitelisted players | Took " + timeTaken + "ms | Read " + records + " records.");
+            Log.debug(LogMessages.SuccessGetWhitelistedPlayersFromDatabase(timeTaken, records));
 
             rs.close();
             stmt.close();
@@ -161,45 +162,44 @@ public class MySqlService implements BaseService {
         // ArrayList for opped players.
         ArrayList<OppedPlayer> oppedPlayers = new ArrayList<>();
 
-        if (this.syncingOpList) {
-            try {
-                // Keep track of records.
-                int records = 0;
+        if (!this.syncingOpList) {
+            Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
+            return oppedPlayers;
+        }
 
-                // Connect to database.
-                Connection conn = DriverManager.getConnection(url, username, password);
-                long startTime = System.currentTimeMillis();
+        try {
+            // Keep track of records.
+            int records = 0;
 
-                String sql = "SELECT uuid, name FROM " + databaseName + ".op WHERE isOp = true;";
-                PreparedStatement stmt = conn.prepareStatement(sql);
-                ResultSet rs = stmt.executeQuery();
+            // Connect to database.
+            Connection conn = DriverManager.getConnection(url, username, password);
+            long startTime = System.currentTimeMillis();
 
-                // Add queried results to arraylist.
-                while (rs.next()) {
-                    OppedPlayer oppedPlayer = new OppedPlayer();
-                    oppedPlayer.setIsOp(true);
-                    oppedPlayer.setUuid(rs.getString("uuid"));
-                    oppedPlayer.setName(rs.getString("name"));
+            String sql = "SELECT uuid, name FROM " + databaseName + ".op WHERE isOp = true;";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
 
-                    oppedPlayers.add(oppedPlayer);
-                    records++;
-                }
+            // Add queried results to arraylist.
+            while (rs.next()) {
+                OppedPlayer oppedPlayer = new OppedPlayer();
+                oppedPlayer.setIsOp(true);
+                oppedPlayer.setUuid(rs.getString("uuid"));
+                oppedPlayer.setName(rs.getString("name"));
 
-                // Time taken
-                long timeTaken = System.currentTimeMillis() - startTime;
-
-                Log.debug("Database pulled opped players | Took " + timeTaken + "ms | Read " + records + " records.");
-
-                rs.close();
-                stmt.close();
-                conn.close();
-            } catch (SQLException e) {
-                Log.error("Error querying opped players from database!");
-                Log.error(e.getMessage(), e);
+                oppedPlayers.add(oppedPlayer);
+                records++;
             }
-        } else {
-            Log.error("Op list syncing is currently disabled in your config. "
-                    + "Please enable it and restart the server to use this feature.");
+
+            // Time taken
+            long timeTaken = System.currentTimeMillis() - startTime;
+            Log.debug(LogMessages.SuccessGetOppedPlayersFromDatabase(timeTaken, records));
+
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            Log.error("Error querying opped players from database!");
+            Log.error(e.getMessage(), e);
         }
 
         return oppedPlayers;
@@ -229,13 +229,12 @@ public class MySqlService implements BaseService {
             }
             // Record time taken.
             long timeTaken = System.currentTimeMillis() - startTime;
-            Log.debug("Whitelist table updated | Took " + timeTaken + "ms | Wrote " + records + " records.");
+            Log.debug(LogMessages.SuccessPushLocalWhitelistToDatabase(timeTaken, records));
             conn.close();
 
             return true;
         } catch (SQLException e) {
-            Log.error("Failed to update database with local records.");
-            Log.error(e.getMessage(), e);
+            Log.error(LogMessages.ERROR_PushLocalWhitelistToDatabase, e);
         }
 
         return false;
@@ -243,40 +242,39 @@ public class MySqlService implements BaseService {
 
     @Override
     public boolean pushLocalOpsToDatabase(ArrayList<OppedPlayer> oppedPlayers) {
-        if (this.syncingOpList) {
-            // TODO: Start job on thread to avoid lag?
-            // Keep track of records.
-            int records = 0;
-            try {
-                // Connect to database.
-                Connection conn = DriverManager.getConnection(url, username, password);
-                long startTime = System.currentTimeMillis();
-                // Loop through local whitelist and insert into database.
-                for (OppedPlayer player : oppedPlayers) {
+        if (!this.syncingOpList) {
+            Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
+            return false;
+        }
 
-                    if (player.getUuid() != null && player.getName() != null) {
-                        PreparedStatement stmt = conn.prepareStatement("INSERT IGNORE INTO " + databaseName + ".op(uuid, name, isOp) VALUES (?, ?, true)");
-                        stmt.setString(1, player.getUuid());
-                        stmt.setString(2, player.getName());
-                        stmt.executeUpdate();
-                        stmt.close();
+        // TODO: Start job on thread to avoid lag?
+        // Keep track of records.
+        int records = 0;
+        try {
+            // Connect to database.
+            Connection conn = DriverManager.getConnection(url, username, password);
+            long startTime = System.currentTimeMillis();
+            // Loop through local whitelist and insert into database.
+            for (OppedPlayer player : oppedPlayers) {
 
-                        records++;
-                    }
+                if (player.getUuid() != null && player.getName() != null) {
+                    PreparedStatement stmt = conn.prepareStatement("INSERT IGNORE INTO " + databaseName + ".op(uuid, name, isOp) VALUES (?, ?, true)");
+                    stmt.setString(1, player.getUuid());
+                    stmt.setString(2, player.getName());
+                    stmt.executeUpdate();
+                    stmt.close();
+
+                    records++;
                 }
-                // Record time taken.
-                long timeTaken = System.currentTimeMillis() - startTime;
-                Log.debug("Op table updated | Took " + timeTaken + "ms | Wrote " + records + " records.");
-                conn.close();
-
-                return true;
-            } catch (SQLException e) {
-                Log.error("Failed to update database with local records.");
-                Log.error(e.getMessage(), e);
             }
-        } else {
-            Log.error("Op list syncing is currently disabled in your config. "
-                    + "Please enable it and restart the server to use this feature.");
+            // Record time taken.
+            long timeTaken = System.currentTimeMillis() - startTime;
+            Log.debug(LogMessages.SuccessPushLocalOpsToDatabase(timeTaken, records));
+            conn.close();
+
+            return true;
+        } catch (SQLException e) {
+            Log.error(LogMessages.ERROR_PushLocalOpsToDatabase, e);
         }
 
         return false;
@@ -304,32 +302,30 @@ public class MySqlService implements BaseService {
                     if (localWhitelistedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid.toString()))) {
                         try {
                             onUserAdd.call(uuid, name);
-                            Log.debug("Added " + name + " to whitelist.");
+                            Log.debug(LogMessages.AddedUserToWhitelist(name));
                             records++;
                         } catch (NullPointerException e) {
-                            Log.error("Player is null?");
                             Log.error(e.getMessage(), e);
                         }
                     }
                 } else {
                     if (localWhitelistedPlayers.stream().anyMatch(o -> o.getUuid().equals(uuid.toString()))) {
                         onUserRemove.call(uuid, name);
-                        Log.debug("Removed " + name + " from whitelist.");
+                        Log.debug(LogMessages.RemovedUserToWhitelist(name));
                         records++;
                     }
                 }
 
             }
             long timeTaken = System.currentTimeMillis() - startTime;
-            Log.debug("Copied whitelist database to local | Took " + timeTaken + "ms | Wrote " + records + " records.");
+            Log.debug(LogMessages.SuccessPullDatabaseWhitelistToLocal( timeTaken, records));
 
             rs.close();
             stmt.close();
             conn.close();
             return true;
         } catch (SQLException e) {
-            Log.error("Error querying whitelisted players from database!");
-            Log.error(e.getMessage(), e);
+            Log.error(LogMessages.ERROR_PullDatabaseWhitelistToLocal, e);
         }
 
         return false;
@@ -337,59 +333,57 @@ public class MySqlService implements BaseService {
 
     @Override
     public boolean pullDatabaseOpsToLocal(ArrayList<OppedPlayer> localOppedPlayers, IOnUserOpAdd onUserAdd, IOnUserOpRemove onUserRemove) {
-        if (this.syncingOpList) {
+        if (!this.syncingOpList) {
+            Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
+            return false;
+        }
 
-            // TODO: Compare level and bypassesPlayerLimit, sync if needed
-            try {
-                int records = 0;
+        // TODO: Compare level and bypassesPlayerLimit, sync if needed
+        try {
+            int records = 0;
 
-                // Open connection
-                Connection conn = DriverManager.getConnection(url, username, password);
-                long startTime = System.currentTimeMillis();
+            // Open connection
+            Connection conn = DriverManager.getConnection(url, username, password);
+            long startTime = System.currentTimeMillis();
 
-                String sql = "SELECT uuid, name, isOp FROM " + databaseName + ".op";
-                PreparedStatement stmt = conn.prepareStatement(sql);
-                ResultSet rs = stmt.executeQuery();
+            String sql = "SELECT uuid, name, isOp FROM " + databaseName + ".op";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
 
-                while (rs.next()) {
-                    UUID uuid = UUID.fromString(rs.getString("uuid"));
-                    String name = rs.getString("name");
-                    int opped = rs.getInt("isOp");
+            while (rs.next()) {
+                UUID uuid = UUID.fromString(rs.getString("uuid"));
+                String name = rs.getString("name");
+                int opped = rs.getInt("isOp");
 
-                    if (opped == 1) {
-                        if (localOppedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid.toString()))) {
-                            try {
-                                onUserAdd.call(uuid, name);
-                                Log.debug("Opped " + name + ".");
-                                records++;
-                            } catch (NullPointerException e) {
-                                Log.error("Player is null?");
-                                Log.error(e.getMessage(), e);
-                            }
-                        }
-                    } else {
-                        if (localOppedPlayers.stream().anyMatch(o -> o.getUuid().equals(uuid.toString()))) {
-                            onUserRemove.call(uuid, name);
-                            Log.debug("Deopped " + name + ".");
+                if (opped == 1) {
+                    if (localOppedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid.toString()))) {
+                        try {
+                            onUserAdd.call(uuid, name);
+                            Log.debug(LogMessages.OppedUser(name));
                             records++;
+                        } catch (NullPointerException e) {
+                            Log.error(e.getMessage(), e);
                         }
                     }
-
+                } else {
+                    if (localOppedPlayers.stream().anyMatch(o -> o.getUuid().equals(uuid.toString()))) {
+                        onUserRemove.call(uuid, name);
+                        Log.debug(LogMessages.DeopUser(name));
+                        records++;
+                    }
                 }
-                long timeTaken = System.currentTimeMillis() - startTime;
-                Log.debug("Copied op database to local | Took " + timeTaken + "ms | Wrote " + records + " records.");
 
-                rs.close();
-                stmt.close();
-                conn.close();
-                return true;
-            } catch (SQLException e) {
-                Log.error("Error querying opped players from database!");
-                Log.error(e.getMessage(), e);
             }
-        } else {
-            Log.error("Op list syncing is currently disabled in your config. "
-                    + "Please enable it and restart the server to use this feature.");
+            long timeTaken = System.currentTimeMillis() - startTime;
+            Log.debug(LogMessages.SuccessPullDatabaseOpsToLocal(timeTaken, records));
+
+            rs.close();
+            stmt.close();
+            conn.close();
+            return true;
+        } catch (SQLException e) {
+            Log.error("Error querying opped players from database!");
+            Log.error(e.getMessage(), e);
         }
 
         return false;
@@ -426,8 +420,7 @@ public class MySqlService implements BaseService {
     @Override
     public boolean addOppedPlayer(UUID uuid, String name) {
         if (!this.syncingOpList) {
-            Log.error("Op list syncing is currently disabled in your config. "
-                    + "Please enable it and restart the server to use this feature.");
+            Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return false;
         }
 
@@ -487,32 +480,32 @@ public class MySqlService implements BaseService {
 
     @Override
     public boolean removeOppedPlayer(UUID uuid, String name) {
-        if (this.syncingOpList) {
-            try {
-                // Open connection=
-                Connection conn = DriverManager.getConnection(url, username, password);
-                long startTime = System.currentTimeMillis();
+        if (!this.syncingOpList) {
+            Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
+            return false;
+        }
 
-                String sql = "REPLACE INTO " + databaseName + ".op(uuid, name, isOp) VALUES (?, ?, false)";
-                PreparedStatement stmt = conn.prepareStatement(sql);
-                stmt.setString(1, uuid.toString());
-                stmt.setString(2, name);
-                stmt.executeUpdate();
+        try {
+            // Open connection=
+            Connection conn = DriverManager.getConnection(url, username, password);
+            long startTime = System.currentTimeMillis();
 
-                // Time taken.
-                long timeTaken = System.currentTimeMillis() - startTime;
-                Log.debug("Deopped " + name + " | Took " + timeTaken + "ms");
-                stmt.close();
-                conn.close();
-                return true;
+            String sql = "REPLACE INTO " + databaseName + ".op(uuid, name, isOp) VALUES (?, ?, false)";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, uuid.toString());
+            stmt.setString(2, name);
+            stmt.executeUpdate();
 
-            } catch (SQLException e) {
-                Log.error("Error deopping " + name + ".");
-                Log.error(e.getMessage(), e);
-            }
-        } else {
-            Log.error("Op list syncing is currently disabled in your config. "
-                    + "Please enable it and restart the server to use this feature.");
+            // Time taken.
+            long timeTaken = System.currentTimeMillis() - startTime;
+            Log.debug("Deopped " + name + " | Took " + timeTaken + "ms");
+            stmt.close();
+            conn.close();
+            return true;
+
+        } catch (SQLException e) {
+            Log.error("Error deopping " + name + ".");
+            Log.error(e.getMessage(), e);
         }
 
         return false;

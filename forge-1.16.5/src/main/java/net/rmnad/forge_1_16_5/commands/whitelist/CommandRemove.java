@@ -12,6 +12,7 @@ import net.minecraft.server.management.WhiteList;
 import net.minecraft.server.management.WhitelistEntry;
 import net.minecraft.util.text.StringTextComponent;
 import net.rmnad.forge_1_16_5.WhitelistSync2;
+import net.rmnad.logging.CommandMessages;
 
 import java.util.Collection;
 
@@ -46,7 +47,7 @@ public class CommandRemove {
                                 if(WhitelistSync2.whitelistService.removeWhitelistPlayer(gameProfile.getId(), gameProfile.getName())) {
                                     WhitelistEntry whitelistentry = new WhitelistEntry(gameProfile);
                                     whiteList.remove(whitelistentry);
-                                    context.getSource().sendSuccess(new StringTextComponent(String.format("Removed %s from whitelist database.", playerName)), true);
+                                    context.getSource().sendSuccess(new StringTextComponent(CommandMessages.RemovedFromWhitelist(playerName)), true);
                                     ++i;
                                     // Everything is kosher
                                 } else {
@@ -55,7 +56,7 @@ public class CommandRemove {
                                 }
                             } else {
                                 // Player is not whitelisted
-                                context.getSource().sendSuccess(new StringTextComponent(String.format("%s is not whitelisted.", playerName)), true);
+                                context.getSource().sendSuccess(new StringTextComponent(CommandMessages.NotWhitelisted(playerName)), true);
                             }
                         }
 

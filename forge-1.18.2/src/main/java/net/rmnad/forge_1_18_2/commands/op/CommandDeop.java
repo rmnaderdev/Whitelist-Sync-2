@@ -12,6 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.players.PlayerList;
 import net.rmnad.forge_1_18_2.WhitelistSync2;
+import net.rmnad.logging.CommandMessages;
 
 import java.util.Collection;
 
@@ -47,7 +48,7 @@ public class CommandDeop {
                                 if (playerList.isOp(gameProfile)) {
                                     if(WhitelistSync2.whitelistService.removeOppedPlayer(gameProfile.getId(), gameProfile.getName())) {
                                         playerList.deop(gameProfile);
-                                        context.getSource().sendSuccess(new TextComponent(String.format("Deopped %s from database.", playerName)), true);
+                                        context.getSource().sendSuccess(new TextComponent(CommandMessages.RemovedFromOpList(playerName)), true);
                                         ++i;
                                         // Everything is kosher
                                     } else {
@@ -56,7 +57,7 @@ public class CommandDeop {
                                     }
                                 } else {
                                     // Player is not whitelisted
-                                    context.getSource().sendSuccess(new TextComponent(String.format("%s is not opped.", playerName)), true);
+                                    context.getSource().sendSuccess(new TextComponent(CommandMessages.NotInOpList(playerName)), true);
                                 }
                             }
 
