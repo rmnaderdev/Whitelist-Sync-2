@@ -31,7 +31,10 @@ public class WhitelistSyncThread extends Thread {
     public void run() {
         try {
             Thread.sleep(1000);
-        } catch (InterruptedException ignored) {}
+        } catch (InterruptedException ignored) {
+            Log.debug("WhitelistSyncThread interrupted. Exiting.");
+            return;
+        }
 
         Log.info(LogMessages.SYNC_THREAD_STARTING);
 
