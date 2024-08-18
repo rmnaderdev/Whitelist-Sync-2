@@ -41,7 +41,7 @@ public class WhitelistSyncThread extends Thread {
         }
 
         try {
-            while (server.isRunning()) {
+            while (true) {
                 service.pullDatabaseWhitelistToLocal(
                         WhitelistedPlayersFileReader.getWhitelistedPlayers(WhitelistSync2.SERVER_FILEPATH),
                         (uuid, name)->{
