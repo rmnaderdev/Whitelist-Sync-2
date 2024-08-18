@@ -36,6 +36,7 @@ public class Config {
         public ForgeConfigSpec.ConfigValue<String> SQLITE_DATABASE_PATH;
 
         // WEB Settings
+        public ForgeConfigSpec.ConfigValue<String> WEB_API_HOST;
         public ForgeConfigSpec.ConfigValue<String> WEB_API_KEY;
 
         Common(final ForgeConfigSpec.Builder builder) {
@@ -97,6 +98,9 @@ public class Config {
                     "Web configuration (To enable Web, " +
                             "refer to the mode setting in the general configuration)."
             ).push(CATEGORY_WEB);
+            WEB_API_HOST = builder.comment("Host for the web service. This should be the URL of the web service.")
+                    .worldRestart()
+                    .define("webApiHost", "https://staging.d1aqw7webnsilt.amplifyapp.com/");
             WEB_API_KEY = builder.comment("API Key for the web service. You can generate one by logging into the web service and adding a new API key to your account.")
                     .worldRestart()
                     .define("webApiKey", "");

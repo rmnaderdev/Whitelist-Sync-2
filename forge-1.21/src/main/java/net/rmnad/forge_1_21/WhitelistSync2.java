@@ -78,7 +78,7 @@ public class WhitelistSync2
                 );
                 break;
             case WEB:
-                whitelistService = new WebService(Config.COMMON.WEB_API_KEY.get(), Config.COMMON.SYNC_OP_LIST.get());
+                whitelistService = new WebService(Config.COMMON.WEB_API_HOST.get(), Config.COMMON.WEB_API_KEY.get(), Config.COMMON.SYNC_OP_LIST.get());
                 break;
             default:
                 Log.error(LogMessages.ERROR_WHITELIST_MODE);
@@ -106,6 +106,8 @@ public class WhitelistSync2
 
     public static void StartWhitelistSyncThread(MinecraftServer server, BaseService service, boolean errorOnSetup) {
         WhitelistSyncThread syncThread = new WhitelistSyncThread(server, service, Config.COMMON.SYNC_OP_LIST.get(), errorOnSetup);
+        syncThread.setName("WhitelistSyncThread");
+        syncThread.setDaemon(true);
         syncThread.start();
     }
 }

@@ -36,40 +36,55 @@ import java.util.UUID;
 
 public class WebService implements BaseService {
 
+    private final String apiHost;
     private final String apiKey;
     private final boolean syncingOpList;
 
-    public WebService(String apiKey, boolean syncingOpList) {
+    public WebService(String apiHost, String apiKey, boolean syncingOpList) {
+        this.apiHost = apiHost;
         this.apiKey = apiKey;
         this.syncingOpList = syncingOpList;
+
+        Log.debug("WebService API host is set to: " + this.apiHost);
     }
 
     private CloseableHttpClient getClient() throws NoSuchAlgorithmException, KeyManagementException {
-        TrustManager[] trustAllCerts = new TrustManager[]{
-                new X509TrustManager() {
-                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                        return null;
-                    }
-                    public void checkClientTrusted(
-                            java.security.cert.X509Certificate[] certs, String authType) {
-                    }
-                    public void checkServerTrusted(
-                            java.security.cert.X509Certificate[] certs, String authType) {
-                    }
-                }
-        };
 
-        SSLContext sslContext = SSLContext.getInstance("TLS");
-        sslContext.init(null, trustAllCerts, new SecureRandom());
+        if (this.apiHost.contains("https://localhost")) {
+            TrustManager[] trustAllCerts = new TrustManager[]{
+                    new X509TrustManager() {
+                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                            return null;
+                        }
+                        public void checkClientTrusted(
+                                java.security.cert.X509Certificate[] certs, String authType) {
+                        }
+                        public void checkServerTrusted(
+                                java.security.cert.X509Certificate[] certs, String authType) {
+                        }
+                    }
+            };
 
-        return HttpClients.custom()
-                .setSslcontext(sslContext)
-                .setHostnameVerifier(new AllowAllHostnameVerifier())
-                .build();
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, trustAllCerts, new SecureRandom());
+
+            Log.debug("Creating custom http client (ignoring SSL)");
+
+            return HttpClients.custom()
+                    .setSslcontext(sslContext)
+                    .setHostnameVerifier(new AllowAllHostnameVerifier())
+                    .build();
+        }
+
+        return HttpClients.createDefault();
     }
 
     private String getApiHost() {
-        return "https://localhost:3000";
+        if (this.apiHost.endsWith("/")) {
+            return this.apiHost.substring(0, this.apiHost.length() - 1);
+        }
+
+        return this.apiHost;
     }
 
     private String getApiKey() {
@@ -157,17 +172,24 @@ public class WebService implements BaseService {
 
     @Override
     public boolean initializeDatabase() {
-        if (apiKey.isEmpty()) {
+        if (getApiHost().isEmpty()) {
+            Log.error("API Host is not set. Please set the API Host in the configuration file.");
+            return false;
+        }
+
+        if (getApiKey().isEmpty()) {
             Log.error("API Key is not set. Please set the API Key in the configuration file.");
             return false;
         }
 
         if (isAuthenticated()) {
-            Log.info("Database Initialized");
+            Log.info("Connected to Web API successfully!");
             return true;
+        } else {
+            Log.error("Failed to authenticate with Web API. If you have not setup an API Key, you can create one on the website at "
+                    + getApiHost() + ". Don't forget to set the API Key in the configuration file.");
+            return false;
         }
-
-        return false;
     }
 
     @Override
