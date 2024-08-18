@@ -86,7 +86,7 @@ public class WebService implements BaseService {
             HttpResponse response = client.execute(request);
             Log.debug("isAuthenticated Response Code : " + response.getStatusLine().getStatusCode());
 
-            return response.getStatusLine().getStatusCode() == 200;
+            return responseIsSuccess(response);
         }
         catch (HttpHostConnectException e) {
             Log.warning("Failed to connect to Whitelist Sync Web API.");
@@ -110,7 +110,7 @@ public class WebService implements BaseService {
             HttpResponse response = client.execute(request);
             Log.debug("getWhitelistEntries Response Code : " + response.getStatusLine().getStatusCode());
 
-            if (response.getStatusLine().getStatusCode() == 200) {
+            if (responseIsSuccess(response)) {
                 Gson gson = new Gson();
                 return gson.fromJson(EntityUtils.toString(response.getEntity(), "UTF-8"), WhitelistEntry[].class);
             } else {
@@ -138,7 +138,7 @@ public class WebService implements BaseService {
             HttpResponse response = client.execute(request);
             Log.debug("getOpEntries Response Code : " + response.getStatusLine().getStatusCode());
 
-            if (response.getStatusLine().getStatusCode() == 200) {
+            if (responseIsSuccess(response)) {
                 Gson gson = new Gson();
                 return gson.fromJson(EntityUtils.toString(response.getEntity(), "UTF-8"), OpEntry[].class);
             } else {
@@ -244,7 +244,7 @@ public class WebService implements BaseService {
 
             HttpResponse response = client.execute(request);
 
-            if (response.getStatusLine().getStatusCode() == 200) {
+            if (responseIsSuccess(response)) {
                 // Record time taken.
                 long timeTaken = System.currentTimeMillis() - startTime;
                 Log.debug(LogMessages.SuccessPushLocalWhitelistToDatabase(timeTaken, records));
@@ -290,7 +290,7 @@ public class WebService implements BaseService {
 
             HttpResponse response = client.execute(request);
 
-            if (response.getStatusLine().getStatusCode() == 200) {
+            if (responseIsSuccess(response)) {
                 // Record time taken.
                 long timeTaken = System.currentTimeMillis() - startTime;
                 Log.debug(LogMessages.SuccessPushLocalOpsToDatabase(timeTaken, records));
@@ -404,7 +404,7 @@ public class WebService implements BaseService {
 
             HttpResponse response = client.execute(request);
 
-            if (response.getStatusLine().getStatusCode() == 200) {
+            if (responseIsSuccess(response)) {
                 long timeTaken = System.currentTimeMillis() - startTime;
                 Log.debug("Added " + name + " to whitelist | Took " + timeTaken + "ms");
 
@@ -448,7 +448,7 @@ public class WebService implements BaseService {
 
             HttpResponse response = client.execute(request);
 
-            if (response.getStatusLine().getStatusCode() == 200) {
+            if (responseIsSuccess(response)) {
                 long timeTaken = System.currentTimeMillis() - startTime;
                 Log.debug("Opped " + name + " | Took " + timeTaken + "ms");
 
@@ -479,7 +479,7 @@ public class WebService implements BaseService {
 
             HttpResponse response = client.execute(request);
 
-            if (response.getStatusLine().getStatusCode() == 200) {
+            if (responseIsSuccess(response)) {
                 long timeTaken = System.currentTimeMillis() - startTime;
                 Log.debug("Removed " + name + " from whitelist | Took " + timeTaken + "ms");
 
@@ -515,7 +515,7 @@ public class WebService implements BaseService {
 
             HttpResponse response = client.execute(request);
 
-            if (response.getStatusLine().getStatusCode() == 200) {
+            if (responseIsSuccess(response)) {
                 long timeTaken = System.currentTimeMillis() - startTime;
                 Log.debug("Deopped " + name + " | Took " + timeTaken + "ms");
 
@@ -532,5 +532,9 @@ public class WebService implements BaseService {
         }
 
         return false;
+    }
+
+    private boolean responseIsSuccess(HttpResponse response) {
+        return response.getStatusLine().getStatusCode() >= 200 && response.getStatusLine().getStatusCode() < 300;
     }
 }
