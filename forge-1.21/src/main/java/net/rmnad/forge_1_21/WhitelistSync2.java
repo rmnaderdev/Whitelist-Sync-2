@@ -4,6 +4,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -25,6 +26,8 @@ public class WhitelistSync2
 
     // Database Service
     public static BaseService whitelistService;
+
+    public static WhitelistSyncThread syncThread;
 
     public WhitelistSync2() {
         // Register config
@@ -51,6 +54,13 @@ public class WhitelistSync2
     @SubscribeEvent
     public void onServerStarted(ServerStartedEvent event) {
         WhitelistSync2.SetupWhitelistSync(event.getServer());
+    }
+
+    @SubscribeEvent
+    public void onServerStopping(ServerStoppingEvent event) {
+        if(syncThread != null) {
+            syncThread.interrupt();
+        }
     }
 
     public static void SetupWhitelistSync(MinecraftServer server) {
@@ -105,9 +115,7 @@ public class WhitelistSync2
     }
 
     public static void StartWhitelistSyncThread(MinecraftServer server, BaseService service, boolean errorOnSetup) {
-        WhitelistSyncThread syncThread = new WhitelistSyncThread(server, service, Config.COMMON.SYNC_OP_LIST.get(), errorOnSetup);
-        syncThread.setName("WhitelistSyncThread");
-        syncThread.setDaemon(true);
+        syncThread = new WhitelistSyncThread(server, service, Config.COMMON.SYNC_OP_LIST.get(), errorOnSetup);
         syncThread.start();
     }
 }

@@ -19,6 +19,8 @@ public class WhitelistSyncThread extends Thread {
     private final boolean errorOnSetup;
 
     public WhitelistSyncThread(MinecraftServer server, BaseService service, boolean syncOpLists, boolean errorOnSetup) {
+        this.setName("WhitelistSyncThread");
+        this.setDaemon(true);
         this.server = server;
         this.service = service;
         this.syncOpLists = syncOpLists;
@@ -69,7 +71,10 @@ public class WhitelistSyncThread extends Thread {
 
                 try {
                     Thread.sleep(Config.COMMON.SYNC_TIMER.get() * 1000);
-                } catch (InterruptedException ignored) {}
+                } catch (InterruptedException ignored) {
+                    Log.debug("WhitelistSyncThread interrupted. Exiting.");
+                    return;
+                }
             }
         } catch (Exception e) {
             Log.error(LogMessages.ERROR_WHITELIST_SYNC_THREAD, e);

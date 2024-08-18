@@ -7,6 +7,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
+import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.rmnad.Log;
 import net.rmnad.logging.LogMessages;
 import net.rmnad.services.BaseService;
@@ -25,6 +26,8 @@ public class WhitelistSync2
 
     // Database Service
     public static BaseService whitelistService;
+
+    public static WhitelistSyncThread syncThread;
 
     public WhitelistSync2() {
         // Register config
@@ -51,6 +54,13 @@ public class WhitelistSync2
     @SubscribeEvent
     public void onServerStarted(FMLServerStartedEvent event) {
         WhitelistSync2.SetupWhitelistSync(event.getServer());
+    }
+
+    @SubscribeEvent
+    public void onServerStopping(FMLServerStoppingEvent event) {
+        if(syncThread != null) {
+            syncThread.interrupt();
+        }
     }
 
     public static void SetupWhitelistSync(MinecraftServer server) {
@@ -105,7 +115,7 @@ public class WhitelistSync2
     }
 
     public static void StartWhitelistSyncThread(MinecraftServer server, BaseService service, boolean errorOnSetup) {
-        WhitelistSyncThread syncThread = new WhitelistSyncThread(server, service, Config.COMMON.SYNC_OP_LIST.get(), errorOnSetup);
+        syncThread = new WhitelistSyncThread(server, service, Config.COMMON.SYNC_OP_LIST.get(), errorOnSetup);
         syncThread.start();
     }
 }
