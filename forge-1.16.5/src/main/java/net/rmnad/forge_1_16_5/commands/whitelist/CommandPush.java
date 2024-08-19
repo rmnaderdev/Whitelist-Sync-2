@@ -20,7 +20,7 @@ public class CommandPush {
         return Commands.literal(commandName)
                 .requires(cs -> cs.hasPermission(permissionLevel))
                 .executes(context -> {
-                    if(WhitelistSync2.whitelistService.pushLocalWhitelistToDatabase(WhitelistedPlayersFileReader.getWhitelistedPlayers(WhitelistSync2.SERVER_FILEPATH))) {
+                    if(WhitelistSync2.whitelistService.pushLocalWhitelistToDatabase(WhitelistedPlayersFileReader.getWhitelistedPlayers(context.getSource().getServer().getServerDirectory().getAbsolutePath()))) {
                         context.getSource().sendSuccess(new StringTextComponent("Pushed local whitelist to database."), false);
                     } else {
                         throw DB_ERROR.create();

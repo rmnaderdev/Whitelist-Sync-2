@@ -24,7 +24,7 @@ public class CommandSync {
                 .executes(context -> {
 
                     boolean status = WhitelistSync2.whitelistService.pullDatabaseOpsToLocal(
-                            OppedPlayersFileReader.getOppedPlayers(WhitelistSync2.SERVER_FILEPATH),
+                            OppedPlayersFileReader.getOppedPlayers(context.getSource().getServer().getServerDirectory().getAbsolutePath()),
                             (uuid, name)->{
                                 // Called when user added to op list
                                 // TODO: Add level and bypassesPlayerLimit

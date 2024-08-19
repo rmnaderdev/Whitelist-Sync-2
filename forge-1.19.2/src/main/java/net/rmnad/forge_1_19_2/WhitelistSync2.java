@@ -1,6 +1,8 @@
 package net.rmnad.forge_1_19_2;
 
+import com.mojang.authlib.GameProfile;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.players.UserWhiteListEntry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
@@ -10,24 +12,20 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.rmnad.Log;
 import net.rmnad.logging.LogMessages;
-import net.rmnad.services.BaseService;
-import net.rmnad.services.MySqlService;
-import net.rmnad.services.SqLiteService;
+import net.rmnad.services.*;
 import net.rmnad.forge_1_19_2.commands.op.OpCommands;
 import net.rmnad.forge_1_19_2.commands.whitelist.WhitelistCommands;
-import net.rmnad.forge_1_19_2.services.*;
-import net.rmnad.services.WebService;
 
 @Mod(WhitelistSync2.MODID)
 public class WhitelistSync2
 {
     public static final String MODID = "whitelistsync2";
-    public static String SERVER_FILEPATH;
 
     // Database Service
     public static BaseService whitelistService;
 
-    public static WhitelistSyncThread syncThread;
+    public static WhitelistPollingThread pollingThread;
+    public static WhitelistSocketThread socketThread;
 
     public WhitelistSync2() {
         // Register config
@@ -58,8 +56,12 @@ public class WhitelistSync2
 
     @SubscribeEvent
     public void onServerStopping(ServerStoppingEvent event) {
-        if(syncThread != null) {
-            syncThread.interrupt();
+        if(pollingThread != null) {
+            pollingThread.interrupt();
+        }
+
+        if(socketThread != null) {
+            socketThread.interrupt();
         }
     }
 
@@ -67,9 +69,6 @@ public class WhitelistSync2
         Log.verbose = Config.COMMON.VERBOSE_LOGGING.get();
 
         boolean errorOnSetup = false;
-
-        // Server filepath
-        SERVER_FILEPATH = server.getServerDirectory().getPath();
 
         LogMessages.ShowModStartupHeaderMessage();
 
@@ -109,13 +108,50 @@ public class WhitelistSync2
             }
         }
 
-        StartWhitelistSyncThread(server, whitelistService, errorOnSetup);
+        if (whitelistService instanceof WebService) {
+            socketThread = new WhitelistSocketThread(
+                    (WebService) whitelistService,
+                    errorOnSetup,
+                    ((uuid, name) -> {
+                        // Called when user added to whitelist
+                        server.getPlayerList().getWhiteList().add(new UserWhiteListEntry(new GameProfile(uuid, name)));
+                    }), ((uuid, name) -> {
+                        // Called when user removed from whitelist
+                        server.getPlayerList().getWhiteList().remove(new UserWhiteListEntry(new GameProfile(uuid, name)));
+                    }), ((uuid, name) -> {
+                        // Called when user added to op list
+                        server.getPlayerList().op(new GameProfile(uuid, name));
+                    }), ((uuid, name) -> {
+                        // Called when user removed from op list
+                        server.getPlayerList().deop(new GameProfile(uuid, name));
+                    })
+            );
+
+            socketThread.start();
+        } else {
+            pollingThread = new WhitelistPollingThread(
+                    whitelistService,
+                    Config.COMMON.SYNC_OP_LIST.get(),
+                    errorOnSetup,
+                    server.getServerDirectory().getPath(),
+                    Config.COMMON.SYNC_TIMER.get(),
+                    ((uuid, name) -> {
+                        // Called when user added to whitelist
+                        server.getPlayerList().getWhiteList().add(new UserWhiteListEntry(new GameProfile(uuid, name)));
+                    }), ((uuid, name) -> {
+                        // Called when user removed from whitelist
+                        server.getPlayerList().getWhiteList().remove(new UserWhiteListEntry(new GameProfile(uuid, name)));
+                    }), ((uuid, name) -> {
+                        // Called when user added to op list
+                        server.getPlayerList().op(new GameProfile(uuid, name));
+                    }), ((uuid, name) -> {
+                        // Called when user removed from op list
+                        server.getPlayerList().deop(new GameProfile(uuid, name));
+                    })
+            );
+            pollingThread.start();
+        }
 
         LogMessages.ShowModStartupFooterMessage();
-    }
-
-    public static void StartWhitelistSyncThread(MinecraftServer server, BaseService service, boolean errorOnSetup) {
-        syncThread = new WhitelistSyncThread(server, service, Config.COMMON.SYNC_OP_LIST.get(), errorOnSetup);
-        syncThread.start();
     }
 }

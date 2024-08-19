@@ -24,7 +24,7 @@ public class CommandPush {
         return Commands.literal(commandName)
                 .requires(cs -> cs.hasPermission(permissionLevel))
                 .executes(context -> {
-                    if(WhitelistSync2.whitelistService.pushLocalOpsToDatabase(OppedPlayersFileReader.getOppedPlayers(WhitelistSync2.SERVER_FILEPATH))) {
+                    if(WhitelistSync2.whitelistService.pushLocalOpsToDatabase(OppedPlayersFileReader.getOppedPlayers(context.getSource().getServer().getServerDirectory().toFile().getAbsolutePath()))) {
                         context.getSource().sendSuccess(() -> Component.literal("Pushed local op list to database."), false);
                     } else {
                         throw DB_ERROR.create();

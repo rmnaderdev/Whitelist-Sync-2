@@ -24,7 +24,7 @@ public class CommandSync {
                 .executes(context -> {
 
                     boolean status = WhitelistSync2.whitelistService.pullDatabaseWhitelistToLocal(
-                            WhitelistedPlayersFileReader.getWhitelistedPlayers(WhitelistSync2.SERVER_FILEPATH),
+                            WhitelistedPlayersFileReader.getWhitelistedPlayers(context.getSource().getServer().getServerDirectory().toFile().getAbsolutePath()),
                             (uuid, name)->{
                                 // Called when user added to whitelist
                                 context.getSource().getServer().getPlayerList().getWhiteList().add(new UserWhiteListEntry(new GameProfile(uuid, name)));

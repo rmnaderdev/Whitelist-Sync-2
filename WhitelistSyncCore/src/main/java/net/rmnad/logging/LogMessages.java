@@ -5,10 +5,12 @@ import net.rmnad.Log;
 public class LogMessages {
 
     public static String SYNC_THREAD_STARTING = "Sync thread starting...";
+    public static String SOCKET_THREAD_STARTING = "Web Socket thread starting...";
     public static String HELLO_MESSAGE = "Hello from Whitelist Sync 2!";
 
     // Errors
     public static String ERROR_INITIALIZING_WHITELIST_SYNC_DATABASE = "Error initializing whitelist sync database. Disabling mod functionality. Please correct errors and restart.";
+    public static String ERROR_INITIALIZING_WHITELIST_SYNC_WEB_API = "Error initializing whitelist sync WEB API. Disabling mod functionality. Please correct errors and restart.";
     public static String ERROR_WHITELIST_MODE = "Please check what WHITELIST_MODE is set in the config and make sure it is set to a supported mode.";
     public static String ERROR_WHITELIST_SYNC_THREAD = "Error in the whitelist sync thread! Syncing will stop until the server is restarted.";
 

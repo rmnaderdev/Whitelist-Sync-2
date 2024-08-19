@@ -38,7 +38,7 @@ public class WebService implements BaseService {
 
     private final String apiHost;
     private final String apiKey;
-    private final boolean syncingOpList;
+    public final boolean syncingOpList;
 
     public WebService(String apiHost, String apiKey, boolean syncingOpList) {
         this.apiHost = apiHost;
@@ -79,7 +79,7 @@ public class WebService implements BaseService {
         return HttpClients.createDefault();
     }
 
-    private String getApiHost() {
+    public String getApiHost() {
         if (this.apiHost.endsWith("/")) {
             return this.apiHost.substring(0, this.apiHost.length() - 1);
         }
@@ -87,7 +87,7 @@ public class WebService implements BaseService {
         return this.apiHost;
     }
 
-    private String getApiKey() {
+    public String getApiKey() {
         return apiKey;
     }
 
