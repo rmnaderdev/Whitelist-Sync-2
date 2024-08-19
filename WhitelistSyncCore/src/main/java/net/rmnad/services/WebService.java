@@ -13,24 +13,13 @@ import net.rmnad.models.OppedPlayer;
 import net.rmnad.models.WhitelistedPlayer;
 import net.rmnad.models.api.OpEntry;
 import net.rmnad.models.api.WhitelistEntry;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.HttpHostConnectException;
-import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
+import okhttp3.*;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.*;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -48,35 +37,37 @@ public class WebService implements BaseService {
         Log.debug("WebService API host is set to: " + this.apiHost);
     }
 
-    private CloseableHttpClient getClient() throws NoSuchAlgorithmException, KeyManagementException {
+    private OkHttpClient getClient() throws NoSuchAlgorithmException, KeyManagementException {
+
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
         if (this.apiHost.contains("https://localhost")) {
-            TrustManager[] trustAllCerts = new TrustManager[]{
-                    new X509TrustManager() {
-                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                            return null;
-                        }
-                        public void checkClientTrusted(
-                                java.security.cert.X509Certificate[] certs, String authType) {
-                        }
-                        public void checkServerTrusted(
-                                java.security.cert.X509Certificate[] certs, String authType) {
-                        }
-                    }
+            Log.debug("Creating custom http client (ignoring SSL)");
+            X509TrustManager trustManager = new X509TrustManager() {
+                public X509Certificate[] getAcceptedIssuers() {
+                    return new X509Certificate[] {};
+                }
+
+                @Override
+                public void checkClientTrusted(X509Certificate[] arg0, String arg1) {
+                    // not implemented
+                }
+
+                @Override
+                public void checkServerTrusted(X509Certificate[] arg0, String arg1) {
+                    // not implemented
+                }
             };
 
             SSLContext sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(null, trustAllCerts, new SecureRandom());
+            sslContext.init(null, new TrustManager[] { trustManager }, null);
 
-            Log.debug("Creating custom http client (ignoring SSL)");
 
-            return HttpClients.custom()
-                    .setSslcontext(sslContext)
-                    .setHostnameVerifier(new AllowAllHostnameVerifier())
-                    .build();
+            builder.hostnameVerifier((hostname, session) -> true)
+                    .sslSocketFactory(sslContext.getSocketFactory(), trustManager);
         }
 
-        return HttpClients.createDefault();
+        return builder.build();
     }
 
     public String getApiHost() {
@@ -93,22 +84,21 @@ public class WebService implements BaseService {
 
     private boolean isAuthenticated() {
         try {
-            CloseableHttpClient client = getClient();
-            HttpGet request = new HttpGet(getApiHost() + "/api/v1/authenticate");
-            request.addHeader("content-type", "application/json");
-            request.addHeader("Authorization", getApiKey());
+            OkHttpClient client = getClient();
 
-            HttpResponse response = client.execute(request);
-            Log.debug("isAuthenticated Response Code : " + response.getStatusLine().getStatusCode());
+            Request request = new Request.Builder()
+                    .url(getApiHost() + "/api/v1/authenticate")
+                    .addHeader("content-type", "application/json")
+                    .addHeader("Authorization", getApiKey())
+                    .build();
 
-            return responseIsSuccess(response);
-        }
-        catch (HttpHostConnectException e) {
-            Log.warning("Failed to connect to Whitelist Sync Web API.");
-            // Return true to try again later.
-            return true;
-        }
-        catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+            okhttp3.Response response = client.newCall(request).execute();
+
+            return response.isSuccessful();
+
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
             Log.error("Error authenticating with Web API.", e);
         }
 
@@ -117,27 +107,27 @@ public class WebService implements BaseService {
 
     private WhitelistEntry[] getWhitelistEntries() {
         try {
-            CloseableHttpClient client = getClient();
-            HttpGet request = new HttpGet(getApiHost() + "/api/v1/whitelist");
-            request.addHeader("content-type", "application/json");
-            request.addHeader("Authorization", getApiKey());
+            OkHttpClient client = getClient();
+            Request request = new Request.Builder()
+                    .url(getApiHost() + "/api/v1/whitelist")
+                    .addHeader("content-type", "application/json")
+                    .addHeader("Authorization", getApiKey())
+                    .build();
 
-            HttpResponse response = client.execute(request);
-            Log.debug("getWhitelistEntries Response Code : " + response.getStatusLine().getStatusCode());
+            Response response = client.newCall(request).execute();
+            Log.debug("getWhitelistEntries Response Code : " + response.code());
 
-            if (responseIsSuccess(response)) {
+            if (response.isSuccessful()) {
                 Gson gson = new Gson();
-                return gson.fromJson(EntityUtils.toString(response.getEntity(), "UTF-8"), WhitelistEntry[].class);
+                return gson.fromJson(response.body().string(), WhitelistEntry[].class);
             } else {
-                Log.error("Failed to get whitelist entries from API. Response Code: " + response.getStatusLine().getStatusCode());
+                Log.error("Failed to get whitelist entries from API. Response Code: " + response.code());
             }
 
-        }
-        catch (HttpHostConnectException e) {
-            Log.warning("Failed to connect to Whitelist Sync Web API.");
-        }
-        catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
-            Log.error("Error getting whitelisted players from Web API.", e);
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            Log.error("Error authenticating with Web API.", e);
         }
 
         return new WhitelistEntry[0];
@@ -145,26 +135,27 @@ public class WebService implements BaseService {
 
     private OpEntry[] getOpEntries() {
         try {
-            CloseableHttpClient client = getClient();
-            HttpGet request = new HttpGet(getApiHost() + "/api/v1/op");
-            request.addHeader("content-type", "application/json");
-            request.addHeader("Authorization", getApiKey());
+            OkHttpClient client = getClient();
+            Request request = new Request.Builder()
+                    .url(getApiHost() + "/api/v1/op")
+                    .addHeader("content-type", "application/json")
+                    .addHeader("Authorization", getApiKey())
+                    .build();
 
-            HttpResponse response = client.execute(request);
-            Log.debug("getOpEntries Response Code : " + response.getStatusLine().getStatusCode());
+            Response response = client.newCall(request).execute();
+            Log.debug("getOpEntries Response Code : " + response.code());
 
-            if (responseIsSuccess(response)) {
+            if (response.isSuccessful()) {
                 Gson gson = new Gson();
-                return gson.fromJson(EntityUtils.toString(response.getEntity(), "UTF-8"), OpEntry[].class);
+                return gson.fromJson(response.body().string(), OpEntry[].class);
             } else {
-                Log.error("Failed to get op entries from API. Response Code: " + response.getStatusLine().getStatusCode());
+                Log.error("Failed to get op entries from API. Response Code: " + response.code());
             }
-        }
-        catch (HttpHostConnectException e) {
-            Log.warning("Failed to connect to Whitelist Sync Web API.");
-        }
-        catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
-            Log.error("Error getting opped players from Web API.", e);
+
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            Log.error("Error getting OP entries from Web API.", e);
         }
 
         return new OpEntry[0];
@@ -200,10 +191,6 @@ public class WebService implements BaseService {
         WhitelistEntry[] entries = getWhitelistEntries();
 
         for (WhitelistEntry entry : entries) {
-            // TODO: Move to parameter of the api call
-            if (!entry.getWhitelisted())
-                continue;
-
             whitelistedPlayers.add(entry.toWhitelistedPlayer());
         }
 
@@ -226,10 +213,6 @@ public class WebService implements BaseService {
         OpEntry[] entries = getOpEntries();
 
         for (OpEntry entry : entries) {
-            // TODO: Move to parameter of the api call
-            if (!entry.getOpped())
-                continue;
-
             oppedPlayers.add(entry.toOppedPlayer());
         }
 
@@ -246,10 +229,7 @@ public class WebService implements BaseService {
         long startTime = System.currentTimeMillis();
 
         try {
-            CloseableHttpClient client = getClient();
-            HttpPost request = new HttpPost(getApiHost() + "/api/v1/whitelist/push");
-            request.addHeader("content-type", "application/json");
-            request.addHeader("Authorization", getApiKey());
+            OkHttpClient client = getClient();
 
             // Set body of request
             Gson gson = new Gson();
@@ -262,23 +242,28 @@ public class WebService implements BaseService {
                 records++;
             }
             String jsonBody = gson.toJson(jsonArray);
-            request.setEntity(new StringEntity(jsonBody));
+            RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
 
-            HttpResponse response = client.execute(request);
+            Request request = new Request.Builder()
+                    .url(getApiHost() + "/api/v1/whitelist/push")
+                    .addHeader("content-type", "application/json")
+                    .addHeader("Authorization", getApiKey())
+                    .post(body)
+                    .build();
 
-            if (responseIsSuccess(response)) {
+            Response response = client.newCall(request).execute();
+
+            if (response.isSuccessful()) {
                 // Record time taken.
                 long timeTaken = System.currentTimeMillis() - startTime;
                 Log.debug(LogMessages.SuccessPushLocalWhitelistToDatabase(timeTaken, records));
                 return true;
             } else {
-                Log.error("Failed to update database with local records. Response Code: " + response.getStatusLine().getStatusCode());
+                Log.error("Failed to update database with local records. Response Code: " + response.code());
             }
-        }
-        catch (HttpHostConnectException e) {
-            Log.warning("Failed to connect to Whitelist Sync Web API.");
-        }
-        catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+        //    } catch (HttpHostConnectException e) {
+        //        Log.warning("Failed to connect to Whitelist Sync Web API.");
+        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
             Log.error(LogMessages.ERROR_PushLocalWhitelistToDatabase, e);
         }
 
@@ -292,10 +277,7 @@ public class WebService implements BaseService {
         long startTime = System.currentTimeMillis();
 
         try {
-            CloseableHttpClient client = getClient();
-            HttpPost request = new HttpPost(getApiHost() + "/api/v1/op/push");
-            request.addHeader("content-type", "application/json");
-            request.addHeader("Authorization", getApiKey());
+            OkHttpClient client = getClient();
 
             // Set body of request
             Gson gson = new Gson();
@@ -308,23 +290,28 @@ public class WebService implements BaseService {
                 records++;
             }
             String jsonBody = gson.toJson(jsonArray);
-            request.setEntity(new StringEntity(jsonBody));
+            RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
 
-            HttpResponse response = client.execute(request);
+            Request request = new Request.Builder()
+                    .url(getApiHost() + "/api/v1/op/push")
+                    .addHeader("content-type", "application/json")
+                    .addHeader("Authorization", getApiKey())
+                    .post(body)
+                    .build();
 
-            if (responseIsSuccess(response)) {
+            Response response = client.newCall(request).execute();
+
+            if (response.isSuccessful()) {
                 // Record time taken.
                 long timeTaken = System.currentTimeMillis() - startTime;
-                Log.debug(LogMessages.SuccessPushLocalOpsToDatabase(timeTaken, records));
+                Log.debug(LogMessages.SuccessPushLocalWhitelistToDatabase(timeTaken, records));
                 return true;
             } else {
-                Log.error("Failed to update database with local records. Response Code: " + response.getStatusLine().getStatusCode());
+                Log.error("Failed to update database with local records. Response Code: " + response.code());
             }
-        }
-        catch (HttpHostConnectException e) {
-            Log.warning("Failed to connect to Whitelist Sync Web API.");
-        }
-        catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+        //    } catch (HttpHostConnectException e) {
+        //        Log.warning("Failed to connect to Whitelist Sync Web API.");
+        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
             Log.error(LogMessages.ERROR_PushLocalOpsToDatabase, e);
         }
 
@@ -411,34 +398,37 @@ public class WebService implements BaseService {
     public boolean addWhitelistPlayer(UUID uuid, String name) {
         long startTime = System.currentTimeMillis();
         try {
-            CloseableHttpClient client = getClient();
-            HttpPost request = new HttpPost(getApiHost() + "/api/v1/whitelist");
-            request.addHeader("content-type", "application/json");
-            request.addHeader("Authorization", getApiKey());
-
             // Set body of request
             Gson gson = new Gson();
             JsonObject json = new JsonObject();
             json.addProperty("uuid", uuid.toString());
             json.addProperty("name", name);
             String jsonBody = gson.toJson(json);
-            request.setEntity(new StringEntity(jsonBody));
+            RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
 
-            HttpResponse response = client.execute(request);
+            OkHttpClient client = getClient();
+            Request request = new Request.Builder()
+                    .url(getApiHost() + "/api/v1/whitelist")
+                    .addHeader("content-type", "application/json")
+                    .addHeader("Authorization", getApiKey())
+                    .post(body)
+                    .build();
 
-            if (responseIsSuccess(response)) {
+            Response response = client.newCall(request).execute();
+
+            if (response.isSuccessful()) {
                 long timeTaken = System.currentTimeMillis() - startTime;
                 Log.debug("Added " + name + " to whitelist | Took " + timeTaken + "ms");
 
                 return true;
             } else {
-                Log.error("Error adding " + name + " to whitelist database! Response Code: " + response.getStatusLine().getStatusCode());
+                Log.error("Error adding " + name + " to whitelist database! Response Code: " + response.code());
             }
 
         }
-        catch (HttpHostConnectException e) {
-            Log.warning("Failed to connect to Whitelist Sync Web API.");
-        }
+//        catch (HttpHostConnectException e) {
+//            Log.warning("Failed to connect to Whitelist Sync Web API.");
+//        }
         catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
             Log.error("Error adding " + name + " to whitelist database!", e);
         }
@@ -455,34 +445,36 @@ public class WebService implements BaseService {
 
         long startTime = System.currentTimeMillis();
         try {
-            CloseableHttpClient client = getClient();
-            HttpPost request = new HttpPost(getApiHost() + "/api/v1/op");
-            request.addHeader("content-type", "application/json");
-            request.addHeader("Authorization", getApiKey());
-
-            // Set body of request
+            OkHttpClient client = getClient();
             Gson gson = new Gson();
             JsonObject json = new JsonObject();
             json.addProperty("uuid", uuid.toString());
             json.addProperty("name", name);
             String jsonBody = gson.toJson(json);
-            request.setEntity(new StringEntity(jsonBody));
+            RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
 
-            HttpResponse response = client.execute(request);
+            Request request = new Request.Builder()
+                    .url(getApiHost() + "/api/v1/op")
+                    .addHeader("content-type", "application/json")
+                    .addHeader("Authorization", getApiKey())
+                    .post(body)
+                    .build();
 
-            if (responseIsSuccess(response)) {
+            Response response = client.newCall(request).execute();
+
+            if (response.isSuccessful()) {
                 long timeTaken = System.currentTimeMillis() - startTime;
                 Log.debug("Opped " + name + " | Took " + timeTaken + "ms");
 
                 return true;
             } else {
-                Log.error("Error opping " + name + " in database! Response Code: " + response.getStatusLine().getStatusCode());
+                Log.error("Error opping " + name + " in database! Response Code: " + response.code());
             }
 
         }
-        catch (HttpHostConnectException e) {
-            Log.warning("Failed to connect to Whitelist Sync Web API.");
-        }
+//        catch (HttpHostConnectException e) {
+//            Log.warning("Failed to connect to Whitelist Sync Web API.");
+//        }
         catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
             Log.error("Error opping " + name + " in database!", e);
         }
@@ -494,26 +486,29 @@ public class WebService implements BaseService {
     public boolean removeWhitelistPlayer(UUID uuid, String name) {
         long startTime = System.currentTimeMillis();
         try {
-            CloseableHttpClient client = getClient();
-            HttpDelete request = new HttpDelete(getApiHost() + "/api/v1/whitelist/" + uuid.toString());
-            request.addHeader("content-type", "application/json");
-            request.addHeader("Authorization", getApiKey());
+            OkHttpClient client = getClient();
+            Request request = new Request.Builder()
+                    .url(getApiHost() + "/api/v1/whitelist/" + uuid.toString())
+                    .addHeader("content-type", "application/json")
+                    .addHeader("Authorization", getApiKey())
+                    .delete()
+                    .build();
 
-            HttpResponse response = client.execute(request);
+            Response response = client.newCall(request).execute();
 
-            if (responseIsSuccess(response)) {
+            if (response.isSuccessful()) {
                 long timeTaken = System.currentTimeMillis() - startTime;
                 Log.debug("Removed " + name + " from whitelist | Took " + timeTaken + "ms");
 
                 return true;
             } else {
-                Log.error("Error removing " + name + " from whitelist database! Response Code: " + response.getStatusLine().getStatusCode());
+                Log.error("Error removing " + name + " from whitelist database! Response Code: " + response.code());
             }
 
         }
-        catch (HttpHostConnectException e) {
-            Log.warning("Failed to connect to Whitelist Sync Web API.");
-        }
+//        catch (HttpHostConnectException e) {
+//            Log.warning("Failed to connect to Whitelist Sync Web API.");
+//        }
         catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
             Log.error("Error removing " + name + " from whitelist database!", e);
         }
@@ -530,25 +525,28 @@ public class WebService implements BaseService {
 
         long startTime = System.currentTimeMillis();
         try {
-            CloseableHttpClient client = getClient();
-            HttpDelete request = new HttpDelete(getApiHost() + "/api/v1/op/" + uuid.toString());
-            request.addHeader("content-type", "application/json");
-            request.addHeader("Authorization", getApiKey());
+            OkHttpClient client = getClient();
+            Request request = new Request.Builder()
+                    .url(getApiHost() + "/api/v1/op/" + uuid.toString())
+                    .addHeader("content-type", "application/json")
+                    .addHeader("Authorization", getApiKey())
+                    .delete()
+                    .build();
 
-            HttpResponse response = client.execute(request);
+            Response response = client.newCall(request).execute();
 
-            if (responseIsSuccess(response)) {
+            if (response.isSuccessful()) {
                 long timeTaken = System.currentTimeMillis() - startTime;
                 Log.debug("Deopped " + name + " | Took " + timeTaken + "ms");
 
                 return true;
             } else {
-                Log.error("Error opping " + name + " in database! Response Code: " + response.getStatusLine().getStatusCode());
+                Log.error("Error opping " + name + " in database! Response Code: " + response.code());
             }
         }
-        catch (HttpHostConnectException e) {
-            Log.warning("Failed to connect to Whitelist Sync Web API.");
-        }
+//        catch (HttpHostConnectException e) {
+//            Log.warning("Failed to connect to Whitelist Sync Web API.");
+//        }
         catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
             Log.error("Error opping " + name + " in database!", e);
         }
@@ -556,7 +554,4 @@ public class WebService implements BaseService {
         return false;
     }
 
-    private boolean responseIsSuccess(HttpResponse response) {
-        return response.getStatusLine().getStatusCode() >= 200 && response.getStatusLine().getStatusCode() < 300;
-    }
 }

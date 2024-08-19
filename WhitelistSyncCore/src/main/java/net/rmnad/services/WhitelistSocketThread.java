@@ -75,44 +75,41 @@ public class WhitelistSocketThread extends Thread {
             HashMap<String, String> auth = new HashMap<>();
             auth.put("token", this.service.getApiKey());
 
-            HostnameVerifier hostnameVerifier = new HostnameVerifier() {
-                @Override
-                public boolean verify(String hostname, SSLSession sslSession) {
-                    return true;
-                }
-            };
-
-            X509TrustManager trustManager = new X509TrustManager() {
-                public X509Certificate[] getAcceptedIssuers() {
-                    return new X509Certificate[] {};
-                }
-
-                @Override
-                public void checkClientTrusted(X509Certificate[] arg0, String arg1) {
-                    // not implemented
-                }
-
-                @Override
-                public void checkServerTrusted(X509Certificate[] arg0, String arg1) {
-                    // not implemented
-                }
-            };
-
-            SSLContext sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(null, new TrustManager[] { trustManager }, null);
-
             Dispatcher dispatcher = new Dispatcher();
-            OkHttpClient okHttpClient = new OkHttpClient.Builder()
+            OkHttpClient.Builder builder = new OkHttpClient.Builder()
                     .dispatcher(dispatcher)
-                    .hostnameVerifier(hostnameVerifier)
-                    .sslSocketFactory(sslContext.getSocketFactory(), trustManager)
-                    .readTimeout(1, TimeUnit.MINUTES) // important for HTTP long-polling
-                    .build();
+                    .readTimeout(1, TimeUnit.MINUTES); // important for HTTP long-polling
+
+            if (this.service.getApiHost().startsWith("https://localhost")) {
+                X509TrustManager trustManager = new X509TrustManager() {
+                    public X509Certificate[] getAcceptedIssuers() {
+                        return new X509Certificate[] {};
+                    }
+
+                    @Override
+                    public void checkClientTrusted(X509Certificate[] arg0, String arg1) {
+                        // not implemented
+                    }
+
+                    @Override
+                    public void checkServerTrusted(X509Certificate[] arg0, String arg1) {
+                        // not implemented
+                    }
+                };
+
+                SSLContext sslContext = SSLContext.getInstance("TLS");
+                sslContext.init(null, new TrustManager[] { trustManager }, null);
+
+
+                builder.hostnameVerifier((hostname, session) -> true).sslSocketFactory(sslContext.getSocketFactory(), trustManager);
+            }
 
             URI uri = URI.create(this.service.getApiHost());
             IO.Options options = IO.Options.builder()
                     .setAuth(auth)
                     .build();
+
+            OkHttpClient okHttpClient = builder.build();
 
             options.callFactory = okHttpClient;
             options.webSocketFactory = okHttpClient;

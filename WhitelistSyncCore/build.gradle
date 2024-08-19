@@ -16,8 +16,7 @@ sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = co
 
 dependencies {
     compileOnly "com.google.code.gson:gson:2.8.9"
-    implementation 'org.apache.httpcomponents:httpclient:4.5.13'
-    implementation 'org.apache.httpcomponents:httpcore:4.4.16'
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
     implementation 'io.socket:socket.io-client:2.1.1'
 }
 
@@ -28,11 +27,10 @@ jar {
 
 shadowJar {
     dependencies {
-        include(dependency('org.apache.httpcomponents:httpclient:'))
-        include(dependency('org.apache.httpcomponents:httpcore:'))
+        include(dependency('com.squareup.okhttp3:okhttp:'))
         include(dependency('io.socket:socket.io-client:'))
     }
-    relocate('org.apache.httpcomponents', 'net.rmnad.org.apache.httpcomponents')
+    relocate('com.squareup.okhttp3', 'net.rmnad.com.squareup.okhttp3')
     relocate('io.socket', 'net.rmnad.io.socket')
 
     destinationDirectory = file '../target'
