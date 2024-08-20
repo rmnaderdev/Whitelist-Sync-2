@@ -36,12 +36,17 @@ minecraft {
 
 project.archivesBaseName = "${project.archivesBaseName}-forge-${minecraft_version}"
 
+configurations {
+    shade
+    implementation.extendsFrom shade
+}
+
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
     // Core library dependency
-    implementation project(path: ':WhitelistSyncCore', configuration: "shadow")
-    minecraftLibrary project(path: ':WhitelistSyncCore')
+    shade project(':WhitelistSyncCore')
+    minecraftLibrary project(':WhitelistSyncCore')
 
     // Used for development. These are added by the user later.
     // Need "minecraftLibrary" so the libraries are used in the dev environment. Without them, the JDBC drivers won't be loaded.
@@ -68,33 +73,39 @@ tasks.named('processResources', ProcessResources).configure {
     }
 }
 
+// Example for how to get properties into the manifest for reading at runtime.
+tasks.named('jar', Jar).configure {
+    archiveClassifier = 'slim'
+    manifest {
+        attributes([
+                'Specification-Title'     : mod_id,
+                'Specification-Vendor'    : mod_authors,
+                'Specification-Version'   : '1', // We are version 1 of ourselves
+                'Implementation-Title'    : project.name,
+                'Implementation-Version'  : project.jar.archiveVersion,
+                'Implementation-Vendor'   : mod_authors,
+                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+
+    // This is the preferred method to reobfuscate your jar file
+    finalizedBy 'reobfJar'
+}
+
 shadowJar {
     dependencies {
-        include(dependency(':WhitelistSyncCore'))
-        exclude("META-INF/maven/**")
-        exclude("META-INF/services/**")
+        exclude(dependency('org.jetbrains:.*'))
     }
 
     archiveBaseName = "WhitelistSync"
     archiveClassifier = "forge-${minecraft_version}"
     destinationDirectory = file '../target'
+    configurations = [project.configurations.shade]
+    finalizedBy 'reobfShadowJar'
 }
 
-afterEvaluate {
-    reobf {
-        shadowJar {
-            mappings = createMcpToSrg.output
-        }
-    }
-}
+assemble.dependsOn shadowJar
 
-task deobfJar(type: Jar) {
-    from sourceSets.main.output
-    archiveClassifier = 'dev'
+reobf {
+    shadowJar {}
 }
-
-artifacts {
-    archives deobfJar
-}
-
-build.dependsOn(shadowJar)
