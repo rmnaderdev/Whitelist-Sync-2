@@ -35,11 +35,16 @@ minecraft {
 
 project.archivesBaseName = "${project.archivesBaseName}-forge-${minecraft_version}"
 
+configurations {
+    shade
+    implementation.extendsFrom shade
+}
+
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
     // Core library dependency
-    implementation project(path: ':WhitelistSyncCore', configuration: "shadow")
+    shade project(':WhitelistSyncCore')
     minecraftLibrary project(path: ':WhitelistSyncCore')
 
     // Used for development. These are added by the user later.
@@ -69,31 +74,18 @@ tasks.named('processResources', ProcessResources).configure {
 
 shadowJar {
     dependencies {
-        include(dependency(':WhitelistSyncCore'))
-        exclude("META-INF/maven/**")
-        exclude("META-INF/services/**")
+        exclude(dependency('org.jetbrains:annotations:'))
     }
 
     archiveBaseName = "WhitelistSync"
     archiveClassifier = "forge-${minecraft_version}"
     destinationDirectory = file '../target'
+    configurations = [project.configurations.shade]
+    finalizedBy 'reobfShadowJar'
 }
 
-afterEvaluate {
-    reobf {
-        shadowJar {
-            mappings = createMcpToSrg.output
-        }
-    }
-}
+assemble.dependsOn shadowJar
 
-task deobfJar(type: Jar) {
-    from sourceSets.main.output
-    archiveClassifier = 'dev'
+reobf {
+    shadowJar {}
 }
-
-artifacts {
-    archives deobfJar
-}
-
-build.dependsOn(shadowJar)

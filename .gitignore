@@ -25,3 +25,5 @@ run
 forge*changelog.txt
 
 target/
+
+whitelistsync2-common.toml

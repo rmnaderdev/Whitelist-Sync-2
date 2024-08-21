@@ -16,7 +16,6 @@ sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = co
 
 configurations {
     cleanedAnnotations
-    minecraftLibrary.exclude group: 'org.jetbrains' , module:'annotations'
     implementation.exclude group: 'org.jetbrains' , module:'annotations'
 }
 
@@ -35,7 +34,6 @@ shadowJar {
     dependencies {
         include(dependency('com.squareup.okhttp3:okhttp:'))
         include(dependency('io.socket:socket.io-client:'))
-        exclude(dependency('org.jetbrains:annotations:'))
     }
     relocate('com.squareup.okhttp3', 'net.rmnad.com.squareup.okhttp3')
     relocate('io.socket', 'net.rmnad.io.socket')
