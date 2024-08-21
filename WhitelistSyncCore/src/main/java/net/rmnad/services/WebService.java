@@ -92,10 +92,9 @@ public class WebService implements BaseService {
                     .addHeader("Authorization", getApiKey())
                     .build();
 
-            okhttp3.Response response = client.newCall(request).execute();
-
-            return response.isSuccessful();
-
+            try (Response response = client.newCall(request).execute()) {
+                return response.isSuccessful();
+            }
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
@@ -114,13 +113,17 @@ public class WebService implements BaseService {
                     .addHeader("Authorization", getApiKey())
                     .build();
 
-            Response response = client.newCall(request).execute();
-            Log.debug("getWhitelistEntries Response Code : " + response.code());
+            try (Response response = client.newCall(request).execute()) {
+                Log.debug("getWhitelistEntries Response Code : " + response.code());
 
-            if (response.isSuccessful()) {
-                Gson gson = new Gson();
-                return gson.fromJson(response.body().string(), WhitelistEntry[].class);
-            } else {
+                if (response.isSuccessful()) {
+                    Gson gson = new Gson();
+
+                    if (response.body() != null) {
+                        return gson.fromJson(response.body().string(), WhitelistEntry[].class);
+                    }
+                }
+
                 Log.error("Failed to get whitelist entries from API. Response Code: " + response.code());
             }
 
@@ -142,13 +145,14 @@ public class WebService implements BaseService {
                     .addHeader("Authorization", getApiKey())
                     .build();
 
-            Response response = client.newCall(request).execute();
-            Log.debug("getOpEntries Response Code : " + response.code());
+            try (Response response = client.newCall(request).execute()) {
+                Log.debug("getOpEntries Response Code : " + response.code());
 
-            if (response.isSuccessful()) {
-                Gson gson = new Gson();
-                return gson.fromJson(response.body().string(), OpEntry[].class);
-            } else {
+                if (response.isSuccessful() && response.body() != null) {
+                    Gson gson = new Gson();
+                    return gson.fromJson(response.body().string(), OpEntry[].class);
+                }
+
                 Log.error("Failed to get op entries from API. Response Code: " + response.code());
             }
 
@@ -251,17 +255,18 @@ public class WebService implements BaseService {
                     .post(body)
                     .build();
 
-            Response response = client.newCall(request).execute();
+            try (Response response = client.newCall(request).execute()) {
 
-            if (response.isSuccessful()) {
-                // Record time taken.
-                long timeTaken = System.currentTimeMillis() - startTime;
-                Log.debug(LogMessages.SuccessPushLocalWhitelistToDatabase(timeTaken, records));
-                return true;
-            } else {
-                Log.error("Failed to update database with local records. Response Code: " + response.code());
+                if (response.isSuccessful()) {
+                    // Record time taken.
+                    long timeTaken = System.currentTimeMillis() - startTime;
+                    Log.debug(LogMessages.SuccessPushLocalWhitelistToDatabase(timeTaken, records));
+                    return true;
+                } else {
+                    Log.error("Failed to update database with local records. Response Code: " + response.code());
+                }
             }
-        //    } catch (HttpHostConnectException e) {
+            //    } catch (HttpHostConnectException e) {
         //        Log.warning("Failed to connect to Whitelist Sync Web API.");
         } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
             Log.error(LogMessages.ERROR_PushLocalWhitelistToDatabase, e);
@@ -299,17 +304,18 @@ public class WebService implements BaseService {
                     .post(body)
                     .build();
 
-            Response response = client.newCall(request).execute();
+            try (Response response = client.newCall(request).execute()) {
 
-            if (response.isSuccessful()) {
-                // Record time taken.
-                long timeTaken = System.currentTimeMillis() - startTime;
-                Log.debug(LogMessages.SuccessPushLocalWhitelistToDatabase(timeTaken, records));
-                return true;
-            } else {
-                Log.error("Failed to update database with local records. Response Code: " + response.code());
+                if (response.isSuccessful()) {
+                    // Record time taken.
+                    long timeTaken = System.currentTimeMillis() - startTime;
+                    Log.debug(LogMessages.SuccessPushLocalWhitelistToDatabase(timeTaken, records));
+                    return true;
+                } else {
+                    Log.error("Failed to update database with local records. Response Code: " + response.code());
+                }
             }
-        //    } catch (HttpHostConnectException e) {
+            //    } catch (HttpHostConnectException e) {
         //        Log.warning("Failed to connect to Whitelist Sync Web API.");
         } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
             Log.error(LogMessages.ERROR_PushLocalOpsToDatabase, e);
@@ -414,15 +420,16 @@ public class WebService implements BaseService {
                     .post(body)
                     .build();
 
-            Response response = client.newCall(request).execute();
+            try (Response response = client.newCall(request).execute()) {
 
-            if (response.isSuccessful()) {
-                long timeTaken = System.currentTimeMillis() - startTime;
-                Log.debug("Added " + name + " to whitelist | Took " + timeTaken + "ms");
+                if (response.isSuccessful()) {
+                    long timeTaken = System.currentTimeMillis() - startTime;
+                    Log.debug("Added " + name + " to whitelist | Took " + timeTaken + "ms");
 
-                return true;
-            } else {
-                Log.error("Error adding " + name + " to whitelist database! Response Code: " + response.code());
+                    return true;
+                } else {
+                    Log.error("Error adding " + name + " to whitelist database! Response Code: " + response.code());
+                }
             }
 
         }
@@ -460,15 +467,16 @@ public class WebService implements BaseService {
                     .post(body)
                     .build();
 
-            Response response = client.newCall(request).execute();
+            try (Response response = client.newCall(request).execute()) {
 
-            if (response.isSuccessful()) {
-                long timeTaken = System.currentTimeMillis() - startTime;
-                Log.debug("Opped " + name + " | Took " + timeTaken + "ms");
+                if (response.isSuccessful()) {
+                    long timeTaken = System.currentTimeMillis() - startTime;
+                    Log.debug("Opped " + name + " | Took " + timeTaken + "ms");
 
-                return true;
-            } else {
-                Log.error("Error opping " + name + " in database! Response Code: " + response.code());
+                    return true;
+                } else {
+                    Log.error("Error opping " + name + " in database! Response Code: " + response.code());
+                }
             }
 
         }
@@ -494,15 +502,16 @@ public class WebService implements BaseService {
                     .delete()
                     .build();
 
-            Response response = client.newCall(request).execute();
+            try (Response response = client.newCall(request).execute()) {
 
-            if (response.isSuccessful()) {
-                long timeTaken = System.currentTimeMillis() - startTime;
-                Log.debug("Removed " + name + " from whitelist | Took " + timeTaken + "ms");
+                if (response.isSuccessful()) {
+                    long timeTaken = System.currentTimeMillis() - startTime;
+                    Log.debug("Removed " + name + " from whitelist | Took " + timeTaken + "ms");
 
-                return true;
-            } else {
-                Log.error("Error removing " + name + " from whitelist database! Response Code: " + response.code());
+                    return true;
+                } else {
+                    Log.error("Error removing " + name + " from whitelist database! Response Code: " + response.code());
+                }
             }
 
         }
@@ -533,15 +542,16 @@ public class WebService implements BaseService {
                     .delete()
                     .build();
 
-            Response response = client.newCall(request).execute();
+            try (Response response = client.newCall(request).execute()) {
 
-            if (response.isSuccessful()) {
-                long timeTaken = System.currentTimeMillis() - startTime;
-                Log.debug("Deopped " + name + " | Took " + timeTaken + "ms");
+                if (response.isSuccessful()) {
+                    long timeTaken = System.currentTimeMillis() - startTime;
+                    Log.debug("Deopped " + name + " | Took " + timeTaken + "ms");
 
-                return true;
-            } else {
-                Log.error("Error opping " + name + " in database! Response Code: " + response.code());
+                    return true;
+                } else {
+                    Log.error("Error opping " + name + " in database! Response Code: " + response.code());
+                }
             }
         }
 //        catch (HttpHostConnectException e) {
