@@ -182,8 +182,9 @@ public class WhitelistSocketThread extends Thread {
                 this.latch.countDown();
                 this.socket.disconnect();
                 this.socket.close();
-                dispatcher.executorService().shutdown();
             }
+
+            dispatcher.executorService().shutdown();
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
             throw new RuntimeException(e);
         }
