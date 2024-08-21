@@ -14,10 +14,16 @@ repositories {
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
+configurations {
+    cleanedAnnotations
+    minecraftLibrary.exclude group: 'org.jetbrains' , module:'annotations'
+    implementation.exclude group: 'org.jetbrains' , module:'annotations'
+}
+
 dependencies {
     compileOnly "com.google.code.gson:gson:2.8.9"
-    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
-    implementation 'io.socket:socket.io-client:2.1.1'
+    implementation ('com.squareup.okhttp3:okhttp:[4.12.0,5.0)')
+    implementation ('io.socket:socket.io-client:2.1.1')
 }
 
 jar {
@@ -29,6 +35,7 @@ shadowJar {
     dependencies {
         include(dependency('com.squareup.okhttp3:okhttp:'))
         include(dependency('io.socket:socket.io-client:'))
+        exclude(dependency('org.jetbrains:annotations:'))
     }
     relocate('com.squareup.okhttp3', 'net.rmnad.com.squareup.okhttp3')
     relocate('io.socket', 'net.rmnad.io.socket')

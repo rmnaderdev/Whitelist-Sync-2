@@ -94,7 +94,7 @@ tasks.named('jar', Jar).configure {
 
 shadowJar {
     dependencies {
-        exclude(dependency('org.jetbrains:.*'))
+        exclude(dependency('org.jetbrains:annotations:'))
     }
 
     archiveBaseName = "WhitelistSync"
