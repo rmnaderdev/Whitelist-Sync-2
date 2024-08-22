@@ -7,7 +7,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.rmnad.forge_1_21.WhitelistSync2;
-import net.rmnad.json.OppedPlayersFileReader;
 
 public class CommandPush {
 
@@ -24,7 +23,7 @@ public class CommandPush {
         return Commands.literal(commandName)
                 .requires(cs -> cs.hasPermission(permissionLevel))
                 .executes(context -> {
-                    if(WhitelistSync2.whitelistService.pushLocalOpsToDatabase(OppedPlayersFileReader.getOppedPlayers(context.getSource().getServer().getServerDirectory().toFile().getAbsolutePath()))) {
+                    if(WhitelistSync2.whitelistService.pushLocalOpsToDatabase()) {
                         context.getSource().sendSuccess(() -> Component.literal("Pushed local op list to database."), false);
                     } else {
                         throw DB_ERROR.create();

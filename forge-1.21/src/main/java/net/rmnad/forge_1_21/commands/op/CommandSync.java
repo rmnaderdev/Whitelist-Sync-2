@@ -23,18 +23,7 @@ public class CommandSync {
                 .requires(cs -> cs.hasPermission(permissionLevel))
                 .executes(context -> {
 
-                    boolean status = WhitelistSync2.whitelistService.pullDatabaseOpsToLocal(
-                            OppedPlayersFileReader.getOppedPlayers(context.getSource().getServer().getServerDirectory().toFile().getAbsolutePath()),
-                            (uuid, name)->{
-                                // Called when user added to op list
-                                // TODO: Add level and bypassesPlayerLimit
-                                context.getSource().getServer().getPlayerList().op(new GameProfile(uuid, name));
-                            },
-                            (uuid, name) -> {
-                                // Called when user removed from op list
-                                context.getSource().getServer().getPlayerList().deop(new GameProfile(uuid, name));
-                            }
-                    );
+                    boolean status = WhitelistSync2.whitelistService.pullDatabaseOpsToLocal();
                     
                     if(status) {
                         context.getSource().sendSuccess(() -> Component.literal("Local op list up to date with database."), false);

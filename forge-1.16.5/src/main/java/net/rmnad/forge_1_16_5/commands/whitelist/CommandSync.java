@@ -22,20 +22,7 @@ public class CommandSync {
         return Commands.literal(commandName)
                 .requires(cs -> cs.hasPermission(permissionLevel))
                 .executes(context -> {
-
-                    boolean status = WhitelistSync2.whitelistService.pullDatabaseWhitelistToLocal(
-                            WhitelistedPlayersFileReader.getWhitelistedPlayers(context.getSource().getServer().getServerDirectory().getAbsolutePath()),
-                            (uuid, name)->{
-                                // Called when user added to whitelist
-                                context.getSource().getServer().getPlayerList().getWhiteList().add(new WhitelistEntry(new GameProfile(uuid, name)));
-                            },
-                            (uuid, name) -> {
-                                // Called when user removed from whitelist
-                                context.getSource().getServer().getPlayerList().getWhiteList().remove(new WhitelistEntry(new GameProfile(uuid, name)));
-                            }
-                    );
-
-                    if(status) {
+                    if(WhitelistSync2.whitelistService.pullDatabaseWhitelistToLocal()) {
                         context.getSource().sendSuccess(new StringTextComponent("Local whitelist up to date with database."), false);
                     } else {
                         throw DB_ERROR.create();
