@@ -3,10 +3,7 @@ package net.rmnad.services;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import net.rmnad.Log;
-import net.rmnad.callbacks.IOnUserOpAdd;
-import net.rmnad.callbacks.IOnUserOpRemove;
-import net.rmnad.callbacks.IOnUserWhitelistAdd;
-import net.rmnad.callbacks.IOnUserWhitelistRemove;
+import net.rmnad.callbacks.*;
 import net.rmnad.logging.LogMessages;
 import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
@@ -28,10 +25,7 @@ public class WhitelistSocketThread extends Thread {
     private final WebService service;
     private final boolean errorOnSetup;
 
-    private final IOnUserWhitelistAdd onUserAdd;
-    private final IOnUserWhitelistRemove onUserRemove;
-    private final IOnUserOpAdd onUserOpAdd;
-    private final IOnUserOpRemove onUserOpRemove;
+    private final IServerControl serverControl;
 
     private Socket socket;
     private final CountDownLatch latch = new CountDownLatch(1);
@@ -39,20 +33,14 @@ public class WhitelistSocketThread extends Thread {
     public WhitelistSocketThread(
             WebService service,
             boolean errorOnSetup,
-            IOnUserWhitelistAdd onUserAdd,
-            IOnUserWhitelistRemove onUserRemove,
-            IOnUserOpAdd onUserOpAdd,
-            IOnUserOpRemove onUserOpRemove) {
+            IServerControl serverControl) {
 
         this.setName("WhitelistSocketThread");
         this.setDaemon(true);
         this.service = service;
         this.errorOnSetup = errorOnSetup;
 
-        this.onUserAdd = onUserAdd;
-        this.onUserRemove = onUserRemove;
-        this.onUserOpAdd = onUserOpAdd;
-        this.onUserOpRemove = onUserOpRemove;
+        this.serverControl = serverControl;
     }
 
     @Override
@@ -138,10 +126,10 @@ public class WhitelistSocketThread extends Thread {
 
                     if (isWhitelisted) {
                         Log.info("Web-Socket: Player whitelisted: " + name + " (" + uuid + ")");
-                        this.onUserAdd.call(uuid, name);
+                        this.serverControl.addWhitelistPlayer(uuid, name);
                     } else {
                         Log.info("Web-Socket: Player removed from whitelist: " + name + " (" + uuid + ")");
-                        this.onUserRemove.call(uuid, name);
+                        this.serverControl.removeWhitelistPlayer(uuid, name);
                     }
                 } catch (JSONException e) {
                     Log.error("Web-Socket: Error parsing JSON data: " + e.getMessage());
@@ -158,10 +146,10 @@ public class WhitelistSocketThread extends Thread {
 
                         if (isOpped) {
                             Log.info("Web-Socket: Player opped: " + name + " (" + uuid + ")");
-                            this.onUserOpAdd.call(uuid, name);
+                            this.serverControl.addOpPlayer(uuid, name);
                         } else {
                             Log.info("Web-Socket: Player deopped: " + name + " (" + uuid + ")");
-                            this.onUserOpRemove.call(uuid, name);
+                            this.serverControl.removeOpPlayer(uuid, name);
                         }
                     } catch (JSONException e) {
                         Log.error("Web-Socket: Error parsing JSON data: " + e.getMessage());

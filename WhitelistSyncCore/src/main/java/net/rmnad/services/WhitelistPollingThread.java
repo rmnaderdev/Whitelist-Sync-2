@@ -1,12 +1,6 @@
 package net.rmnad.services;
 
 import net.rmnad.Log;
-import net.rmnad.callbacks.IOnUserOpAdd;
-import net.rmnad.callbacks.IOnUserOpRemove;
-import net.rmnad.callbacks.IOnUserWhitelistAdd;
-import net.rmnad.callbacks.IOnUserWhitelistRemove;
-import net.rmnad.json.OppedPlayersFileReader;
-import net.rmnad.json.WhitelistedPlayersFileReader;
 import net.rmnad.logging.LogMessages;
 
 public class WhitelistPollingThread extends Thread {
@@ -14,39 +8,20 @@ public class WhitelistPollingThread extends Thread {
     private final BaseService service;
     private final boolean syncOpLists;
     private final boolean errorOnSetup;
-
-    private final String serverFilePath;
     private final int syncTimer;
-
-    private final IOnUserWhitelistAdd onUserAdd;
-    private final IOnUserWhitelistRemove onUserRemove;
-    private final IOnUserOpAdd onUserOpAdd;
-    private final IOnUserOpRemove onUserOpRemove;
 
     public WhitelistPollingThread(
             BaseService service,
             boolean syncOpLists,
             boolean errorOnSetup,
-            String serverFilePath,
-            int syncTimer,
-            IOnUserWhitelistAdd onUserAdd,
-            IOnUserWhitelistRemove onUserRemove,
-            IOnUserOpAdd onUserOpAdd,
-            IOnUserOpRemove onUserOpRemove) {
+            int syncTimer) {
 
         this.setName("WhitelistPollingThread");
         this.setDaemon(true);
         this.service = service;
         this.syncOpLists = syncOpLists;
         this.errorOnSetup = errorOnSetup;
-
-        this.serverFilePath = serverFilePath;
         this.syncTimer = syncTimer;
-
-        this.onUserAdd = onUserAdd;
-        this.onUserRemove = onUserRemove;
-        this.onUserOpAdd = onUserOpAdd;
-        this.onUserOpRemove = onUserOpRemove;
     }
 
     @Override
@@ -67,18 +42,10 @@ public class WhitelistPollingThread extends Thread {
 
         while (true) {
             try {
-                service.pullDatabaseWhitelistToLocal(
-                        WhitelistedPlayersFileReader.getWhitelistedPlayers(serverFilePath),
-                        this.onUserAdd,
-                        this.onUserRemove
-                );
+                service.pullDatabaseWhitelistToLocal();
 
                 if (syncOpLists) {
-                    service.pullDatabaseOpsToLocal(
-                            OppedPlayersFileReader.getOppedPlayers(serverFilePath),
-                            this.onUserOpAdd,
-                            this.onUserOpRemove
-                    );
+                    service.pullDatabaseOpsToLocal();
                 }
             } catch (Exception e) {
                 Log.error(LogMessages.ERROR_WHITELIST_SYNC_THREAD, e);

@@ -2,10 +2,9 @@ package net.rmnad.services;
 
 
 import net.rmnad.Log;
-import net.rmnad.callbacks.IOnUserOpAdd;
-import net.rmnad.callbacks.IOnUserOpRemove;
-import net.rmnad.callbacks.IOnUserWhitelistAdd;
-import net.rmnad.callbacks.IOnUserWhitelistRemove;
+import net.rmnad.callbacks.*;
+import net.rmnad.json.OppedPlayersFileReader;
+import net.rmnad.json.WhitelistedPlayersFileReader;
 import net.rmnad.logging.LogMessages;
 import net.rmnad.models.OppedPlayer;
 import net.rmnad.models.WhitelistedPlayer;
@@ -19,12 +18,22 @@ import java.util.UUID;
  */
 public class SqLiteService implements BaseService {
 
-    private final boolean syncingOpList;
     private final String databasePath;
+    private final String serverFilePath;
+    private final boolean syncingOpList;
+
+    private final IServerControl serverControl;
     
-    public SqLiteService(String databasePath, boolean syncingOpList) {
+    public SqLiteService(
+            String databasePath,
+            String serverFilePath,
+            boolean syncingOpList,
+            IServerControl serverControl) {
+
         this.databasePath = databasePath;
+        this.serverFilePath = serverFilePath;
         this.syncingOpList = syncingOpList;
+        this.serverControl = serverControl;
     }
 
     public Connection getConnection() throws SQLException {
@@ -207,18 +216,20 @@ public class SqLiteService implements BaseService {
     }
 
     @Override
-    public boolean pushLocalWhitelistToDatabase(ArrayList<WhitelistedPlayer> whitelistedPlayers) {
+    public boolean pushLocalWhitelistToDatabase() {
         // TODO: Start job on thread to avoid lag?
         // Keep track of records.
         int records = 0;
         boolean success;
+        long startTime = System.currentTimeMillis();
+
+        ArrayList<WhitelistedPlayer> whitelistedPlayers = WhitelistedPlayersFileReader.getWhitelistedPlayers(this.serverFilePath);
 
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
             // Connect to database.
             conn = getConnection();
-            long startTime = System.currentTimeMillis();
             // Loop through local whitelist and insert into database.
             for (WhitelistedPlayer player : whitelistedPlayers) {
 
@@ -248,7 +259,7 @@ public class SqLiteService implements BaseService {
     }
 
     @Override
-    public boolean pushLocalOpsToDatabase(ArrayList<OppedPlayer> oppedPlayers) {
+    public boolean pushLocalOpsToDatabase() {
         if (!this.syncingOpList) {
             Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return false;
@@ -258,13 +269,15 @@ public class SqLiteService implements BaseService {
         // Keep track of records.
         int records = 0;
         boolean success;
+        long startTime = System.currentTimeMillis();
+
+        ArrayList<OppedPlayer> oppedPlayers = OppedPlayersFileReader.getOppedPlayers(this.serverFilePath);
 
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
             // Connect to database.
             conn = getConnection();
-            long startTime = System.currentTimeMillis();
             // Loop through local opped players and insert into database.
             for (OppedPlayer player : oppedPlayers) {
 
@@ -293,16 +306,18 @@ public class SqLiteService implements BaseService {
     }
 
     @Override
-    public boolean pullDatabaseWhitelistToLocal(ArrayList<WhitelistedPlayer> localWhitelistedPlayers, IOnUserWhitelistAdd onUserAdd, IOnUserWhitelistRemove onUserRemove) {
+    public boolean pullDatabaseWhitelistToLocal() {
         int records = 0;
         boolean success;
+        long startTime = System.currentTimeMillis();
+
+        ArrayList<WhitelistedPlayer> localWhitelistedPlayers = WhitelistedPlayersFileReader.getWhitelistedPlayers(this.serverFilePath);
 
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
             conn = getConnection();
-            long startTime = System.currentTimeMillis();
 
             String sql = "SELECT name, uuid, whitelisted FROM whitelist;";
             stmt = conn.prepareStatement(sql);
@@ -316,7 +331,7 @@ public class SqLiteService implements BaseService {
                 if (whitelisted == 1) {
                     if (localWhitelistedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid.toString()))) {
                         try {
-                            onUserAdd.call(uuid, name);
+                            this.serverControl.addWhitelistPlayer(uuid, name);
                             Log.debug(LogMessages.AddedUserToWhitelist(name));
                             records++;
                         } catch (NullPointerException e) {
@@ -325,7 +340,7 @@ public class SqLiteService implements BaseService {
                     }
                 } else {
                     if (localWhitelistedPlayers.stream().anyMatch(o -> o.getUuid().equals(uuid.toString()))) {
-                        onUserRemove.call(uuid, name);
+                        this.serverControl.removeWhitelistPlayer(uuid, name);
                         Log.debug(LogMessages.RemovedUserToWhitelist(name));
                         records++;
                     }
@@ -347,7 +362,7 @@ public class SqLiteService implements BaseService {
     }
 
     @Override
-    public boolean pullDatabaseOpsToLocal(ArrayList<OppedPlayer> localOppedPlayers, IOnUserOpAdd onUserAdd, IOnUserOpRemove onUserRemove) {
+    public boolean pullDatabaseOpsToLocal() {
 
         // TODO: Compare level and bypassesPlayerLimit, sync if needed
         if (!this.syncingOpList) {
@@ -358,13 +373,16 @@ public class SqLiteService implements BaseService {
         int records = 0;
         boolean success;
 
+        long startTime = System.currentTimeMillis();
+
+        ArrayList<OppedPlayer> localOppedPlayers = OppedPlayersFileReader.getOppedPlayers(this.serverFilePath);
+
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
             conn = getConnection();
-            long startTime = System.currentTimeMillis();
 
             String sql = "SELECT uuid, name, isOp FROM op;";
             stmt = conn.prepareStatement(sql);
@@ -378,7 +396,7 @@ public class SqLiteService implements BaseService {
                 if (opped == 1) {
                     if (localOppedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid.toString()))) {
                         try {
-                            onUserAdd.call(uuid, name);
+                            this.serverControl.addOpPlayer(uuid, name);
                             Log.debug(LogMessages.OppedUser(name));
                             records++;
                         } catch (NullPointerException e) {
@@ -387,7 +405,7 @@ public class SqLiteService implements BaseService {
                     }
                 } else {
                     if (localOppedPlayers.stream().anyMatch(o -> o.getUuid().equals(uuid.toString()))) {
-                        onUserRemove.call(uuid, name);
+                        this.serverControl.removeOpPlayer(uuid, name);
                         Log.debug(LogMessages.DeopUser(name));
                         records++;
                     }

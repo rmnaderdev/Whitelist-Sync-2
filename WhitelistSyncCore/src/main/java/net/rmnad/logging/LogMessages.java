@@ -18,6 +18,9 @@ public class LogMessages {
     public static String OP_SYNC_ENABLED = "Opped Player Sync is enabled";
     public static String OP_SYNC_DISABLED = "Opped Player Sync is disabled";
 
+    public static String WARN_WhitelistSyncWebConnectException = "Failed to communicate with Whitelist Sync Web API. " +
+            "There may be an issue with the connection to the Whitelist Sync servers. Syncing will restore when the connection is restored.";
+
     public static String ALERT_OP_SYNC_DISABLED = "Op list syncing is currently disabled in your config. Please enable it and restart the server to use this feature.";
 
     public static void ShowModStartupHeaderMessage() {

@@ -1,11 +1,8 @@
 package net.rmnad.services;
 
-import net.rmnad.callbacks.IOnUserOpAdd;
-import net.rmnad.callbacks.IOnUserOpRemove;
-import net.rmnad.callbacks.IOnUserWhitelistAdd;
+import net.rmnad.callbacks.*;
 import net.rmnad.models.OppedPlayer;
 import net.rmnad.models.WhitelistedPlayer;
-import net.rmnad.callbacks.IOnUserWhitelistRemove;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -22,11 +19,11 @@ public interface BaseService {
     public ArrayList<OppedPlayer> getOppedPlayersFromDatabase();
 
     // Syncing functions
-    public boolean pushLocalWhitelistToDatabase(ArrayList<WhitelistedPlayer> whitelistedPlayers);
-    public boolean pushLocalOpsToDatabase(ArrayList<OppedPlayer> oppedPlayers);
+    public boolean pushLocalWhitelistToDatabase();
+    public boolean pushLocalOpsToDatabase();
 
-    public boolean pullDatabaseWhitelistToLocal(ArrayList<WhitelistedPlayer> localWhitelistedPlayers, IOnUserWhitelistAdd onUserAdd, IOnUserWhitelistRemove onUserRemove);
-    public boolean pullDatabaseOpsToLocal(ArrayList<OppedPlayer> localOppedPlayers, IOnUserOpAdd onUserAdd, IOnUserOpRemove onUserRemove);
+    public boolean pullDatabaseWhitelistToLocal();
+    public boolean pullDatabaseOpsToLocal();
 
 
     // Addition functions
