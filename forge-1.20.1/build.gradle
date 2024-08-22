@@ -45,7 +45,7 @@ dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
     // Core library dependency
-    shade project(':WhitelistSyncCore')
+    shade project(path: ':WhitelistSyncCore', configuration: 'shadow')
     minecraftLibrary project(':WhitelistSyncCore')
 
     // Used for development. These are added by the user later.
@@ -74,10 +74,6 @@ tasks.named('processResources', ProcessResources).configure {
 }
 
 shadowJar {
-    dependencies {
-        exclude(dependency('org.jetbrains:annotations:'))
-    }
-
     archiveBaseName = "WhitelistSync"
     archiveClassifier = "forge-${minecraft_version}"
     destinationDirectory = file '../target'

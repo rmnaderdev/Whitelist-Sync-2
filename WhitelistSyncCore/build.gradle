@@ -15,33 +15,41 @@ repositories {
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
 configurations {
+    shade
+    implementation.extendsFrom shade
     cleanedAnnotations
     implementation.exclude group: 'org.jetbrains' , module:'annotations'
 }
 
 dependencies {
     compileOnly "com.google.code.gson:gson:2.8.9"
-    implementation ('com.squareup.okhttp3:okhttp:[4.12.0,5.0)')
-    implementation ('io.socket:socket.io-client:2.1.1')
+    shade 'com.squareup.okhttp3:okhttp:[4.12.0,5.0)'
+    shade 'io.socket:socket.io-client:2.1.1'
 }
 
 jar {
     archiveClassifier = 'unshaded'
 }
 
+var shadeRelocateGroup = 'net.rmnad.shade'
 
 shadowJar {
     dependencies {
-        include(dependency('com.squareup.okhttp3:okhttp:'))
-        include(dependency('io.socket:socket.io-client:'))
+        exclude(dependency('org.jetbrains:annotations'))
     }
-    relocate('com.squareup.okhttp3', 'net.rmnad.com.squareup.okhttp3')
-    relocate('io.socket', 'net.rmnad.io.socket')
+    relocate('okhttp3', "${shadeRelocateGroup}.okhttp3")
+    relocate('io.socket', "${shadeRelocateGroup}.io.socket")
+    relocate('okio', "${shadeRelocateGroup}.okio")
+    relocate('org.json', "${shadeRelocateGroup}.org.json")
+    relocate('kotlin', "${shadeRelocateGroup}.kotlin")
 
-    destinationDirectory = file '../target'
+    archiveBaseName = "WhitelistSyncCore"
     archiveClassifier = ''
+    destinationDirectory = file '../target'
+    configurations = [project.configurations.shade]
 }
 
 artifacts {
     archives shadowJar
+    shadow shadowJar
 }

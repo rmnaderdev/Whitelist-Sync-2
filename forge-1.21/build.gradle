@@ -47,7 +47,7 @@ dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
     // Core library dependency
-    shade project(':WhitelistSyncCore')
+    shade project(path: ':WhitelistSyncCore', configuration: 'shadow')
 
     // Used for development. These are added by the user later.
     // Need "minecraftLibrary" so the libraries are used in the dev environment. Without them, the JDBC drivers won't be loaded.
