@@ -62,6 +62,7 @@ public class WhitelistSocketThread extends Thread {
 
             HashMap<String, String> auth = new HashMap<>();
             auth.put("token", this.service.getApiKey());
+            auth.put("uuid", this.service.serverUUID.toString());
 
             Dispatcher dispatcher = new Dispatcher();
             OkHttpClient.Builder builder = new OkHttpClient.Builder()
@@ -107,6 +108,14 @@ public class WhitelistSocketThread extends Thread {
             // Define events
             this.socket.on(Socket.EVENT_CONNECT, args -> {
                 Log.info("Web-Socket: Connected to server");
+
+                // Get latest whitelist and op list on connect
+                this.service.pullDatabaseWhitelistToLocal();
+
+                if (this.service.syncingOpList) {
+                    this.service.pullDatabaseOpsToLocal();
+                }
+                Log.info("Database sync complete");
             });
 
             this.socket.on(Socket.EVENT_DISCONNECT, args -> {

@@ -30,6 +30,7 @@ public class WebService implements BaseService {
     private final String apiKey;
     public final boolean syncingOpList;
     public final IServerControl serverControl;
+    public final UUID serverUUID = UUID.randomUUID();
 
     public WebService(
             String serverFilePath,
@@ -100,6 +101,7 @@ public class WebService implements BaseService {
                     .url(getApiHost() + "/api/v1/authenticate")
                     .addHeader("content-type", "application/json")
                     .addHeader("Authorization", getApiKey())
+                    .addHeader("server-uuid", serverUUID.toString())
                     .build();
 
             try (Response response = client.newCall(request).execute()) {
@@ -123,6 +125,7 @@ public class WebService implements BaseService {
                     .url(getApiHost() + "/api/v1/whitelist")
                     .addHeader("content-type", "application/json")
                     .addHeader("Authorization", getApiKey())
+                    .addHeader("server-uuid", serverUUID.toString())
                     .build();
 
             try (Response response = client.newCall(request).execute()) {
@@ -155,6 +158,7 @@ public class WebService implements BaseService {
                     .url(getApiHost() + "/api/v1/op")
                     .addHeader("content-type", "application/json")
                     .addHeader("Authorization", getApiKey())
+                    .addHeader("server-uuid", serverUUID.toString())
                     .build();
 
             try (Response response = client.newCall(request).execute()) {
@@ -191,14 +195,6 @@ public class WebService implements BaseService {
 
         if (isAuthenticated()) {
             Log.info("Connected to Web API successfully!");
-
-            this.pullDatabaseWhitelistToLocal();
-
-            if (this.syncingOpList) {
-                this.pullDatabaseOpsToLocal();
-            }
-            Log.info("Database synced successfully!");
-
             return true;
         } else {
             Log.error("Failed to authenticate with Web API. If you have not setup an API Key, you can create one on the website at "
@@ -275,6 +271,7 @@ public class WebService implements BaseService {
                     .url(getApiHost() + "/api/v1/whitelist/push")
                     .addHeader("content-type", "application/json")
                     .addHeader("Authorization", getApiKey())
+                    .addHeader("server-uuid", serverUUID.toString())
                     .post(body)
                     .build();
 
@@ -327,6 +324,7 @@ public class WebService implements BaseService {
                     .url(getApiHost() + "/api/v1/op/push")
                     .addHeader("content-type", "application/json")
                     .addHeader("Authorization", getApiKey())
+                    .addHeader("server-uuid", serverUUID.toString())
                     .post(body)
                     .build();
 
@@ -447,6 +445,7 @@ public class WebService implements BaseService {
                     .url(getApiHost() + "/api/v1/whitelist")
                     .addHeader("content-type", "application/json")
                     .addHeader("Authorization", getApiKey())
+                    .addHeader("server-uuid", serverUUID.toString())
                     .post(body)
                     .build();
 
@@ -492,6 +491,7 @@ public class WebService implements BaseService {
                     .url(getApiHost() + "/api/v1/op")
                     .addHeader("content-type", "application/json")
                     .addHeader("Authorization", getApiKey())
+                    .addHeader("server-uuid", serverUUID.toString())
                     .post(body)
                     .build();
 
@@ -526,6 +526,7 @@ public class WebService implements BaseService {
                     .url(getApiHost() + "/api/v1/whitelist/" + uuid.toString())
                     .addHeader("content-type", "application/json")
                     .addHeader("Authorization", getApiKey())
+                    .addHeader("server-uuid", serverUUID.toString())
                     .delete()
                     .build();
 
@@ -565,6 +566,7 @@ public class WebService implements BaseService {
                     .url(getApiHost() + "/api/v1/op/" + uuid.toString())
                     .addHeader("content-type", "application/json")
                     .addHeader("Authorization", getApiKey())
+                    .addHeader("server-uuid", serverUUID.toString())
                     .delete()
                     .build();
 
