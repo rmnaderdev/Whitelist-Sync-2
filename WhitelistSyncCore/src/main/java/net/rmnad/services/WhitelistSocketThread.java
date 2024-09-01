@@ -110,18 +110,20 @@ public class WhitelistSocketThread extends Thread {
                     return;
                 }
 
-                boolean isWhitelisted = data.getWhitelisted();
-                String name = data.getName();
-                UUID uuid = UUID.fromString(data.getUuid());
+                for (WhitelistEntry entry : data) {
+                    boolean isWhitelisted = entry.getWhitelisted();
+                    String name = entry.getName();
+                    UUID uuid = UUID.fromString(entry.getUuid());
 
-                if (isWhitelisted) {
-                    Log.info("Web-Socket: Player whitelisted: " + name + " (" + uuid + ")");
-                    this.serverControl.addWhitelistPlayer(uuid, name);
-                } else {
-                    Log.info("Web-Socket: Player removed from whitelist: " + name + " (" + uuid + ")");
-                    this.serverControl.removeWhitelistPlayer(uuid, name);
+                    if (isWhitelisted) {
+                        Log.info("Web-Socket: Player whitelisted: " + name + " (" + uuid + ")");
+                        this.serverControl.addWhitelistPlayer(uuid, name);
+                    } else {
+                        Log.info("Web-Socket: Player removed from whitelist: " + name + " (" + uuid + ")");
+                        this.serverControl.removeWhitelistPlayer(uuid, name);
+                    }
                 }
-            }, WhitelistEntry.class, String.class);
+            }, WhitelistEntry[].class, String.class);
 
             if (this.service.syncingOpList) {
                 this.hubConnection.on("OpUpdated", (data, serverUuidStr) -> {
@@ -133,18 +135,21 @@ public class WhitelistSocketThread extends Thread {
                         return;
                     }
 
-                    boolean isOpped = data.getOpped();
-                    String name = data.getName();
-                    UUID uuid = UUID.fromString(data.getUuid());
+                    for (OpEntry player : data) {
+                        boolean isOpped = player.getOpped();
+                        String name = player.getName();
+                        UUID uuid = UUID.fromString(player.getUuid());
 
-                    if (isOpped) {
-                        Log.info("Web-Socket: Player opped: " + name + " (" + uuid + ")");
-                        this.serverControl.addOpPlayer(uuid, name);
-                    } else {
-                        Log.info("Web-Socket: Player deopped: " + name + " (" + uuid + ")");
-                        this.serverControl.removeOpPlayer(uuid, name);
+                        if (isOpped) {
+                            Log.info("Web-Socket: Player opped: " + name + " (" + uuid + ")");
+                            this.serverControl.addOpPlayer(uuid, name);
+                        } else {
+                            Log.info("Web-Socket: Player deopped: " + name + " (" + uuid + ")");
+                            this.serverControl.removeOpPlayer(uuid, name);
+                        }
                     }
-                }, OpEntry.class, String.class);
+
+                }, OpEntry[].class, String.class);
             }
 
             // Handle reconnection
