@@ -6,25 +6,25 @@ import java.util.Objects;
 
 public class OpEntry {
 
-    private String _id;
-    private String accountId;
+    private int id;
+    private int accountId;
     private String uuid;
     private String name;
     private boolean isOpped;
 
-    public String get_id() {
-        return _id;
+    public int getId() {
+        return id;
     }
 
-    public void set_id(String _id) {
-        this._id = _id;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public String getAccountId() {
+    public int getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(String accountId) {
+    public void setAccountId(int accountId) {
         this.accountId = accountId;
     }
 
@@ -55,7 +55,7 @@ public class OpEntry {
     @Override
     public String toString() {
         return "OpEntry{" +
-                "_id='" + _id + '\'' +
+                "id='" + id + '\'' +
                 ", accountId='" + accountId + '\'' +
                 ", uuid='" + uuid + '\'' +
                 ", name='" + name + '\'' +
@@ -67,12 +67,12 @@ public class OpEntry {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OpEntry opEntry = (OpEntry) o;
-        return Objects.equals(_id, opEntry._id);
+        return Objects.equals(id, opEntry.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(_id);
+        return Objects.hashCode(id);
     }
 
     public OppedPlayer toOppedPlayer() {

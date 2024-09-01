@@ -46,6 +46,8 @@ shadowJar {
     relocate('org.json', "${shadeRelocateGroup}.org.json")
     relocate('kotlin', "${shadeRelocateGroup}.kotlin")
     relocate('com.google.gson', "${shadeRelocateGroup}.com.google.gson")
+    relocate('io.reactivex', "${shadeRelocateGroup}.io.reactivex")
+    relocate('org.reactivestreams', "${shadeRelocateGroup}.org.reactivestreams")
 
     archiveBaseName = "WhitelistSyncCore"
     archiveClassifier = ''

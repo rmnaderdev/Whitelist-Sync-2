@@ -1,20 +1,13 @@
 package net.rmnad.models.api;
 
-//export interface IWhitelistEntry {
-//    _id: ObjectId;
-//    accountId: ObjectId;
-//    uuid: string;
-//    name: string;
-//}
-
 import net.rmnad.models.WhitelistedPlayer;
 
 import java.util.Objects;
 
 public class WhitelistEntry {
 
-    private String _id;
-    private String accountId;
+    private int id;
+    private int accountId;
     private String uuid;
     private String name;
     private boolean isWhitelisted;
@@ -22,26 +15,26 @@ public class WhitelistEntry {
     public WhitelistEntry() {
     }
 
-    public WhitelistEntry(String _id, String accountId, String uuid, String name) {
-        this._id = _id;
+    public WhitelistEntry(int id, int accountId, String uuid, String name) {
+        this.id = id;
         this.accountId = accountId;
         this.uuid = uuid;
         this.name = name;
     }
 
-    public String get_id() {
-        return _id;
+    public int getId() {
+        return id;
     }
 
-    public void set_id(String _id) {
-        this._id = _id;
+    public void setId(int Id) {
+        this.id = id;
     }
 
-    public String getAccountId() {
+    public int getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(String accountId) {
+    public void setAccountId(int accountId) {
         this.accountId = accountId;
     }
 
@@ -72,7 +65,7 @@ public class WhitelistEntry {
     @Override
     public String toString() {
         return "WhitelistEntry{" +
-                "_id='" + _id + '\'' +
+                "id='" + id + '\'' +
                 ", accountId='" + accountId + '\'' +
                 ", uuid='" + uuid + '\'' +
                 ", name='" + name + '\'' +
@@ -85,12 +78,12 @@ public class WhitelistEntry {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         WhitelistEntry that = (WhitelistEntry) o;
-        return Objects.equals(_id, that._id);
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(_id);
+        return Objects.hashCode(id);
     }
 
     public WhitelistedPlayer toWhitelistedPlayer() {
