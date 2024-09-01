@@ -1,17 +1,17 @@
 package net.rmnad.services;
 
-import io.socket.client.IO;
-import io.socket.client.Socket;
+import com.google.gson.internal.LinkedTreeMap;
+import com.microsoft.signalr.HttpHubConnectionBuilder;
+import com.microsoft.signalr.HubConnection;
+import com.microsoft.signalr.HubConnectionBuilder;
+import io.reactivex.rxjava3.core.Single;
 import net.rmnad.Log;
 import net.rmnad.callbacks.*;
 import net.rmnad.logging.LogMessages;
 import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import javax.net.ssl.*;
-import java.net.URI;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
@@ -27,7 +27,7 @@ public class WhitelistSocketThread extends Thread {
 
     private final IServerControl serverControl;
 
-    private Socket socket;
+    private HubConnection hubConnection;
     private final CountDownLatch latch = new CountDownLatch(1);
 
     public WhitelistSocketThread(
@@ -60,14 +60,11 @@ public class WhitelistSocketThread extends Thread {
                 return;
             }
 
-            HashMap<String, String> auth = new HashMap<>();
-            auth.put("token", this.service.getApiKey());
-            auth.put("uuid", this.service.serverUUID.toString());
-
             Dispatcher dispatcher = new Dispatcher();
-            OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                    .dispatcher(dispatcher)
-                    .readTimeout(1, TimeUnit.MINUTES); // important for HTTP long-polling
+
+            HttpHubConnectionBuilder hubConnectionBuilder = HubConnectionBuilder.create(this.service.getApiHost() + "/hubs/whitelistsyncmodhub")
+                    .withHeader("X-Api-Key", this.service.getApiKey())
+                    .withHeader("server-uuid", this.service.serverUUID.toString());
 
             if (this.service.getApiHost().startsWith("https://localhost")) {
                 X509TrustManager trustManager = new X509TrustManager() {
@@ -89,47 +86,61 @@ public class WhitelistSocketThread extends Thread {
                 SSLContext sslContext = SSLContext.getInstance("TLS");
                 sslContext.init(null, new TrustManager[] { trustManager }, null);
 
-
-                builder.hostnameVerifier((hostname, session) -> true).sslSocketFactory(sslContext.getSocketFactory(), trustManager);
+                hubConnectionBuilder = hubConnectionBuilder.setHttpClientBuilderCallback(httpClientBuilder -> httpClientBuilder
+                        .dispatcher(dispatcher)
+                        .readTimeout(1, TimeUnit.MINUTES)
+                        .sslSocketFactory(sslContext.getSocketFactory(), trustManager)
+                        .hostnameVerifier((hostname, session) -> true));
+            } else {
+                hubConnectionBuilder = hubConnectionBuilder.setHttpClientBuilderCallback(httpClientBuilder -> httpClientBuilder
+                        .dispatcher(dispatcher)
+                        .readTimeout(1, TimeUnit.MINUTES));
             }
 
-            URI uri = URI.create(this.service.getApiHost());
-            IO.Options options = IO.Options.builder()
-                    .setAuth(auth)
+            this.hubConnection = hubConnectionBuilder
                     .build();
 
-            OkHttpClient okHttpClient = builder.build();
+            this.hubConnection.onClosed(error -> {
+                Log.info("Web-Socket: Disconnected from server. Retrying in 5 seconds...");
 
-            options.callFactory = okHttpClient;
-            options.webSocketFactory = okHttpClient;
-
-            this.socket = IO.socket(uri, options);
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException ignored) {}
+                // Reconnect
+                this.hubConnection.start().blockingAwait();
+            });
 
             // Define events
-            this.socket.on(Socket.EVENT_CONNECT, args -> {
-                Log.info("Web-Socket: Connected to server");
+//            this.hubConnection.on("", args -> {
+//                Log.info("Web-Socket: Connected to server");
+//
+//                // Get latest whitelist and op list on connect
+//                this.service.pullDatabaseWhitelistToLocal();
+//
+//                if (this.service.syncingOpList) {
+//                    this.service.pullDatabaseOpsToLocal();
+//                }
+//                Log.info("Database sync complete");
+//            });
 
-                // Get latest whitelist and op list on connect
-                this.service.pullDatabaseWhitelistToLocal();
+//            this.socket.on(Socket.EVENT_DISCONNECT, args -> {
+//                Log.info("Web-Socket: Disconnected from server");
+//            });
+//
+//            this.socket.on(Socket.EVENT_CONNECT_ERROR, args -> {
+//                Log.error("Web-Socket: Connection error");
+//            });
 
-                if (this.service.syncingOpList) {
-                    this.service.pullDatabaseOpsToLocal();
+            this.hubConnection.on("WhitelistUpdated", (data, serverUuid) -> {
+
+                // Ignore if the server UUID is the same as this server
+                if (serverUuid != null && serverUuid.equals(this.service.serverUUID.toString())) {
+                    return;
                 }
-                Log.info("Database sync complete");
-            });
 
-            this.socket.on(Socket.EVENT_DISCONNECT, args -> {
-                Log.info("Web-Socket: Disconnected from server");
-            });
-
-            this.socket.on(Socket.EVENT_CONNECT_ERROR, args -> {
-                Log.error("Web-Socket: Connection error");
-            });
-
-            this.socket.on("whitelist-update", args -> {
                 try {
-                    JSONObject data = (JSONObject) args[0];
-                    boolean isWhitelisted = data.getBoolean("isWhitelisted");
+                    LinkedTreeMap whitelist = data;
+                    boolean isWhitelisted = ((boolean) whitelist.get("isWhitelisted"));
                     String name = data.getString("name");
                     UUID uuid = UUID.fromString(data.getString("uuid"));
 
@@ -143,45 +154,46 @@ public class WhitelistSocketThread extends Thread {
                 } catch (JSONException e) {
                     Log.error("Web-Socket: Error parsing JSON data: " + e.getMessage());
                 }
-            });
+            }, LinkedTreeMap.class, String.class);
 
             if (this.service.syncingOpList) {
-                this.socket.on("op-update", args -> {
-                    try {
-                        JSONObject data = (JSONObject) args[0];
-                        boolean isOpped = data.getBoolean("isOpped");
-                        String name = data.getString("name");
-                        UUID uuid = UUID.fromString(data.getString("uuid"));
-
-                        if (isOpped) {
-                            Log.info("Web-Socket: Player opped: " + name + " (" + uuid + ")");
-                            this.serverControl.addOpPlayer(uuid, name);
-                        } else {
-                            Log.info("Web-Socket: Player deopped: " + name + " (" + uuid + ")");
-                            this.serverControl.removeOpPlayer(uuid, name);
-                        }
-                    } catch (JSONException e) {
-                        Log.error("Web-Socket: Error parsing JSON data: " + e.getMessage());
-                    }
-                });
+                this.hubConnection.on("OpUpdated", (data, serverUuid) -> {
+//                    try {
+//                        JSONObject data = (JSONObject) args[0];
+//                        boolean isOpped = data.getBoolean("isOpped");
+//                        String name = data.getString("name");
+//                        UUID uuid = UUID.fromString(data.getString("uuid"));
+//
+//                        if (isOpped) {
+//                            Log.info("Web-Socket: Player opped: " + name + " (" + uuid + ")");
+//                            this.serverControl.addOpPlayer(uuid, name);
+//                        } else {
+//                            Log.info("Web-Socket: Player deopped: " + name + " (" + uuid + ")");
+//                            this.serverControl.removeOpPlayer(uuid, name);
+//                        }
+//                    } catch (JSONException e) {
+//                        Log.error("Web-Socket: Error parsing JSON data: " + e.getMessage());
+//                    }
+                    Log.info("Web-Socket: Player opped: " + data.toString());
+                }, Object.class, String.class);
             }
 
-            this.socket.connect();
+            hubConnection.start().blockingAwait();
 
-            try {
-                // Keep the thread alive
-                latch.await();
-            } catch (InterruptedException ignored) {
-                Log.debug("WhitelistSocketThread interrupted. Exiting.");
-            }
+//            try {
+//                // Keep the thread alive
+//                latch.await();
+//            } catch (InterruptedException ignored) {
+//                Log.debug("WhitelistSocketThread interrupted. Exiting.");
+//            }
+//
+//            if (this.socket != null && this.socket.connected()) {
+//                this.latch.countDown();
+//                this.socket.disconnect();
+//                this.socket.close();
+//            }
 
-            if (this.socket != null && this.socket.connected()) {
-                this.latch.countDown();
-                this.socket.disconnect();
-                this.socket.close();
-            }
-
-            dispatcher.executorService().shutdown();
+            //dispatcher.executorService().shutdown();
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
             throw new RuntimeException(e);
         }
