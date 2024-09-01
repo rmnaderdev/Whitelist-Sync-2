@@ -98,9 +98,9 @@ public class WebService implements BaseService {
             OkHttpClient client = getClient();
 
             Request request = new Request.Builder()
-                    .url(getApiHost() + "/api/v1/authenticate")
+                    .url(getApiHost() + "/api/authentication")
                     .addHeader("content-type", "application/json")
-                    .addHeader("Authorization", getApiKey())
+                    .addHeader("X-API-KEY", getApiKey())
                     .addHeader("server-uuid", serverUUID.toString())
                     .build();
 
@@ -122,9 +122,9 @@ public class WebService implements BaseService {
         try {
             OkHttpClient client = getClient();
             Request request = new Request.Builder()
-                    .url(getApiHost() + "/api/v1/whitelist")
+                    .url(getApiHost() + "/api/whitelist")
                     .addHeader("content-type", "application/json")
-                    .addHeader("Authorization", getApiKey())
+                    .addHeader("X-API-KEY", getApiKey())
                     .addHeader("server-uuid", serverUUID.toString())
                     .build();
 
@@ -155,9 +155,9 @@ public class WebService implements BaseService {
         try {
             OkHttpClient client = getClient();
             Request request = new Request.Builder()
-                    .url(getApiHost() + "/api/v1/op")
+                    .url(getApiHost() + "/api/op")
                     .addHeader("content-type", "application/json")
-                    .addHeader("Authorization", getApiKey())
+                    .addHeader("X-API-KEY", getApiKey())
                     .addHeader("server-uuid", serverUUID.toString())
                     .build();
 
@@ -268,9 +268,9 @@ public class WebService implements BaseService {
             RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
 
             Request request = new Request.Builder()
-                    .url(getApiHost() + "/api/v1/whitelist/push")
+                    .url(getApiHost() + "/api/whitelist/push")
                     .addHeader("content-type", "application/json")
-                    .addHeader("Authorization", getApiKey())
+                    .addHeader("X-API-KEY", getApiKey())
                     .addHeader("server-uuid", serverUUID.toString())
                     .post(body)
                     .build();
@@ -321,9 +321,9 @@ public class WebService implements BaseService {
             RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
 
             Request request = new Request.Builder()
-                    .url(getApiHost() + "/api/v1/op/push")
+                    .url(getApiHost() + "/api/op/push")
                     .addHeader("content-type", "application/json")
-                    .addHeader("Authorization", getApiKey())
+                    .addHeader("X-API-KEY", getApiKey())
                     .addHeader("server-uuid", serverUUID.toString())
                     .post(body)
                     .build();
@@ -442,9 +442,9 @@ public class WebService implements BaseService {
 
             OkHttpClient client = getClient();
             Request request = new Request.Builder()
-                    .url(getApiHost() + "/api/v1/whitelist")
+                    .url(getApiHost() + "/api/whitelist")
                     .addHeader("content-type", "application/json")
-                    .addHeader("Authorization", getApiKey())
+                    .addHeader("X-API-KEY", getApiKey())
                     .addHeader("server-uuid", serverUUID.toString())
                     .post(body)
                     .build();
@@ -461,9 +461,9 @@ public class WebService implements BaseService {
                 }
             }
 
-        }catch (ConnectException e) {
+        } catch (ConnectException e) {
             Log.warning(LogMessages.WARN_WhitelistSyncWebConnectException);
-        }catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
             Log.error("Error adding " + name + " to whitelist database!", e);
         }
 
@@ -488,9 +488,9 @@ public class WebService implements BaseService {
             RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
 
             Request request = new Request.Builder()
-                    .url(getApiHost() + "/api/v1/op")
+                    .url(getApiHost() + "/api/op")
                     .addHeader("content-type", "application/json")
-                    .addHeader("Authorization", getApiKey())
+                    .addHeader("X-API-KEY", getApiKey())
                     .addHeader("server-uuid", serverUUID.toString())
                     .post(body)
                     .build();
@@ -523,9 +523,9 @@ public class WebService implements BaseService {
         try {
             OkHttpClient client = getClient();
             Request request = new Request.Builder()
-                    .url(getApiHost() + "/api/v1/whitelist/" + uuid.toString())
+                    .url(getApiHost() + "/api/whitelist/" + uuid.toString())
                     .addHeader("content-type", "application/json")
-                    .addHeader("Authorization", getApiKey())
+                    .addHeader("X-API-KEY", getApiKey())
                     .addHeader("server-uuid", serverUUID.toString())
                     .delete()
                     .build();
@@ -563,9 +563,9 @@ public class WebService implements BaseService {
         try {
             OkHttpClient client = getClient();
             Request request = new Request.Builder()
-                    .url(getApiHost() + "/api/v1/op/" + uuid.toString())
+                    .url(getApiHost() + "/api/op/" + uuid.toString())
                     .addHeader("content-type", "application/json")
-                    .addHeader("Authorization", getApiKey())
+                    .addHeader("X-API-KEY", getApiKey())
                     .addHeader("server-uuid", serverUUID.toString())
                     .delete()
                     .build();
@@ -581,10 +581,9 @@ public class WebService implements BaseService {
                     Log.error("Error opping " + name + " in database! Response Code: " + response.code());
                 }
             }
+        } catch (ConnectException e) {
+            Log.warning(LogMessages.WARN_WhitelistSyncWebConnectException);
         }
-//        catch (HttpHostConnectException e) {
-//            Log.warning("Failed to connect to Whitelist Sync Web API.");
-//        }
         catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
             Log.error("Error opping " + name + " in database!", e);
         }
