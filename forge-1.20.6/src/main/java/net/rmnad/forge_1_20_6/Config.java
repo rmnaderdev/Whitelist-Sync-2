@@ -100,7 +100,7 @@ public class Config {
             ).push(CATEGORY_WEB);
             WEB_API_HOST = builder.comment("Host for the web service. This should be the URL of the web service.")
                     .worldRestart()
-                    .define("webApiHost", "https://staging.d1aqw7webnsilt.amplifyapp.com/");
+                    .define("webApiHost", "https://whitelistsyncweb.rmnad.net/");
             WEB_API_KEY = builder.comment("API Key for the web service. You can generate one by logging into the web service and adding a new API key to your account.")
                     .worldRestart()
                     .define("webApiKey", "");
