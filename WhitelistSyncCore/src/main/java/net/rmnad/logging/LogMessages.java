@@ -51,6 +51,17 @@ public class LogMessages {
     }
     public static String ERROR_PushLocalOpsToDatabase = "Failed to update database with local records.";
 
+    // PushLocalBannedPlayersToDatabase
+    public static String SuccessPushLocalBannedPlayersToDatabase(long timeTaken, int records) {
+        return String.format("Banned players table updated | Took %sms | Wrote %s records.", timeTaken, records);
+    }
+    public static String ERROR_PushLocalBannedPlayersToDatabase = "Failed to update database with local banned players.";
+
+    // PushLocalBannedIpsToDatabase
+    public static String SuccessPushLocalBannedIpsToDatabase(long timeTaken, int records) {
+        return String.format("Banned ips table updated | Took %sms | Wrote %s records.", timeTaken, records);
+    }
+    public static String ERROR_PushLocalBannedIpsToDatabase = "Failed to update database with local banned ips.";
 
     // PullDatabaseWhitelistToLocal
     public static String SuccessPullDatabaseWhitelistToLocal(long timeTaken, int records) {
@@ -63,6 +74,16 @@ public class LogMessages {
         return String.format("Copied op database to local | Took %sms | Wrote %s records.", timeTaken, records);
     }
 
+    // PullDatabaseBannedPlayersToLocal
+    public static String SuccessPullDatabaseBannedPlayersToLocal(long timeTaken, int records) {
+        return String.format("Copied banned players database to local | Took %sms | Wrote %s records.", timeTaken, records);
+    }
+
+    // PullDatabaseBannedIpsToLocal
+    public static String SuccessPullDatabaseBannedIpsToLocal(long timeTaken, int records) {
+        return String.format("Copied banned ips database to local | Took %sms | Wrote %s records.", timeTaken, records);
+    }
+
     // GetWhitelistedPlayersFromDatabase
     public static String SuccessGetWhitelistedPlayersFromDatabase(long timeTaken, int records) {
         return String.format("Retrieved whitelist from database | Took %sms | Found %s records.", timeTaken, records);
@@ -71,6 +92,16 @@ public class LogMessages {
     // GetOppedPlayersFromDatabase
     public static String SuccessGetOppedPlayersFromDatabase(long timeTaken, int records) {
         return String.format("Retrieved op list from database | Took %sms | Found %s records.", timeTaken, records);
+    }
+
+    // GetBannedPlayersFromDatabase
+    public static String SuccessGetBannedPlayersFromDatabase(long timeTaken, int records) {
+        return String.format("Retrieved banned players list from database | Took %sms | Found %s records.", timeTaken, records);
+    }
+
+    // GetBannedIpsFromDatabase
+    public static String SuccessGetBannedIpsFromDatabase(long timeTaken, int records) {
+        return String.format("Retrieved banned ips list from database | Took %sms | Found %s records.", timeTaken, records);
     }
 
     // Added user to whitelist
@@ -91,5 +122,25 @@ public class LogMessages {
     // Removed user to op list
     public static String DeopUser(String name) {
         return String.format("Deopped %s.", name);
+    }
+
+    // Added user to banned players
+    public static String BannedPlayer(String name) {
+        return String.format("Banned player %s.", name);
+    }
+
+    // Removed user to banned players
+    public static String UnbannedPlayer(String name) {
+        return String.format("Unbanned player %s.", name);
+    }
+
+    // Added ip to banned ips
+    public static String BannedIp(String ip) {
+        return String.format("Banned ip %s.", ip);
+    }
+
+    // Removed ip to banned ips
+    public static String UnbannedIp(String ip) {
+        return String.format("Unbanned ip %s.", ip);
     }
 }

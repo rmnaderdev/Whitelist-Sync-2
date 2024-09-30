@@ -76,6 +76,6 @@ public class OpEntry {
     }
 
     public OppedPlayer toOppedPlayer() {
-        return new OppedPlayer(uuid, name, isOpped);
+        return new OppedPlayer(uuid, name);
     }
 }

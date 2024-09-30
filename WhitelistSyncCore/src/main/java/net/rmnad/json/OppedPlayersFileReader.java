@@ -32,7 +32,6 @@ public class OppedPlayersFileReader {
 
             // Create DTO
             OppedPlayer oppedPlayer = new OppedPlayer();
-            oppedPlayer.setIsOp(true);
             oppedPlayer.setUuid(uuid);
             oppedPlayer.setName(name);
             oppedPlayer.setLevel(level);

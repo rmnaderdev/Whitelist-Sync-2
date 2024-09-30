@@ -8,6 +8,15 @@ public class BannedPlayer {
     private String expires;
     private String reason;
 
+    public BannedPlayer(String uuid, String name, String reason) {
+        this.uuid = uuid;
+        this.name = name;
+        this.reason = reason;
+    }
+
+    public BannedPlayer() {
+    }
+
     public String getUuid() {
         return uuid;
     }

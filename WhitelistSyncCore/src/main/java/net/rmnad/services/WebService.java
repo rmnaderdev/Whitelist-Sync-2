@@ -5,11 +5,17 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.rmnad.Log;
 import net.rmnad.callbacks.IServerControl;
+import net.rmnad.json.BannedIpsFileReader;
+import net.rmnad.json.BannedPlayersFileReader;
 import net.rmnad.json.OppedPlayersFileReader;
 import net.rmnad.json.WhitelistedPlayersFileReader;
 import net.rmnad.logging.LogMessages;
+import net.rmnad.models.BannedIp;
+import net.rmnad.models.BannedPlayer;
 import net.rmnad.models.OppedPlayer;
 import net.rmnad.models.WhitelistedPlayer;
+import net.rmnad.models.api.BannedIpEntry;
+import net.rmnad.models.api.BannedPlayerEntry;
 import net.rmnad.models.api.OpEntry;
 import net.rmnad.models.api.WhitelistEntry;
 import okhttp3.*;
@@ -181,6 +187,66 @@ public class WebService implements BaseService {
         return new OpEntry[0];
     }
 
+    private BannedPlayerEntry[] getBannedPlayerEntries() {
+        try {
+            OkHttpClient client = getClient();
+            Request request = new Request.Builder()
+                    .url(getApiHost() + "/api/bannedplayer")
+                    .addHeader("content-type", "application/json")
+                    .addHeader("X-API-KEY", getApiKey())
+                    .addHeader("server-uuid", serverUUID.toString())
+                    .build();
+
+            try (Response response = client.newCall(request).execute()) {
+                Log.debug("getBannedPlayerEntries Response Code : " + response.code());
+
+                if (response.isSuccessful() && response.body() != null) {
+                    Gson gson = new Gson();
+                    return gson.fromJson(response.body().string(), BannedPlayerEntry[].class);
+                }
+
+                Log.error("Failed to get banned player entries from API. Response Code: " + response.code());
+            }
+
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            Log.error("Error getting banned player entries from Web API.", e);
+        }
+
+        return new BannedPlayerEntry[0];
+    }
+
+    private BannedIpEntry[] getBannedIpEntries() {
+        try {
+            OkHttpClient client = getClient();
+            Request request = new Request.Builder()
+                    .url(getApiHost() + "/api/bannedip")
+                    .addHeader("content-type", "application/json")
+                    .addHeader("X-API-KEY", getApiKey())
+                    .addHeader("server-uuid", serverUUID.toString())
+                    .build();
+
+            try (Response response = client.newCall(request).execute()) {
+                Log.debug("getBannedIpEntries Response Code : " + response.code());
+
+                if (response.isSuccessful() && response.body() != null) {
+                    Gson gson = new Gson();
+                    return gson.fromJson(response.body().string(), BannedIpEntry[].class);
+                }
+
+                Log.error("Failed to get banned ip entries from API. Response Code: " + response.code());
+            }
+
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            Log.error("Error getting banned ip entries from Web API.", e);
+        }
+
+        return new BannedIpEntry[0];
+    }
+
     @Override
     public boolean initializeDatabase() {
         if (getApiHost().isEmpty()) {
@@ -240,6 +306,38 @@ public class WebService implements BaseService {
         Log.debug(LogMessages.SuccessGetOppedPlayersFromDatabase(timeTaken, entries.length));
 
         return oppedPlayers;
+    }
+
+    public ArrayList<BannedPlayer> getBannedPlayersFromDatabase() {
+        ArrayList<BannedPlayer> bannedPlayers = new ArrayList<>();
+        long startTime = System.currentTimeMillis();
+
+        BannedPlayerEntry[] entries = getBannedPlayerEntries();
+
+        for (BannedPlayerEntry entry : entries) {
+            bannedPlayers.add(entry.toBannedPlayer());
+        }
+
+        long timeTaken = System.currentTimeMillis() - startTime;
+        Log.debug(LogMessages.SuccessGetBannedPlayersFromDatabase(timeTaken, entries.length));
+
+        return bannedPlayers;
+    }
+
+    public ArrayList<String> getBannedIpsFromDatabase() {
+        ArrayList<String> bannedIps = new ArrayList<>();
+        long startTime = System.currentTimeMillis();
+
+        BannedIpEntry[] entries = getBannedIpEntries();
+
+        for (BannedIpEntry entry : entries) {
+            bannedIps.add(entry.getIp());
+        }
+
+        long timeTaken = System.currentTimeMillis() - startTime;
+        Log.debug(LogMessages.SuccessGetBannedIpsFromDatabase(timeTaken, entries.length));
+
+        return bannedIps;
     }
 
     @Override
@@ -348,6 +446,109 @@ public class WebService implements BaseService {
         return false;
     }
 
+    public boolean pushLocalBannedPlayersToDatabase() {
+        int records = 0;
+        long startTime = System.currentTimeMillis();
+
+        ArrayList<BannedPlayer> bannedPlayers
+                = BannedPlayersFileReader.getBannedPlayers(this.serverFilePath);
+
+        try {
+            OkHttpClient client = getClient();
+
+            // Set body of request
+            Gson gson = new Gson();
+            JsonArray jsonArray = new JsonArray();
+            for (BannedPlayer player : bannedPlayers) {
+                JsonObject json = new JsonObject();
+                json.addProperty("uuid", player.getUuid());
+                json.addProperty("name", player.getName());
+                json.addProperty("reason", player.getReason());
+                jsonArray.add(json);
+                records++;
+            }
+            String jsonBody = gson.toJson(jsonArray);
+            RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
+
+            Request request = new Request.Builder()
+                    .url(getApiHost() + "/api/bannedplayer/push")
+                    .addHeader("content-type", "application/json")
+                    .addHeader("X-API-KEY", getApiKey())
+                    .addHeader("server-uuid", serverUUID.toString())
+                    .post(body)
+                    .build();
+
+            try (Response response = client.newCall(request).execute()) {
+
+                if (response.isSuccessful()) {
+                    // Record time taken.
+                    long timeTaken = System.currentTimeMillis() - startTime;
+                    Log.debug(LogMessages.SuccessPushLocalBannedPlayersToDatabase(timeTaken, records));
+                    return true;
+                } else {
+                    Log.error("Failed to update database with local records. Response Code: " + response.code());
+                }
+            }
+        } catch (ConnectException e) {
+            Log.warning(LogMessages.WARN_WhitelistSyncWebConnectException);
+        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+            Log.error(LogMessages.ERROR_PushLocalBannedPlayersToDatabase, e);
+        }
+
+        return false;
+    }
+
+    public boolean pushLocalBannedIpsToDatabase() {
+        int records = 0;
+        long startTime = System.currentTimeMillis();
+
+        ArrayList<BannedIp> bannedIps
+                = BannedIpsFileReader.getBannedIps(this.serverFilePath);
+
+        try {
+            OkHttpClient client = getClient();
+
+            // Set body of request
+            Gson gson = new Gson();
+            JsonArray jsonArray = new JsonArray();
+            for (BannedIp ip : bannedIps) {
+                JsonObject json = new JsonObject();
+                json.addProperty("ip", ip.getIp());
+                json.addProperty("reason", ip.getReason());
+                jsonArray.add(json);
+                records++;
+            }
+            String jsonBody = gson.toJson(jsonArray);
+            RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
+
+            Request request = new Request.Builder()
+                    .url(getApiHost() + "/api/bannedip/push")
+                    .addHeader("content-type", "application/json")
+                    .addHeader("X-API-KEY", getApiKey())
+                    .addHeader("server-uuid", serverUUID.toString())
+                    .post(body)
+                    .build();
+
+            try (Response response = client.newCall(request).execute()) {
+
+                if (response.isSuccessful()) {
+                    // Record time taken.
+                    long timeTaken = System.currentTimeMillis() - startTime;
+                    Log.debug(LogMessages.SuccessPushLocalBannedIpsToDatabase(timeTaken, records));
+                    return true;
+                } else {
+                    Log.error("Failed to update database with local records. Response Code: " + response.code());
+                }
+            }
+        } catch (ConnectException e) {
+            Log.warning(LogMessages.WARN_WhitelistSyncWebConnectException);
+        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+            Log.error(LogMessages.ERROR_PushLocalBannedIpsToDatabase, e);
+        }
+
+        return false;
+    }
+
     @Override
     public boolean pullDatabaseWhitelistToLocal() {
         int records = 0;
@@ -424,6 +625,64 @@ public class WebService implements BaseService {
 
         long timeTaken = System.currentTimeMillis() - startTime;
         Log.debug(LogMessages.SuccessPullDatabaseOpsToLocal(timeTaken, records));
+
+        return true;
+    }
+
+    public boolean pullDatabaseBannedPlayersToLocal() {
+        int records = 0;
+        long startTime = System.currentTimeMillis();
+
+        ArrayList<BannedPlayer> localBannedPlayers
+                = BannedPlayersFileReader.getBannedPlayers(this.serverFilePath);
+
+        BannedPlayerEntry[] entries = getBannedPlayerEntries();
+
+        for (BannedPlayerEntry player : entries) {
+            UUID uuid = UUID.fromString(player.getUuid());
+            String name = player.getName();
+            String reason = player.getReason();
+
+            if (localBannedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid.toString()))) {
+                try {
+                    this.serverControl.addBannedPlayer(uuid, name, reason);
+                    Log.debug(LogMessages.BannedPlayer(name));
+                    records++;
+                } catch (NullPointerException e) {
+                    Log.error(e.getMessage(), e);
+                }
+            }
+        }
+
+        long timeTaken = System.currentTimeMillis() - startTime;
+        Log.debug(LogMessages.SuccessPullDatabaseBannedPlayersToLocal(timeTaken, records));
+
+        return true;
+    }
+
+    public boolean pullDatabaseBannedIpsToLocal() {
+        int records = 0;
+        long startTime = System.currentTimeMillis();
+
+        ArrayList<BannedIp> localBannedIps
+                = BannedIpsFileReader.getBannedIps(this.serverFilePath);
+
+        BannedIpEntry[] entries = getBannedIpEntries();
+
+        for (BannedIpEntry ip : entries) {
+            if (localBannedIps.stream().noneMatch(o -> o.getIp().equals(ip.getIp()))) {
+                try {
+                    this.serverControl.addBannedIp(ip.getIp(), ip.getReason());
+                    Log.debug(LogMessages.BannedIp(ip.getIp()));
+                    records++;
+                } catch (NullPointerException e) {
+                    Log.error(e.getMessage(), e);
+                }
+            }
+        }
+
+        long timeTaken = System.currentTimeMillis() - startTime;
+        Log.debug(LogMessages.SuccessPullDatabaseBannedIpsToLocal(timeTaken, records));
 
         return true;
     }
@@ -591,4 +850,154 @@ public class WebService implements BaseService {
         return false;
     }
 
+    public boolean addBannedPlayer(UUID uuid, String name, String reason) {
+        long startTime = System.currentTimeMillis();
+        try {
+            // Set body of request
+            Gson gson = new Gson();
+            JsonObject json = new JsonObject();
+            json.addProperty("uuid", uuid.toString());
+            json.addProperty("name", name);
+            json.addProperty("reason", reason);
+            String jsonBody = gson.toJson(json);
+            RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
+
+            OkHttpClient client = getClient();
+            Request request = new Request.Builder()
+                    .url(getApiHost() + "/api/bannedplayer")
+                    .addHeader("content-type", "application/json")
+                    .addHeader("X-API-KEY", getApiKey())
+                    .addHeader("server-uuid", serverUUID.toString())
+                    .post(body)
+                    .build();
+
+            try (Response response = client.newCall(request).execute()) {
+
+                if (response.isSuccessful()) {
+                    long timeTaken = System.currentTimeMillis() - startTime;
+                    Log.debug("Banned " + name + " | Took " + timeTaken + "ms");
+
+                    return true;
+                } else {
+                    Log.error("Error banning " + name + " in database! Response Code: " + response.code());
+                }
+            }
+
+        } catch (ConnectException e) {
+            Log.warning(LogMessages.WARN_WhitelistSyncWebConnectException);
+        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+            Log.error("Error banning " + name + " in database!", e);
+        }
+
+        return false;
+    }
+
+    public boolean addBannedIp(String ip, String reason) {
+        long startTime = System.currentTimeMillis();
+        try {
+            // Set body of request
+            Gson gson = new Gson();
+            JsonObject json = new JsonObject();
+            json.addProperty("ip", ip);
+            json.addProperty("reason", reason);
+            String jsonBody = gson.toJson(json);
+            RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
+
+            OkHttpClient client = getClient();
+            Request request = new Request.Builder()
+                    .url(getApiHost() + "/api/bannedip")
+                    .addHeader("content-type", "application/json")
+                    .addHeader("X-API-KEY", getApiKey())
+                    .addHeader("server-uuid", serverUUID.toString())
+                    .post(body)
+                    .build();
+
+            try (Response response = client.newCall(request).execute()) {
+
+                if (response.isSuccessful()) {
+                    long timeTaken = System.currentTimeMillis() - startTime;
+                    Log.debug("Banned " + ip + " | Took " + timeTaken + "ms");
+
+                    return true;
+                } else {
+                    Log.error("Error banning " + ip + " in database! Response Code: " + response.code());
+                }
+            }
+
+        } catch (ConnectException e) {
+            Log.warning(LogMessages.WARN_WhitelistSyncWebConnectException);
+        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+            Log.error("Error banning " + ip + " in database!", e);
+        }
+
+        return false;
+    }
+
+    public boolean removeBannedPlayer(UUID uuid, String name) {
+        long startTime = System.currentTimeMillis();
+        try {
+            OkHttpClient client = getClient();
+            Request request = new Request.Builder()
+                    .url(getApiHost() + "/api/bannedplayer/" + uuid.toString())
+                    .addHeader("content-type", "application/json")
+                    .addHeader("X-API-KEY", getApiKey())
+                    .addHeader("server-uuid", serverUUID.toString())
+                    .delete()
+                    .build();
+
+            try (Response response = client.newCall(request).execute()) {
+
+                if (response.isSuccessful()) {
+                    long timeTaken = System.currentTimeMillis() - startTime;
+                    Log.debug("Unbanned " + name + " | Took " + timeTaken + "ms");
+
+                    return true;
+                } else {
+                    Log.error("Error unbanning " + name + " in database! Response Code: " + response.code());
+                }
+            }
+
+        } catch (ConnectException e) {
+            Log.warning(LogMessages.WARN_WhitelistSyncWebConnectException);
+        }
+        catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+            Log.error("Error unbanning " + name + " in database!", e);
+        }
+
+        return false;
+    }
+
+    public boolean removeBannedIp(String ip) {
+        long startTime = System.currentTimeMillis();
+        try {
+            OkHttpClient client = getClient();
+            Request request = new Request.Builder()
+                    .url(getApiHost() + "/api/bannedplayer/" + ip)
+                    .addHeader("content-type", "application/json")
+                    .addHeader("X-API-KEY", getApiKey())
+                    .addHeader("server-uuid", serverUUID.toString())
+                    .delete()
+                    .build();
+
+            try (Response response = client.newCall(request).execute()) {
+
+                if (response.isSuccessful()) {
+                    long timeTaken = System.currentTimeMillis() - startTime;
+                    Log.debug("Unbanned " + ip + " | Took " + timeTaken + "ms");
+
+                    return true;
+                } else {
+                    Log.error("Error unbanning " + ip + " in database! Response Code: " + response.code());
+                }
+            }
+
+        } catch (ConnectException e) {
+            Log.warning(LogMessages.WARN_WhitelistSyncWebConnectException);
+        }
+        catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+            Log.error("Error unbanning " + ip + " in database!", e);
+        }
+
+        return false;
+    }
 }

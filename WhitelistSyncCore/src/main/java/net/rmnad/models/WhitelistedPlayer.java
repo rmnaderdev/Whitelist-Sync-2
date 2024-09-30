@@ -6,15 +6,13 @@ public class WhitelistedPlayer {
 
     private String uuid;
     private String name;
-    private boolean isWhitelisted;
 
     public WhitelistedPlayer() {
     }
 
-    public WhitelistedPlayer(String uuid, String name, boolean isWhitelisted) {
+    public WhitelistedPlayer(String uuid, String name) {
         this.uuid = uuid;
         this.name = name;
-        this.isWhitelisted = isWhitelisted;
     }
 
     public String getUuid() {
@@ -33,20 +31,11 @@ public class WhitelistedPlayer {
         this.name = name;
     }
 
-    public boolean isWhitelisted() {
-        return isWhitelisted;
-    }
-
-    public void setWhitelisted(boolean whitelisted) {
-        isWhitelisted = whitelisted;
-    }
-
     @Override
     public String toString() {
         return "WhitelistedPlayer{" +
                 "uuid='" + uuid + '\'' +
                 ", name='" + name + '\'' +
-                ", isWhitelisted=" + isWhitelisted +
                 '}';
     }
 }

@@ -147,7 +147,7 @@ public class SqLiteService implements BaseService {
 
             // Save queried return to names list.
             while (rs.next()) {
-                whitelistedPlayers.add(new WhitelistedPlayer(rs.getString("uuid"), rs.getString("name"), true));
+                whitelistedPlayers.add(new WhitelistedPlayer(rs.getString("uuid"), rs.getString("name")));
                 records++;
             }
 
@@ -193,7 +193,6 @@ public class SqLiteService implements BaseService {
             // Save queried return to names list.
             while (rs.next()) {
                 OppedPlayer oppedPlayer = new OppedPlayer();
-                oppedPlayer.setIsOp(true);
                 oppedPlayer.setUuid(rs.getString("uuid"));
                 oppedPlayer.setName(rs.getString("name"));
 

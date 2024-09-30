@@ -2,8 +2,6 @@ package net.rmnad.models;
 
 
 public class OppedPlayer {
-
-    private boolean isOp;
     private String uuid;
     private String name;
     private int level;
@@ -12,28 +10,18 @@ public class OppedPlayer {
     public OppedPlayer() {
     }
 
-    public OppedPlayer(String uuid, String name, boolean isOp) {
-        this.isOp = isOp;
+    public OppedPlayer(String uuid, String name) {
         this.uuid = uuid;
         this.name = name;
         this.level = 5;
         this.bypassesPlayerLimit = false;
     }
 
-    public OppedPlayer(String uuid, String name, boolean isOp, int level, boolean bypassesPlayerLimit) {
-        this.isOp = isOp;
+    public OppedPlayer(String uuid, String name, int level, boolean bypassesPlayerLimit) {
         this.uuid = uuid;
         this.name = name;
         this.level = level;
         this.bypassesPlayerLimit = bypassesPlayerLimit;
-    }
-
-    public boolean isOp() {
-        return isOp;
-    }
-
-    public void setIsOp(boolean op) {
-        isOp = op;
     }
 
     public String getUuid() {
@@ -71,8 +59,7 @@ public class OppedPlayer {
     @Override
     public String toString() {
         return "OppedPlayer{" +
-                "isOp=" + isOp +
-                ", uuid='" + uuid + '\'' +
+                "uuid='" + uuid + '\'' +
                 ", name='" + name + '\'' +
                 ", level='" + level + '\'' +
                 ", bypassesPlayerLimit=" + bypassesPlayerLimit +

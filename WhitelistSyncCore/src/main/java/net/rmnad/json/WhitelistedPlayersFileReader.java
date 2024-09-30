@@ -32,7 +32,6 @@ public class WhitelistedPlayersFileReader {
             WhitelistedPlayer whitelistedPlayer = new WhitelistedPlayer();
             whitelistedPlayer.setUuid(uuid);
             whitelistedPlayer.setName(name);
-            whitelistedPlayer.setWhitelisted(true);
 
 
             users.add(whitelistedPlayer);

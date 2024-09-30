@@ -1,21 +1,22 @@
 package net.rmnad.models.api;
 
-import net.rmnad.models.WhitelistedPlayer;
+import net.rmnad.models.BannedPlayer;
 
 import java.util.Objects;
 
-public class WhitelistEntry {
+public class BannedPlayerEntry {
 
     private int id;
     private int accountId;
     private String uuid;
     private String name;
-    private boolean isWhitelisted;
+    private String reason;
+    private boolean isBanned;
 
-    public WhitelistEntry() {
+    public BannedPlayerEntry() {
     }
 
-    public WhitelistEntry(int id, int accountId, String uuid, String name) {
+    public BannedPlayerEntry(int id, int accountId, String uuid, String name) {
         this.id = id;
         this.accountId = accountId;
         this.uuid = uuid;
@@ -54,22 +55,31 @@ public class WhitelistEntry {
         this.name = name;
     }
 
-    public boolean getWhitelisted() {
-        return isWhitelisted;
+    public String getReason() {
+        return reason;
     }
 
-    public void setWhitelisted(boolean whitelisted) {
-        isWhitelisted = whitelisted;
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public boolean getBanned() {
+        return isBanned;
+    }
+
+    public void setBanned(boolean banned) {
+        isBanned = banned;
     }
 
     @Override
     public String toString() {
-        return "WhitelistEntry{" +
-                "id='" + id + '\'' +
-                ", accountId='" + accountId + '\'' +
+        return "BannedPlayerEntry{" +
+                "id=" + id +
+                ", accountId=" + accountId +
                 ", uuid='" + uuid + '\'' +
                 ", name='" + name + '\'' +
-                ", isWhitelisted=" + isWhitelisted +
+                ", reason='" + reason + '\'' +
+                ", isBanned=" + isBanned +
                 '}';
     }
 
@@ -77,7 +87,7 @@ public class WhitelistEntry {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        WhitelistEntry that = (WhitelistEntry) o;
+        BannedPlayerEntry that = (BannedPlayerEntry) o;
         return Objects.equals(id, that.id);
     }
 
@@ -86,7 +96,7 @@ public class WhitelistEntry {
         return Objects.hashCode(id);
     }
 
-    public WhitelistedPlayer toWhitelistedPlayer() {
-        return new WhitelistedPlayer(this.uuid, this.name);
+    public BannedPlayer toBannedPlayer() {
+        return new BannedPlayer(this.uuid, this.name, this.reason);
     }
 }

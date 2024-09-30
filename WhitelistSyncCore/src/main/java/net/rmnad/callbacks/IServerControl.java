@@ -7,4 +7,10 @@ public interface IServerControl {
     void removeWhitelistPlayer(UUID uuid, String name);
     void addOpPlayer(UUID uuid, String name);
     void removeOpPlayer(UUID uuid, String name);
+
+    void addBannedPlayer(UUID uuid, String name, String reason);
+    void removeBannedPlayer(UUID uuid, String name);
+
+    void addBannedIp(String ip, String reason);
+    void removeBannedIp(String ip);
 }

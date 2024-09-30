@@ -1,29 +1,22 @@
 package net.rmnad.services;
 
-import com.google.gson.internal.LinkedTreeMap;
 import com.microsoft.signalr.HttpHubConnectionBuilder;
 import com.microsoft.signalr.HubConnection;
 import com.microsoft.signalr.HubConnectionBuilder;
 import com.microsoft.signalr.HubConnectionState;
-import io.reactivex.rxjava3.core.Single;
 import net.rmnad.Log;
 import net.rmnad.callbacks.*;
 import net.rmnad.logging.LogMessages;
-import net.rmnad.models.OppedPlayer;
-import net.rmnad.models.WhitelistedPlayer;
+import net.rmnad.models.api.BannedIpEntry;
+import net.rmnad.models.api.BannedPlayerEntry;
 import net.rmnad.models.api.OpEntry;
 import net.rmnad.models.api.WhitelistEntry;
-import okhttp3.Dispatcher;
-import okhttp3.OkHttpClient;
-
 import javax.net.ssl.*;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
-import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 public class WhitelistSocketThread extends Thread {
 
@@ -152,6 +145,59 @@ public class WhitelistSocketThread extends Thread {
                 }, OpEntry[].class, String.class);
             }
 
+            // TODO: Add toggle for ban list sync
+            this.hubConnection.on("BannedPlayerUpdated", (data, serverUuidStr) -> {
+
+                UUID serverUUID = serverUuidStr != null ? UUID.fromString(serverUuidStr) : null;
+
+                // Ignore if the server UUID is the same as this server
+                if (serverUUID != null && serverUUID.equals(this.service.serverUUID)) {
+                    return;
+                }
+
+                for (BannedPlayerEntry player : data) {
+                    boolean isBanned = player.getBanned();
+                    String name = player.getName();
+                    UUID uuid = UUID.fromString(player.getUuid());
+                    String reason = player.getReason();
+
+                    if (isBanned) {
+                        Log.info("Web-Socket: Player banned: " + name + " (" + uuid + "). Reason: " + reason);
+                        this.serverControl.addBannedPlayer(uuid, name, reason);
+                    } else {
+                        Log.info("Web-Socket: Player unbanned: " + name + " (" + uuid + ")");
+                        this.serverControl.removeBannedPlayer(uuid, name);
+                    }
+                }
+
+            }, BannedPlayerEntry[].class, String.class);
+
+            // TODO: Add toggle for banned ip list sync
+            this.hubConnection.on("BannedIpUpdated", (data, serverUuidStr) -> {
+
+                UUID serverUUID = serverUuidStr != null ? UUID.fromString(serverUuidStr) : null;
+
+                // Ignore if the server UUID is the same as this server
+                if (serverUUID != null && serverUUID.equals(this.service.serverUUID)) {
+                    return;
+                }
+
+                for (BannedIpEntry player : data) {
+                    boolean isBanned = player.getBanned();
+                    String ip = player.getIp();
+                    String reason = player.getReason();
+
+                    if (isBanned) {
+                        Log.info("Web-Socket: Ip banned: " + ip + ". Reason: " + reason);
+                        this.serverControl.addBannedIp(ip, reason);
+                    } else {
+                        Log.info("Web-Socket: Ip unbanned: " + ip + ".");
+                        this.serverControl.removeBannedIp(ip);
+                    }
+                }
+
+            }, BannedIpEntry[].class, String.class);
+
             // Handle reconnection
             this.hubConnection.onClosed(error -> {
                 Log.info("Web-Socket: Disconnected from server.");
@@ -205,6 +251,13 @@ public class WhitelistSocketThread extends Thread {
         if (this.service.syncingOpList) {
             this.service.pullDatabaseOpsToLocal();
         }
+
+        // TODO: Add toggle for ban list sync
+        this.service.pullDatabaseBannedPlayersToLocal();
+
+        // TODO: Add toggle for banned ip list sync
+        this.service.pullDatabaseBannedIpsToLocal();
+
         Log.info("Database sync complete");
     }
 
