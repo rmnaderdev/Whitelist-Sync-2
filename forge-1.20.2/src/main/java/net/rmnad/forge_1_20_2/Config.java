@@ -38,11 +38,14 @@ public class Config {
         // WEB Settings
         public ForgeConfigSpec.ConfigValue<String> WEB_API_HOST;
         public ForgeConfigSpec.ConfigValue<String> WEB_API_KEY;
+        public ForgeConfigSpec.BooleanValue WEB_SYNC_BANNED_PLAYERS;
+        public ForgeConfigSpec.BooleanValue WEB_SYNC_BANNED_IPS;
+
 
         Common(final ForgeConfigSpec.Builder builder) {
             // General Settings
             builder.comment("General configuration").push(CATEGORY_GENERAL);
-            DATABASE_MODE = builder.comment("Mode for the database.")
+            DATABASE_MODE = builder.comment("Mode for the database. To use the WEB service, go to https://whitelistsync.com/ for instructions.")
                     .worldRestart()
                     .defineEnum("databaseMode", DatabaseMode.SQLITE);
             SYNC_OP_LIST = builder.comment("Option on whether to sync the server's op list to the database.")
@@ -98,12 +101,18 @@ public class Config {
                     "Web configuration (To enable Web, " +
                             "refer to the mode setting in the general configuration)."
             ).push(CATEGORY_WEB);
-            WEB_API_HOST = builder.comment("Host for the web service. This should be the URL of the web service.")
+            WEB_API_HOST = builder.comment("Host for the web service. This should be the URL of the web service. You should never need to change this.")
                     .worldRestart()
-                    .define("webApiHost", "https://whitelistsyncweb.rmnad.net/");
+                    .define("webApiHost", "https://whitelistsync.com/");
             WEB_API_KEY = builder.comment("API Key for the web service. You can generate one by logging into the web service and adding a new API key to your account.")
                     .worldRestart()
                     .define("webApiKey", "");
+            WEB_SYNC_BANNED_PLAYERS = builder.comment("Option to enable banned players sync.")
+                    .worldRestart()
+                    .define("webSyncBannedPlayers", false);
+            WEB_SYNC_BANNED_IPS = builder.comment("Option to enable banned IPs sync.")
+                    .worldRestart()
+                    .define("webSyncBannedIps", false);
             builder.pop();
         }
     }

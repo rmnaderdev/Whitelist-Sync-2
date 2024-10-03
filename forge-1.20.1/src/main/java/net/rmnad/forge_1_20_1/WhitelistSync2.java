@@ -94,6 +94,8 @@ public class WhitelistSync2
                         Config.COMMON.WEB_API_HOST.get(),
                         Config.COMMON.WEB_API_KEY.get(),
                         Config.COMMON.SYNC_OP_LIST.get(),
+                        Config.COMMON.WEB_SYNC_BANNED_PLAYERS.get(),
+                        Config.COMMON.WEB_SYNC_BANNED_IPS.get(),
                         serverControl
                 );
                 break;

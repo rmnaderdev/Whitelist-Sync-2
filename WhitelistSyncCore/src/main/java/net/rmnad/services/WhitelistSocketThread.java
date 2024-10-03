@@ -145,58 +145,60 @@ public class WhitelistSocketThread extends Thread {
                 }, OpEntry[].class, String.class);
             }
 
-            // TODO: Add toggle for ban list sync
-            this.hubConnection.on("BannedPlayerUpdated", (data, serverUuidStr) -> {
+            if (this.service.syncingBannedPlayers) {
+                this.hubConnection.on("BannedPlayerUpdated", (data, serverUuidStr) -> {
 
-                UUID serverUUID = serverUuidStr != null ? UUID.fromString(serverUuidStr) : null;
+                    UUID serverUUID = serverUuidStr != null ? UUID.fromString(serverUuidStr) : null;
 
-                // Ignore if the server UUID is the same as this server
-                if (serverUUID != null && serverUUID.equals(this.service.serverUUID)) {
-                    return;
-                }
-
-                for (BannedPlayerEntry player : data) {
-                    boolean isBanned = player.getBanned();
-                    String name = player.getName();
-                    UUID uuid = UUID.fromString(player.getUuid());
-                    String reason = player.getReason();
-
-                    if (isBanned) {
-                        Log.info("Web-Socket: Player banned: " + name + " (" + uuid + "). Reason: " + reason);
-                        this.serverControl.addBannedPlayer(uuid, name, reason);
-                    } else {
-                        Log.info("Web-Socket: Player unbanned: " + name + " (" + uuid + ")");
-                        this.serverControl.removeBannedPlayer(uuid, name);
+                    // Ignore if the server UUID is the same as this server
+                    if (serverUUID != null && serverUUID.equals(this.service.serverUUID)) {
+                        return;
                     }
-                }
 
-            }, BannedPlayerEntry[].class, String.class);
+                    for (BannedPlayerEntry player : data) {
+                        boolean isBanned = player.getBanned();
+                        String name = player.getName();
+                        UUID uuid = UUID.fromString(player.getUuid());
+                        String reason = player.getReason();
 
-            // TODO: Add toggle for banned ip list sync
-            this.hubConnection.on("BannedIpUpdated", (data, serverUuidStr) -> {
-
-                UUID serverUUID = serverUuidStr != null ? UUID.fromString(serverUuidStr) : null;
-
-                // Ignore if the server UUID is the same as this server
-                if (serverUUID != null && serverUUID.equals(this.service.serverUUID)) {
-                    return;
-                }
-
-                for (BannedIpEntry player : data) {
-                    boolean isBanned = player.getBanned();
-                    String ip = player.getIp();
-                    String reason = player.getReason();
-
-                    if (isBanned) {
-                        Log.info("Web-Socket: Ip banned: " + ip + ". Reason: " + reason);
-                        this.serverControl.addBannedIp(ip, reason);
-                    } else {
-                        Log.info("Web-Socket: Ip unbanned: " + ip + ".");
-                        this.serverControl.removeBannedIp(ip);
+                        if (isBanned) {
+                            Log.info("Web-Socket: Player banned: " + name + " (" + uuid + "). Reason: " + reason);
+                            this.serverControl.addBannedPlayer(uuid, name, reason);
+                        } else {
+                            Log.info("Web-Socket: Player unbanned: " + name + " (" + uuid + ")");
+                            this.serverControl.removeBannedPlayer(uuid, name);
+                        }
                     }
-                }
 
-            }, BannedIpEntry[].class, String.class);
+                }, BannedPlayerEntry[].class, String.class);
+            }
+
+            if (this.service.syncingBannedIps) {
+                this.hubConnection.on("BannedIpUpdated", (data, serverUuidStr) -> {
+
+                    UUID serverUUID = serverUuidStr != null ? UUID.fromString(serverUuidStr) : null;
+
+                    // Ignore if the server UUID is the same as this server
+                    if (serverUUID != null && serverUUID.equals(this.service.serverUUID)) {
+                        return;
+                    }
+
+                    for (BannedIpEntry player : data) {
+                        boolean isBanned = player.getBanned();
+                        String ip = player.getIp();
+                        String reason = player.getReason();
+
+                        if (isBanned) {
+                            Log.info("Web-Socket: Ip banned: " + ip + ". Reason: " + reason);
+                            this.serverControl.addBannedIp(ip, reason);
+                        } else {
+                            Log.info("Web-Socket: Ip unbanned: " + ip + ".");
+                            this.serverControl.removeBannedIp(ip);
+                        }
+                    }
+
+                }, BannedIpEntry[].class, String.class);
+            }
 
             // Handle reconnection
             this.hubConnection.onClosed(error -> {
@@ -252,11 +254,13 @@ public class WhitelistSocketThread extends Thread {
             this.service.pullDatabaseOpsToLocal();
         }
 
-        // TODO: Add toggle for ban list sync
-        this.service.pullDatabaseBannedPlayersToLocal();
+        if (this.service.syncingBannedPlayers) {
+            this.service.pullDatabaseBannedPlayersToLocal();
+        }
 
-        // TODO: Add toggle for banned ip list sync
-        this.service.pullDatabaseBannedIpsToLocal();
+        if (this.service.syncingBannedIps) {
+            this.service.pullDatabaseBannedIpsToLocal();
+        }
 
         Log.info("Database sync complete");
     }

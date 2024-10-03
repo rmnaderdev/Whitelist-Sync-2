@@ -35,6 +35,8 @@ public class WebService implements BaseService {
     private final String apiHost;
     private final String apiKey;
     public final boolean syncingOpList;
+    public final boolean syncingBannedPlayers;
+    public final boolean syncingBannedIps;
     public final IServerControl serverControl;
     public final UUID serverUUID = UUID.randomUUID();
 
@@ -43,12 +45,16 @@ public class WebService implements BaseService {
             String apiHost,
             String apiKey,
             boolean syncingOpList,
+            boolean syncingBannedPlayers,
+            boolean syncingBannedIps,
             IServerControl serverControl) {
 
         this.serverFilePath = serverFilePath;
         this.apiHost = apiHost;
         this.apiKey = apiKey;
         this.syncingOpList = syncingOpList;
+        this.syncingBannedPlayers = syncingBannedPlayers;
+        this.syncingBannedIps = syncingBannedIps;
         this.serverControl = serverControl;
 
         Log.debug("WebService API host is set to: " + this.apiHost);
