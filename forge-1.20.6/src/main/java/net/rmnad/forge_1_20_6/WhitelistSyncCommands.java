@@ -37,6 +37,30 @@ public class WhitelistSyncCommands {
                         throw SYNC_DB_ERROR.create();
                     }
 
+                    if (Config.COMMON.SYNC_OP_LIST.get()) {
+                        if (WhitelistSync2.whitelistService.pullDatabaseOpsToLocal()) {
+                            context.getSource().sendSuccess(() -> Component.literal("Local op list up to date with database."), false);
+                        } else {
+                            throw SYNC_DB_ERROR.create();
+                        }
+                    }
+
+                    if (Config.COMMON.WEB_SYNC_BANNED_PLAYERS.get() && Config.COMMON.DATABASE_MODE.get() == Config.Common.DatabaseMode.WEB) {
+                        if (WhitelistSync2.whitelistService.pullDatabaseBannedPlayersToLocal()) {
+                            context.getSource().sendSuccess(() -> Component.literal("Local banned players up to date with database."), false);
+                        } else {
+                            throw SYNC_DB_ERROR.create();
+                        }
+                    }
+
+                    if (Config.COMMON.WEB_SYNC_BANNED_IPS.get() && Config.COMMON.DATABASE_MODE.get() == Config.Common.DatabaseMode.WEB) {
+                        if (WhitelistSync2.whitelistService.pullDatabaseBannedIpsToLocal()) {
+                            context.getSource().sendSuccess(() -> Component.literal("Local banned ips up to date with database."), false);
+                        } else {
+                            throw SYNC_DB_ERROR.create();
+                        }
+                    }
+
                     return 0;
                 });
     }
@@ -48,6 +72,30 @@ public class WhitelistSyncCommands {
                         context.getSource().sendSuccess(() -> Component.literal("Pushed local whitelist to database."), false);
                     } else {
                         throw PUSH_DB_ERROR.create();
+                    }
+
+                    if (Config.COMMON.SYNC_OP_LIST.get()) {
+                        if (WhitelistSync2.whitelistService.pushLocalOpsToDatabase()) {
+                            context.getSource().sendSuccess(() -> Component.literal("Pushed local op list to database."), false);
+                        } else {
+                            throw SYNC_DB_ERROR.create();
+                        }
+                    }
+
+                    if (Config.COMMON.WEB_SYNC_BANNED_PLAYERS.get() && Config.COMMON.DATABASE_MODE.get() == Config.Common.DatabaseMode.WEB) {
+                        if (WhitelistSync2.whitelistService.pushLocalBannedPlayersToDatabase()) {
+                            context.getSource().sendSuccess(() -> Component.literal("Pushed local banned players to database."), false);
+                        } else {
+                            throw SYNC_DB_ERROR.create();
+                        }
+                    }
+
+                    if (Config.COMMON.WEB_SYNC_BANNED_IPS.get() && Config.COMMON.DATABASE_MODE.get() == Config.Common.DatabaseMode.WEB) {
+                        if (WhitelistSync2.whitelistService.pushLocalBannedIpsToDatabase()) {
+                            context.getSource().sendSuccess(() -> Component.literal("Pushed local banned ips to database."), false);
+                        } else {
+                            throw SYNC_DB_ERROR.create();
+                        }
                     }
 
                     return 0;
