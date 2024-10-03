@@ -37,7 +37,7 @@ public class Log {
         if(verbose) {
             msg = safeString(msg);
             if (dlog != null) {
-                dlog.debug(msg);
+                dlog.info(msg);
             }
             else {
                 log.log(Level.INFO, prefix + msg);

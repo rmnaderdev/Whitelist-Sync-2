@@ -8,6 +8,14 @@ public class BannedIp {
     private String expires;
     private String reason;
 
+    public BannedIp(String ip, String reason) {
+        this.ip = ip;
+        this.reason = reason;
+    }
+
+    public BannedIp() {
+    }
+
     public String getIp() {
         return ip;
     }
