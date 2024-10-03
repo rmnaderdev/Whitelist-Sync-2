@@ -3,6 +3,7 @@ package net.rmnad.services;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import io.reactivex.rxjava3.annotations.Nullable;
 import net.rmnad.Log;
 import net.rmnad.callbacks.IServerControl;
 import net.rmnad.json.BannedIpsFileReader;
@@ -314,6 +315,7 @@ public class WebService implements BaseService {
         return oppedPlayers;
     }
 
+    @Override
     public ArrayList<BannedPlayer> getBannedPlayersFromDatabase() {
         ArrayList<BannedPlayer> bannedPlayers = new ArrayList<>();
         long startTime = System.currentTimeMillis();
@@ -330,6 +332,7 @@ public class WebService implements BaseService {
         return bannedPlayers;
     }
 
+    @Override
     public ArrayList<String> getBannedIpsFromDatabase() {
         ArrayList<String> bannedIps = new ArrayList<>();
         long startTime = System.currentTimeMillis();
@@ -401,6 +404,11 @@ public class WebService implements BaseService {
 
     @Override
     public boolean pushLocalOpsToDatabase() {
+        if (!this.syncingOpList) {
+            Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
+            return false;
+        }
+
         // TODO: Start job on thread to avoid lag?
         int records = 0;
         long startTime = System.currentTimeMillis();
@@ -453,6 +461,11 @@ public class WebService implements BaseService {
     }
 
     public boolean pushLocalBannedPlayersToDatabase() {
+        if (!this.syncingBannedPlayers) {
+            Log.error(LogMessages.ALERT_BANNED_PLAYERS_SYNC_DISABLED);
+            return false;
+        }
+
         int records = 0;
         long startTime = System.currentTimeMillis();
 
@@ -504,7 +517,13 @@ public class WebService implements BaseService {
         return false;
     }
 
+    @Override
     public boolean pushLocalBannedIpsToDatabase() {
+        if (!this.syncingBannedIps) {
+            Log.error(LogMessages.ALERT_BANNED_IPS_SYNC_DISABLED);
+            return false;
+        }
+
         int records = 0;
         long startTime = System.currentTimeMillis();
 
@@ -597,6 +616,11 @@ public class WebService implements BaseService {
 
     @Override
     public boolean pullDatabaseOpsToLocal() {
+        if (!this.syncingOpList) {
+            Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
+            return false;
+        }
+
         int records = 0;
         long startTime = System.currentTimeMillis();
 
@@ -635,7 +659,13 @@ public class WebService implements BaseService {
         return true;
     }
 
+    @Override
     public boolean pullDatabaseBannedPlayersToLocal() {
+        if (!this.syncingBannedPlayers) {
+            Log.error(LogMessages.ALERT_BANNED_PLAYERS_SYNC_DISABLED);
+            return false;
+        }
+
         int records = 0;
         long startTime = System.currentTimeMillis();
 
@@ -666,7 +696,13 @@ public class WebService implements BaseService {
         return true;
     }
 
+    @Override
     public boolean pullDatabaseBannedIpsToLocal() {
+        if (!this.syncingBannedIps) {
+            Log.error(LogMessages.ALERT_BANNED_IPS_SYNC_DISABLED);
+            return false;
+        }
+
         int records = 0;
         long startTime = System.currentTimeMillis();
 
@@ -856,7 +892,13 @@ public class WebService implements BaseService {
         return false;
     }
 
-    public boolean addBannedPlayer(UUID uuid, String name, String reason) {
+    @Override
+    public boolean addBannedPlayer(UUID uuid, String name, @Nullable String reason) {
+        if (!syncingBannedPlayers) {
+            Log.error(LogMessages.ALERT_BANNED_PLAYERS_SYNC_DISABLED);
+            return false;
+        }
+
         long startTime = System.currentTimeMillis();
         try {
             // Set body of request
@@ -898,7 +940,13 @@ public class WebService implements BaseService {
         return false;
     }
 
-    public boolean addBannedIp(String ip, String reason) {
+    @Override
+    public boolean addBannedIp(String ip, @Nullable String reason) {
+        if (!syncingBannedIps) {
+            Log.error(LogMessages.ALERT_BANNED_IPS_SYNC_DISABLED);
+            return false;
+        }
+
         long startTime = System.currentTimeMillis();
         try {
             // Set body of request
@@ -939,7 +987,13 @@ public class WebService implements BaseService {
         return false;
     }
 
+    @Override
     public boolean removeBannedPlayer(UUID uuid, String name) {
+        if (!syncingBannedPlayers) {
+            Log.error(LogMessages.ALERT_BANNED_PLAYERS_SYNC_DISABLED);
+            return false;
+        }
+
         long startTime = System.currentTimeMillis();
         try {
             OkHttpClient client = getClient();
@@ -973,7 +1027,13 @@ public class WebService implements BaseService {
         return false;
     }
 
+    @Override
     public boolean removeBannedIp(String ip) {
+        if (!syncingBannedIps) {
+            Log.error(LogMessages.ALERT_BANNED_IPS_SYNC_DISABLED);
+            return false;
+        }
+
         long startTime = System.currentTimeMillis();
         try {
             OkHttpClient client = getClient();

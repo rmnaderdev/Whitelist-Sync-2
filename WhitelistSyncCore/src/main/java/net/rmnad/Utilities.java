@@ -1,5 +1,6 @@
 package net.rmnad;
 
+import net.rmnad.models.BannedPlayer;
 import net.rmnad.models.OppedPlayer;
 import net.rmnad.models.WhitelistedPlayer;
 
@@ -47,6 +48,54 @@ public class Utilities {
                     outstr += whitelistedPlayers.get(i).getName();
                 } else {
                     outstr += whitelistedPlayers.get(i).getName() + ", ";
+                }
+
+            }
+        }
+
+        return outstr;
+    }
+
+    public static String FormatBannedPlayersOutput(ArrayList<BannedPlayer> bannedPlayers) {
+        String outstr = "";
+
+        if(bannedPlayers.isEmpty()) {
+            outstr = "Ban list is empty";
+        } else {
+            for(int i = 0; i < bannedPlayers.size(); i++) {
+
+                if(i % 5 == 0 && i != 0) {
+                    outstr += "\n";
+                }
+
+                if(i == bannedPlayers.size() - 1) {
+                    outstr += bannedPlayers.get(i).getName();
+                } else {
+                    outstr += bannedPlayers.get(i).getName() + ", ";
+                }
+
+            }
+        }
+
+        return outstr;
+    }
+
+    public static String FormatBannedIPsOutput(ArrayList<String> bannedIPs) {
+        String outstr = "";
+
+        if(bannedIPs.isEmpty()) {
+            outstr = "Ban list is empty";
+        } else {
+            for(int i = 0; i < bannedIPs.size(); i++) {
+
+                if(i % 5 == 0 && i != 0) {
+                    outstr += "\n";
+                }
+
+                if(i == bannedIPs.size() - 1) {
+                    outstr += bannedIPs.get(i);
+                } else {
+                    outstr += bannedIPs.get(i) + ", ";
                 }
 
             }

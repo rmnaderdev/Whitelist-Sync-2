@@ -1,12 +1,16 @@
 package net.rmnad.forge_1_18_2;
 
 import com.mojang.authlib.GameProfile;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.IpBanListEntry;
 import net.minecraft.server.players.UserBanListEntry;
 import net.minecraft.server.players.UserWhiteListEntry;
 import net.rmnad.callbacks.IServerControl;
 
+import java.util.List;
 import java.util.UUID;
 
 public class ServerControl implements IServerControl {
@@ -44,7 +48,14 @@ public class ServerControl implements IServerControl {
     @Override
     public void addBannedPlayer(UUID uuid, String name, String reason) {
         // Called when user added to ban list
-        server.getPlayerList().getBans().add(new UserBanListEntry(new GameProfile(uuid, name), null, null, null, reason));
+        GameProfile gameProfile = new GameProfile(uuid, name);
+        server.getPlayerList().getBans().add(new UserBanListEntry(gameProfile, null, null, null, reason));
+
+        // If the player is online, kick them
+        ServerPlayer onlinePlayer = server.getPlayerList().getPlayer(gameProfile.getId());
+        if (onlinePlayer != null) {
+            onlinePlayer.connection.disconnect(new TranslatableComponent("multiplayer.disconnect.banned"));
+        }
     }
 
     @Override
@@ -57,6 +68,12 @@ public class ServerControl implements IServerControl {
     public void addBannedIp(String ip, String reason) {
         // Called when IP added to ban list
         server.getPlayerList().getIpBans().add(new IpBanListEntry(ip, null, null, null, reason));
+
+        // If the player is online, kick them
+        List<ServerPlayer> onlinePlayers = server.getPlayerList().getPlayersWithAddress(ip);
+        for (ServerPlayer onlinePlayer : onlinePlayers) {
+            onlinePlayer.connection.disconnect(new TranslatableComponent("multiplayer.disconnect.banned"));
+        }
     }
 
     @Override

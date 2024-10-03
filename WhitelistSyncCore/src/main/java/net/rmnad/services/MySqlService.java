@@ -1,10 +1,12 @@
 package net.rmnad.services;
 
+import io.reactivex.rxjava3.annotations.Nullable;
 import net.rmnad.Log;
 import net.rmnad.callbacks.*;
 import net.rmnad.json.OppedPlayersFileReader;
 import net.rmnad.json.WhitelistedPlayersFileReader;
 import net.rmnad.logging.LogMessages;
+import net.rmnad.models.BannedPlayer;
 import net.rmnad.models.OppedPlayer;
 import net.rmnad.models.WhitelistedPlayer;
 
@@ -217,6 +219,18 @@ public class MySqlService implements BaseService {
     }
 
     @Override
+    public ArrayList<BannedPlayer> getBannedPlayersFromDatabase() {
+        Log.error(LogMessages.ALERT_BANNED_PLAYERS_SYNC_DISABLED);
+        return new ArrayList<>();
+    }
+
+    @Override
+    public ArrayList<String> getBannedIpsFromDatabase() {
+        Log.error(LogMessages.ALERT_BANNED_IPS_SYNC_DISABLED);
+        return new ArrayList<>();
+    }
+
+    @Override
     public boolean pushLocalWhitelistToDatabase() {
         // TODO: Start job on thread to avoid lag?
         // Keep track of records.
@@ -296,6 +310,18 @@ public class MySqlService implements BaseService {
             Log.error(LogMessages.ERROR_PushLocalOpsToDatabase, e);
         }
 
+        return false;
+    }
+
+    @Override
+    public boolean pushLocalBannedPlayersToDatabase() {
+        Log.error(LogMessages.ALERT_BANNED_PLAYERS_SYNC_DISABLED);
+        return false;
+    }
+
+    @Override
+    public boolean pushLocalBannedIpsToDatabase() {
+        Log.error(LogMessages.ALERT_BANNED_IPS_SYNC_DISABLED);
         return false;
     }
 
@@ -415,6 +441,18 @@ public class MySqlService implements BaseService {
     }
 
     @Override
+    public boolean pullDatabaseBannedPlayersToLocal() {
+        Log.error(LogMessages.ALERT_BANNED_PLAYERS_SYNC_DISABLED);
+        return false;
+    }
+
+    @Override
+    public boolean pullDatabaseBannedIpsToLocal() {
+        Log.error(LogMessages.ALERT_BANNED_IPS_SYNC_DISABLED);
+        return false;
+    }
+
+    @Override
     public boolean addWhitelistPlayer(UUID uuid, String name) {
         long startTime = System.currentTimeMillis();
 
@@ -473,6 +511,18 @@ public class MySqlService implements BaseService {
             Log.error(e.getMessage(), e);
         }
 
+        return false;
+    }
+
+    @Override
+    public boolean addBannedPlayer(UUID uuid, String name, @Nullable String reason) {
+        Log.error(LogMessages.ALERT_BANNED_PLAYERS_SYNC_DISABLED);
+        return false;
+    }
+
+    @Override
+    public boolean addBannedIp(String ip, @Nullable String reason) {
+        Log.error(LogMessages.ALERT_BANNED_IPS_SYNC_DISABLED);
         return false;
     }
 
@@ -536,6 +586,18 @@ public class MySqlService implements BaseService {
             Log.error(e.getMessage(), e);
         }
 
+        return false;
+    }
+
+    @Override
+    public boolean removeBannedPlayer(UUID uuid, String name) {
+        Log.error(LogMessages.ALERT_BANNED_PLAYERS_SYNC_DISABLED);
+        return false;
+    }
+
+    @Override
+    public boolean removeBannedIp(String ip) {
+        Log.error(LogMessages.ALERT_BANNED_IPS_SYNC_DISABLED);
         return false;
     }
 

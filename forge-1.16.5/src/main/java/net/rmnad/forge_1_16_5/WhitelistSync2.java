@@ -12,8 +12,6 @@ import net.rmnad.Log;
 import net.rmnad.callbacks.IServerControl;
 import net.rmnad.logging.LogMessages;
 import net.rmnad.services.*;
-import net.rmnad.forge_1_16_5.commands.op.OpCommands;
-import net.rmnad.forge_1_16_5.commands.whitelist.WhitelistCommands;
 
 @Mod(WhitelistSync2.MODID)
 public class WhitelistSync2
@@ -30,6 +28,7 @@ public class WhitelistSync2
         // Register config
         Config.register(ModLoadingContext.get());
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(CommandsListener.class);
         Log.setLogger(new ForgeLogger());
         Log.info(LogMessages.HELLO_MESSAGE);
     }
@@ -37,11 +36,10 @@ public class WhitelistSync2
     // Command Registration
     @SubscribeEvent
     public void registerCommands(RegisterCommandsEvent event){
-        new WhitelistCommands(event.getDispatcher());
+        new WhitelistSyncCommands(event.getDispatcher());
 
         if(Config.COMMON.SYNC_OP_LIST.get()) {
             Log.info(LogMessages.OP_SYNC_ENABLED);
-            new OpCommands(event.getDispatcher());
         } else {
             Log.info(LogMessages.OP_SYNC_DISABLED);
         }
