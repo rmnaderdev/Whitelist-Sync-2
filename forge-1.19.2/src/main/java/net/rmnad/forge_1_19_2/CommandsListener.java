@@ -60,7 +60,7 @@ public class CommandsListener {
                 Log.error("Error handling whitelist add command: " + e.getMessage());
             }
         }
-        else if (command.startsWith("op")) {
+        else if (command.startsWith("op ")) {
             if (!Config.COMMON.SYNC_OP_LIST.get()) {
                 return;
             }
@@ -79,7 +79,7 @@ public class CommandsListener {
                 Log.error("Error handling op command: " + e.getMessage());
             }
         }
-        else if (command.startsWith("deop")) {
+        else if (command.startsWith("deop ")) {
             if (!Config.COMMON.SYNC_OP_LIST.get()) {
                 return;
             }
@@ -98,7 +98,7 @@ public class CommandsListener {
                 Log.error("Error handling deop command: " + e.getMessage());
             }
         }
-        else if (command.startsWith("ban-ip")) {
+        else if (command.startsWith("ban-ip ")) {
             if (!Config.COMMON.WEB_SYNC_BANNED_IPS.get() || !(whitelistService instanceof WebService)) {
                 return;
             }
@@ -129,7 +129,7 @@ public class CommandsListener {
                 Log.error("Error handling ban-ip command: " + e.getMessage());
             }
         }
-        else if (command.startsWith("pardon-ip")) {
+        else if (command.startsWith("pardon-ip ")) {
             if (!Config.COMMON.WEB_SYNC_BANNED_IPS.get() || !(whitelistService instanceof WebService)) {
                 return;
             }
@@ -144,7 +144,7 @@ public class CommandsListener {
                 Log.error("Error handling pardon-ip command: " + e.getMessage());
             }
         }
-        else if (command.startsWith("ban")) {
+        else if (command.startsWith("ban ")) {
             if (!Config.COMMON.WEB_SYNC_BANNED_PLAYERS.get() || !(whitelistService instanceof WebService)) {
                 return;
             }
@@ -169,7 +169,7 @@ public class CommandsListener {
                 Log.error("Error handling ban command: " + e.getMessage());
             }
         }
-        else if (command.startsWith("pardon")) {
+        else if (command.startsWith("pardon ")) {
             if (!Config.COMMON.WEB_SYNC_BANNED_PLAYERS.get() || !(whitelistService instanceof WebService)) {
                 return;
             }
