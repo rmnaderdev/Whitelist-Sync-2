@@ -10,6 +10,7 @@ This mod listens for whitelist, op, ban, and ban-ip changes (using the normal Mi
 ## New in v2.7.0
 - Added support for syncing banned players and IPs to the database. (Only supported when using the Whitelist Sync web service)
 - Removed old whitelist sync commands. Normal Minecraft commands can be used now and the mod will update the database accordingly. (Use `/wl sync` to pull from the database and `/wl push` to push to the database still)
+- Added support for new Web Service database option (currently in beta). See [Whitelist Sync Web](https://whitelistsync.com/) for details.
 
 ## New in v2.5.0
 - No more shadowed JDBC dependencies! **MANUAL STEP REQUIRED for v2.5.0.** See Installation section below.
