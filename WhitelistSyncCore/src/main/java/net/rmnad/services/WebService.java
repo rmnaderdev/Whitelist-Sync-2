@@ -1038,7 +1038,7 @@ public class WebService implements BaseService {
         try {
             OkHttpClient client = getClient();
             Request request = new Request.Builder()
-                    .url(getApiHost() + "/api/bannedplayer/" + ip)
+                    .url(getApiHost() + "/api/bannedip/" + ip)
                     .addHeader("content-type", "application/json")
                     .addHeader("X-API-KEY", getApiKey())
                     .addHeader("server-uuid", serverUUID.toString())
