@@ -19,6 +19,9 @@ This mod listens for whitelist, op, ban, and ban-ip changes (using the normal Mi
 ## Download
 All releases can be found on the [Modrinth](https://modrinth.com/mod/wlsync2) page or on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/whitelistsync2).
 
+## Support/Questions/Feedback
+For issues with the mod please open an issue on [GitHub](https://github.com/rmnaderdev/Whitelist-Sync-2/issues). For other support requests, feature requests, or other general discussion. Please join the [Discord Server](https://discord.gg/7FMJN4kurr).
+
 ## Support the project
 If you like this project and want to support it, consider donating to my [PayPal](https://www.paypal.com/paypalme/PSVFX), [buymeacoffee](https://buymeacoffee.com/potatodotjar) or using the new [Whitelist Sync Web](https://whitelistsync.com) service! Any amount is appreciated!
 
