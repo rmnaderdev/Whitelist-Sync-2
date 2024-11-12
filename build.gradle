@@ -12,7 +12,7 @@ buildscript {
 }
 
 plugins {
-    id  "io.github.goooler.shadow" version "8.1.7"
+    id 'com.gradleup.shadow' version '8.3.5'
     id 'java'
     id 'maven-publish'
 }
@@ -47,8 +47,8 @@ ext {
 }
 
 subprojects {
-    apply plugin: "io.github.goooler.shadow"
     apply plugin: 'java'
+    apply plugin: 'com.gradleup.shadow'
     apply plugin: 'maven-publish'
 
     sourceCompatibility = 1.8
@@ -60,9 +60,6 @@ subprojects {
 
 clean {
     delete "target"
-}
-
-task setupCIWorkspace {
 }
 
 task copyConfigToRun(type: Copy) {

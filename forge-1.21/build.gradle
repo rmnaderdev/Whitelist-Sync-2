@@ -40,7 +40,7 @@ project.archivesBaseName = "${project.archivesBaseName}-forge-${minecraft_versio
 
 configurations {
     shade
-    implementation.extendsFrom shade
+    minecraftLibrary.extendsFrom shade
 }
 
 dependencies {

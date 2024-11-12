@@ -17,10 +17,6 @@ sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = co
 configurations {
     shade
     implementation.extendsFrom shade
-    cleanedAnnotations
-    implementation.exclude group: 'org.jetbrains' , module:'annotations'
-    implementation.exclude group: 'org.slf4j'
-    implementation.exclude group: 'com.google'
 }
 
 dependencies {
@@ -38,7 +34,6 @@ var shadeRelocateGroup = 'net.rmnad.shade'
 shadowJar {
     dependencies {
         exclude(dependency('org.jetbrains:annotations'))
-        exclude(dependency('org.slf4j::'))
     }
     relocate('okhttp3', "${shadeRelocateGroup}.okhttp3")
     relocate('com.microsoft', "${shadeRelocateGroup}.com.microsoft")
@@ -48,6 +43,7 @@ shadowJar {
     relocate('com.google.gson', "${shadeRelocateGroup}.com.google.gson")
     relocate('io.reactivex', "${shadeRelocateGroup}.io.reactivex")
     relocate('org.reactivestreams', "${shadeRelocateGroup}.org.reactivestreams")
+    relocate('org.slf4j', "${shadeRelocateGroup}.org.slf4j")
 
     archiveBaseName = "WhitelistSyncCore"
     archiveClassifier = ''
