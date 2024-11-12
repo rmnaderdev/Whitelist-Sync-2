@@ -141,22 +141,9 @@ dependencies {
     implementation('net.sf.jopt-simple:jopt-simple:5.0.4') { version { strictly '5.0.4' } }
 }
 
-// This block of code expands all declared replace properties in the specified resource targets.
-// A missing property will result in an error. Properties are expanded using ${} Groovy notation.
-// When "copyIdeResources" is enabled, this will also run before the game launches in IDE environments.
-// See https://docs.gradle.org/current/dsl/org.gradle.language.jvm.tasks.ProcessResources.html
-tasks.named('processResources', ProcessResources).configure {
-    var replaceProperties = [
-            minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
-            forge_version: forge_version, forge_version_range: forge_version_range,
-            loader_version_range: loader_version_range,
-            mod_id: project.mod_id, mod_name: project.mod_name, mod_license: project.mod_license, mod_version: project.version + '-' + project.ext.buildNumber,
-            mod_authors: project.mod_authors, mod_description: project.mod_description,
-    ]
-    inputs.properties replaceProperties
-
-    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
-        expand replaceProperties + [project: project]
+processResources {
+    filesMatching(['pack.mcmeta', 'mods.toml', 'META-INF/mods.toml', 'mixins.json', '*.mixins.json']) {
+        expand project.properties
     }
 }
 

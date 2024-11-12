@@ -10,8 +10,7 @@ pluginManagement {
   }
 }
 
-rootProject.name = 'whitelistsync-common'
-
+rootProject.name = 'WhitelistSync2'
 
 include ':WhitelistSyncCore'
 include ':forge-1.16.5'
@@ -23,14 +22,3 @@ include ':forge-1.20.2'
 include ':forge-1.20.6'
 include ':forge-1.21'
 include ':fabric-1.21'
-
-//project(':WhitelistSyncCore').projectDir = "$rootDir/WhitelistSyncCore" as File
-//project(':forge-1.16.5').projectDir = "$rootDir/forge-1.16.5" as File
-//project(':forge-1.18.2').projectDir = "$rootDir/forge-1.18.2" as File
-//project(':forge-1.19').projectDir = "$rootDir/forge-1.19" as File
-//project(':forge-1.19.2').projectDir = "$rootDir/forge-1.19.2" as File
-//project(':forge-1.20.1').projectDir = "$rootDir/forge-1.20.1" as File
-//project(':forge-1.20.2').projectDir = "$rootDir/forge-1.20.2" as File
-//project(':forge-1.20.6').projectDir = "$rootDir/forge-1.20.6" as File
-//project(':forge-1.21').projectDir = "$rootDir/forge-1.21" as File
-//project(':fabric-1.21').projectDir = "$rootDir/fabric-1.21" as File
