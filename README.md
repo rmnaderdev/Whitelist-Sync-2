@@ -25,7 +25,9 @@ For issues with the mod please open an issue on [GitHub](https://github.com/rmna
 ## Support the project
 If you like this project and want to support it, consider donating to my [PayPal](https://www.paypal.com/paypalme/PSVFX), [buymeacoffee](https://buymeacoffee.com/potatodotjar) or using the new [Whitelist Sync Web](https://whitelistsync.com) service! Any amount is appreciated!
 
-## Supported Versions
+## Supported Forge Versions
+- 1.21.3
+- 1.21.1
 - 1.21
 - 1.20.6
 - 1.20.2

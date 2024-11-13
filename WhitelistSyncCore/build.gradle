@@ -2,12 +2,6 @@ description = "WhitelistSyncCore"
 
 apply plugin: 'eclipse'
 
-eclipse {
-    project {
-        name = "WhitelistSync(WhitelistSyncCore)"
-    }
-}
-
 repositories {
     mavenCentral()
 }

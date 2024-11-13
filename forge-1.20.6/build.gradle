@@ -1,7 +1,6 @@
 plugins {
     id 'eclipse'
     id 'idea'
-    id 'maven-publish'
     id 'net.minecraftforge.gradle' version '[6.0.24,6.2)'
 }
 
@@ -12,11 +11,6 @@ base {
     archivesName = mod_id
 }
 
-eclipse {
-    project {
-        name = "WhitelistSync(Forge-1.20.6)"
-    }
-}
 
 // Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = JavaLanguageVersion.of(21) // Need this here so eclipse task generates correctly.

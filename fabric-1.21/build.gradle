@@ -3,21 +3,9 @@ plugins {
     id 'maven-publish'
 }
 
-eclipse {
-    project {
-        name = "WhitelistSync(Forge-1.21)"
-    }
-}
-
 project.archivesBaseName = "${project.archivesBaseName}-fabric-${minecraft_version}"
 version = project.mod_version
 group = project.mod_group_id
-
-eclipse {
-    project {
-        name = "WhitelistSync(Fabric-1.21)"
-    }
-}
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = JavaLanguageVersion.of(21) // Need this here so eclipse task generates correctly.
 

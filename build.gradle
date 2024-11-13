@@ -19,12 +19,6 @@ plugins {
 
 apply plugin: 'eclipse'
 
-eclipse {
-    project {
-        name = "WhitelistSync"
-    }
-}
-
 allprojects {
     repositories {
         mavenLocal()
@@ -36,14 +30,6 @@ allprojects {
 
     group = mod_group_id
     version = mod_version
-}
-
-class Globals {
-    String buildNumber = System.getenv().BUILD_NUMBER ?: "Dev"
-}
-
-ext {
-    globals = new Globals()
 }
 
 subprojects {
