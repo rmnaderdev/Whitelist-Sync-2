@@ -15,12 +15,12 @@ ext.buildNumber = System.getenv().BUILD_NUMBER ?: "Dev"
 
 loom {
 //    splitEnvironmentSourceSets()
-//
-//    mods {
-//        "whitelistsync2" {
-//            sourceSet sourceSets.main
-//        }
-//    }
+
+    mods {
+        "whitelistsync2" {
+            sourceSet sourceSets.main
+        }
+    }
 
 }
 

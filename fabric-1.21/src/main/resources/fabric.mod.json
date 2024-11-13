@@ -11,12 +11,15 @@
 		"homepage": "${mod_page}",
 		"sources": "${mod_page}"
 	},
+	"mixins": [
+		"whitelistsync2.mixins.json"
+	],
 	"license": "${mod_license}",
 	"icon": "assets/whitelistsync2/logo.webp",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"net.rmnad.Whitelistsync2"
+			"net.rmnad.fabric_1_21.WhitelistSync2"
 		]
 	},
 	"depends": {
