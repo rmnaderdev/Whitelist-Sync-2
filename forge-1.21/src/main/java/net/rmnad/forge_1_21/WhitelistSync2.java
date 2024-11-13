@@ -6,6 +6,7 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.rmnad.callbacks.IServerControl;
@@ -20,6 +21,8 @@ public class WhitelistSync2
 
     // Database Service
     public static BaseService whitelistService;
+    public static IServerControl serverControl;
+    public static boolean errorOnSetup = false;
 
     public static WhitelistPollingThread pollingThread;
     public static WhitelistSocketThread socketThread;
@@ -59,11 +62,20 @@ public class WhitelistSync2
     public static void SetupWhitelistSync(MinecraftServer server) {
         Log.verbose = Config.COMMON.VERBOSE_LOGGING.get();
 
-        IServerControl serverControl = new ServerControl(server);
-
-        boolean errorOnSetup = false;
+        serverControl = new ServerControl(server);
 
         LogMessages.ShowModStartupHeaderMessage();
+
+        try {
+            // If this fails, let the server continue to start up.
+            VersionChecker versionChecker = new VersionChecker(Config.COMMON.WEB_API_HOST.get());
+            var modInfo = ModList.get().getModContainerById("whitelistsync2");
+            var minecraftInfo = ModList.get().getModContainerById("minecraft");
+
+            if (modInfo.isPresent() && minecraftInfo.isPresent()) {
+                versionChecker.checkVersion(modInfo.get().getModInfo().getVersion(), minecraftInfo.get().getModInfo().getVersion());
+            }
+        } catch (Exception ignore) {}
 
         switch (Config.COMMON.DATABASE_MODE.get()) {
             case SQLITE:
@@ -116,6 +128,12 @@ public class WhitelistSync2
             }
         }
 
+        StartSyncThread();
+
+        LogMessages.ShowModStartupFooterMessage();
+    }
+
+    public static void StartSyncThread() {
         if (whitelistService instanceof WebService) {
             socketThread = new WhitelistSocketThread((WebService) whitelistService, errorOnSetup, serverControl);
 
@@ -129,17 +147,32 @@ public class WhitelistSync2
             );
             pollingThread.start();
         }
+    }
 
-        LogMessages.ShowModStartupFooterMessage();
+    public static void RestartSyncThread() {
+        if (errorOnSetup)
+            return;
+
+        ShutdownWhitelistSync();
+        StartSyncThread();
     }
 
     public static void ShutdownWhitelistSync() {
         if(pollingThread != null) {
             pollingThread.interrupt();
+
+            try {
+                pollingThread.join();
+            } catch (InterruptedException ignored) {}
+
         }
 
         if(socketThread != null) {
             socketThread.interrupt();
+
+            try {
+                socketThread.join();
+            } catch (InterruptedException ignored) {}
         }
     }
 }

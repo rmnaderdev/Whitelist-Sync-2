@@ -1,9 +1,6 @@
 package net.rmnad.services;
 
-import com.microsoft.signalr.HttpHubConnectionBuilder;
-import com.microsoft.signalr.HubConnection;
-import com.microsoft.signalr.HubConnectionBuilder;
-import com.microsoft.signalr.HubConnectionState;
+import com.microsoft.signalr.*;
 import net.rmnad.Log;
 import net.rmnad.callbacks.*;
 import net.rmnad.logging.LogMessages;
@@ -16,7 +13,6 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
 
 public class WhitelistSocketThread extends Thread {
 
@@ -24,9 +20,6 @@ public class WhitelistSocketThread extends Thread {
     private final boolean errorOnSetup;
 
     private final IServerControl serverControl;
-
-    private HubConnection hubConnection;
-    private final CountDownLatch latch = new CountDownLatch(1);
 
     public WhitelistSocketThread(
             WebService service,
@@ -59,11 +52,11 @@ public class WhitelistSocketThread extends Thread {
             }
 
             HttpHubConnectionBuilder hubConnectionBuilder = HubConnectionBuilder
-                    .create(this.service.getApiHost() + "/hubs/whitelistsyncmodhub")
-                    .withHeader("X-Api-Key", this.service.getApiKey())
+                    .create(this.service.apiClientHelper.getApiHost() + "/hubs/whitelistsyncmodhub")
+                    .withHeader("X-Api-Key", this.service.apiClientHelper.getApiKey())
                     .withHeader("server-uuid", this.service.serverUUID.toString());
 
-            if (this.service.getApiHost().startsWith("https://localhost")) {
+            if (this.service.apiClientHelper.getApiHost().startsWith("https://localhost")) {
                 X509TrustManager trustManager = new X509TrustManager() {
                     public X509Certificate[] getAcceptedIssuers() {
                         return new X509Certificate[] {};
@@ -84,17 +77,30 @@ public class WhitelistSocketThread extends Thread {
                 sslContext.init(null, new TrustManager[] { trustManager }, null);
 
                 hubConnectionBuilder = hubConnectionBuilder.setHttpClientBuilderCallback(httpClientBuilder -> httpClientBuilder
-                        .retryOnConnectionFailure(true)
                         .sslSocketFactory(sslContext.getSocketFactory(), trustManager)
                         .hostnameVerifier((hostname, session) -> true));
-            } else {
-                hubConnectionBuilder = hubConnectionBuilder.setHttpClientBuilderCallback(httpClientBuilder -> httpClientBuilder
-                        .retryOnConnectionFailure(true));
             }
 
-            this.hubConnection = hubConnectionBuilder.build();
+            HubConnection hubConnection = hubConnectionBuilder.build();
 
-            this.hubConnection.on("WhitelistUpdated", (data, serverUuidStr) -> {
+            hubConnection.on("SyncRequested", () -> {
+                Log.info("WebSyncThread: Sync requested from server.");
+                this.service.pullDatabaseWhitelistToLocal();
+
+                if (this.service.syncingOpList) {
+                    this.service.pullDatabaseOpsToLocal();
+                }
+
+                if (this.service.syncingBannedPlayers) {
+                    this.service.pullDatabaseBannedPlayersToLocal();
+                }
+
+                if (this.service.syncingBannedIps) {
+                    this.service.pullDatabaseBannedIpsToLocal();
+                }
+            });
+
+            hubConnection.on("WhitelistUpdated", (data, serverUuidStr) -> {
 
                 UUID serverUUID = serverUuidStr != null ? UUID.fromString(serverUuidStr) : null;
 
@@ -109,17 +115,17 @@ public class WhitelistSocketThread extends Thread {
                     UUID uuid = UUID.fromString(entry.getUuid());
 
                     if (isWhitelisted) {
-                        Log.info("Web-Socket: Player whitelisted: " + name + " (" + uuid + ")");
+                        Log.info("WebSyncThread: Player whitelisted: " + name + " (" + uuid + ")");
                         this.serverControl.addWhitelistPlayer(uuid, name);
                     } else {
-                        Log.info("Web-Socket: Player removed from whitelist: " + name + " (" + uuid + ")");
+                        Log.info("WebSyncThread: Player removed from whitelist: " + name + " (" + uuid + ")");
                         this.serverControl.removeWhitelistPlayer(uuid, name);
                     }
                 }
             }, WhitelistEntry[].class, String.class);
 
             if (this.service.syncingOpList) {
-                this.hubConnection.on("OpUpdated", (data, serverUuidStr) -> {
+                hubConnection.on("OpUpdated", (data, serverUuidStr) -> {
 
                     UUID serverUUID = serverUuidStr != null ? UUID.fromString(serverUuidStr) : null;
 
@@ -134,10 +140,10 @@ public class WhitelistSocketThread extends Thread {
                         UUID uuid = UUID.fromString(player.getUuid());
 
                         if (isOpped) {
-                            Log.info("Web-Socket: Player opped: " + name + " (" + uuid + ")");
+                            Log.info("WebSyncThread: Player opped: " + name + " (" + uuid + ")");
                             this.serverControl.addOpPlayer(uuid, name);
                         } else {
-                            Log.info("Web-Socket: Player deopped: " + name + " (" + uuid + ")");
+                            Log.info("WebSyncThread: Player deopped: " + name + " (" + uuid + ")");
                             this.serverControl.removeOpPlayer(uuid, name);
                         }
                     }
@@ -146,7 +152,7 @@ public class WhitelistSocketThread extends Thread {
             }
 
             if (this.service.syncingBannedPlayers) {
-                this.hubConnection.on("BannedPlayerUpdated", (data, serverUuidStr) -> {
+                hubConnection.on("BannedPlayerUpdated", (data, serverUuidStr) -> {
 
                     UUID serverUUID = serverUuidStr != null ? UUID.fromString(serverUuidStr) : null;
 
@@ -162,10 +168,10 @@ public class WhitelistSocketThread extends Thread {
                         String reason = player.getReason();
 
                         if (isBanned) {
-                            Log.info("Web-Socket: Player banned: " + name + " (" + uuid + "). Reason: " + reason);
+                            Log.info("WebSyncThread: Player banned: " + name + " (" + uuid + "). Reason: " + reason);
                             this.serverControl.addBannedPlayer(uuid, name, reason);
                         } else {
-                            Log.info("Web-Socket: Player unbanned: " + name + " (" + uuid + ")");
+                            Log.info("WebSyncThread: Player unbanned: " + name + " (" + uuid + ")");
                             this.serverControl.removeBannedPlayer(uuid, name);
                         }
                     }
@@ -174,7 +180,7 @@ public class WhitelistSocketThread extends Thread {
             }
 
             if (this.service.syncingBannedIps) {
-                this.hubConnection.on("BannedIpUpdated", (data, serverUuidStr) -> {
+                hubConnection.on("BannedIpUpdated", (data, serverUuidStr) -> {
 
                     UUID serverUUID = serverUuidStr != null ? UUID.fromString(serverUuidStr) : null;
 
@@ -189,10 +195,10 @@ public class WhitelistSocketThread extends Thread {
                         String reason = player.getReason();
 
                         if (isBanned) {
-                            Log.info("Web-Socket: Ip banned: " + ip + ". Reason: " + reason);
+                            Log.info("WebSyncThread: Ip banned: " + ip + ". Reason: " + reason);
                             this.serverControl.addBannedIp(ip, reason);
                         } else {
-                            Log.info("Web-Socket: Ip unbanned: " + ip + ".");
+                            Log.info("WebSyncThread: Ip unbanned: " + ip + ".");
                             this.serverControl.removeBannedIp(ip);
                         }
                     }
@@ -200,72 +206,66 @@ public class WhitelistSocketThread extends Thread {
                 }, BannedIpEntry[].class, String.class);
             }
 
-            // Handle reconnection
-            this.hubConnection.onClosed(error -> {
-                Log.info("Web-Socket: Disconnected from server.");
-
-                // Ignore if the latch is already at 0 (shutting down)
-                if (this.latch.getCount() == 0) {
-                    return;
-                }
-
-                // Wait 5 seconds before reconnecting
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException ignored) {}
-
-                // Loop until connected
-                while (this.hubConnection.getConnectionState().equals(HubConnectionState.DISCONNECTED)) {
-                    // Reconnect
-                    hubConnection.start().subscribe(this::onConnected, this::onConnectError);
-
-                    // Wait 5 seconds before checking again
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException ignored) {}
-                }
+            hubConnection.onClosed(error -> {
+                Log.info("WebSyncThread: Disconnected from server.");
             });
 
-            // Start the connection
-            hubConnection.start().subscribe(this::onConnected, this::onConnectError);
-
             try {
-                // Keep the thread alive
-                latch.await();
-            } catch (InterruptedException ignored) {
-                Log.debug("WhitelistSocketThread interrupted. Exiting.");
-                this.latch.countDown();
+                // Start the connection
+                hubConnection.start().blockingAwait();
+            } catch (HttpRequestException e) {
+                if (e.getStatusCode() == 401) {
+                    // Auth failed
+                    Log.error("WebSyncThread: Authentication error: Invalid API key. Exiting.");
+                    this.interrupt();
+                } else if (e.getStatusCode() == 403) {
+                    // Connected client limit reached
+                    String errorMessage = e.getMessage();
+                    Log.error("WebSyncThread: " + errorMessage + ". Exiting.");
+                    this.interrupt();
+                }
             }
 
-            this.hubConnection.stop().blockingAwait();
-            this.hubConnection.close();
+            try {
+                while (true) {
+                    if (hubConnection.getConnectionState().equals(HubConnectionState.DISCONNECTED)) {
+                        Thread.sleep(5000);
+
+                        Log.info("WebSyncThread: Disconnected from server. Attempting to reconnect.");
+
+                        try {
+                            // Start the connection
+                            hubConnection.start().blockingAwait();
+                        } catch (HttpRequestException e) {
+                            if (e.getStatusCode() == 401) {
+                                // Auth failed
+                                Log.error("WebSyncThread: Authentication error: Invalid API key. Exiting.");
+                                this.interrupt();
+                            } else if (e.getStatusCode() == 403) {
+                                // Connected client limit reached
+                                Log.error("WebSyncThread: Connected client limit reached. Please disconnect other servers and try reconnecting using the command '/wl restart'. Exiting.");
+                                this.interrupt();
+                            } else {
+                                Log.error("WebSyncThread: Failed to reconnect to server. Retrying in 5 seconds.");
+                            }
+                        } catch (Exception e) {
+                            Log.error("WebSyncThread: Failed to reconnect to server. Retrying in 5 seconds.");
+                        }
+                    }
+
+                    Thread.sleep(5000);
+                }
+            } catch (InterruptedException ignored) {
+                Log.debug("WhitelistSocketThread interrupted. Exiting.");
+            }
+
+            Log.info("WebSyncThread: Stopping...");
+            hubConnection.stop().blockingAwait();
+            hubConnection.close();
+            Log.info("WebSyncThread: Stopped");
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void onConnected() {
-        Log.info("Web-Socket: Connected to server");
-
-        // Get latest whitelist and op list on connect
-        this.service.pullDatabaseWhitelistToLocal();
-
-        if (this.service.syncingOpList) {
-            this.service.pullDatabaseOpsToLocal();
-        }
-
-        if (this.service.syncingBannedPlayers) {
-            this.service.pullDatabaseBannedPlayersToLocal();
-        }
-
-        if (this.service.syncingBannedIps) {
-            this.service.pullDatabaseBannedIpsToLocal();
-        }
-
-        Log.info("Database sync complete");
-    }
-
-    private void onConnectError(Throwable error) {
-        Log.error("Web-Socket: Connection error");
-    }
 }

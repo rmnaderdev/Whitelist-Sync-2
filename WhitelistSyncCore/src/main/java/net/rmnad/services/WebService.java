@@ -11,14 +11,8 @@ import net.rmnad.json.BannedPlayersFileReader;
 import net.rmnad.json.OppedPlayersFileReader;
 import net.rmnad.json.WhitelistedPlayersFileReader;
 import net.rmnad.logging.LogMessages;
-import net.rmnad.models.BannedIp;
-import net.rmnad.models.BannedPlayer;
-import net.rmnad.models.OppedPlayer;
-import net.rmnad.models.WhitelistedPlayer;
-import net.rmnad.models.api.BannedIpEntry;
-import net.rmnad.models.api.BannedPlayerEntry;
-import net.rmnad.models.api.OpEntry;
-import net.rmnad.models.api.WhitelistEntry;
+import net.rmnad.models.*;
+import net.rmnad.models.api.*;
 import okhttp3.*;
 
 import javax.net.ssl.*;
@@ -31,10 +25,8 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class WebService implements BaseService {
-
+    public final ApiClientHelper apiClientHelper;
     private final String serverFilePath;
-    private final String apiHost;
-    private final String apiKey;
     public final boolean syncingOpList;
     public final boolean syncingBannedPlayers;
     public final boolean syncingBannedIps;
@@ -50,70 +42,22 @@ public class WebService implements BaseService {
             boolean syncingBannedIps,
             IServerControl serverControl) {
 
+        this.apiClientHelper = new ApiClientHelper(apiHost, apiKey);
         this.serverFilePath = serverFilePath;
-        this.apiHost = apiHost;
-        this.apiKey = apiKey;
         this.syncingOpList = syncingOpList;
         this.syncingBannedPlayers = syncingBannedPlayers;
         this.syncingBannedIps = syncingBannedIps;
         this.serverControl = serverControl;
-
-        Log.debug("WebService API host is set to: " + this.apiHost);
-    }
-
-    private OkHttpClient getClient() throws NoSuchAlgorithmException, KeyManagementException {
-
-        OkHttpClient.Builder builder = new OkHttpClient.Builder();
-
-        if (this.apiHost.contains("https://localhost")) {
-            Log.debug("Creating custom http client (ignoring SSL)");
-            X509TrustManager trustManager = new X509TrustManager() {
-                public X509Certificate[] getAcceptedIssuers() {
-                    return new X509Certificate[] {};
-                }
-
-                @Override
-                public void checkClientTrusted(X509Certificate[] arg0, String arg1) {
-                    // not implemented
-                }
-
-                @Override
-                public void checkServerTrusted(X509Certificate[] arg0, String arg1) {
-                    // not implemented
-                }
-            };
-
-            SSLContext sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(null, new TrustManager[] { trustManager }, null);
-
-
-            builder.hostnameVerifier((hostname, session) -> true)
-                    .sslSocketFactory(sslContext.getSocketFactory(), trustManager);
-        }
-
-        return builder.build();
-    }
-
-    public String getApiHost() {
-        if (this.apiHost.endsWith("/")) {
-            return this.apiHost.substring(0, this.apiHost.length() - 1);
-        }
-
-        return this.apiHost;
-    }
-
-    public String getApiKey() {
-        return apiKey;
     }
 
     private boolean isAuthenticated() {
         try {
-            OkHttpClient client = getClient();
+            OkHttpClient client = this.apiClientHelper.getClient();
 
             Request request = new Request.Builder()
-                    .url(getApiHost() + "/api/authentication")
+                    .url(this.apiClientHelper.getApiHost() + "/api/authentication")
                     .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", getApiKey())
+                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
                     .addHeader("server-uuid", serverUUID.toString())
                     .build();
 
@@ -133,11 +77,11 @@ public class WebService implements BaseService {
 
     private WhitelistEntry[] getWhitelistEntries() {
         try {
-            OkHttpClient client = getClient();
+            OkHttpClient client = this.apiClientHelper.getClient();
             Request request = new Request.Builder()
-                    .url(getApiHost() + "/api/whitelist")
+                    .url(this.apiClientHelper.getApiHost() + "/api/whitelist")
                     .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", getApiKey())
+                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
                     .addHeader("server-uuid", serverUUID.toString())
                     .build();
 
@@ -166,11 +110,11 @@ public class WebService implements BaseService {
 
     private OpEntry[] getOpEntries() {
         try {
-            OkHttpClient client = getClient();
+            OkHttpClient client = this.apiClientHelper.getClient();
             Request request = new Request.Builder()
-                    .url(getApiHost() + "/api/op")
+                    .url(this.apiClientHelper.getApiHost() + "/api/op")
                     .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", getApiKey())
+                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
                     .addHeader("server-uuid", serverUUID.toString())
                     .build();
 
@@ -196,11 +140,11 @@ public class WebService implements BaseService {
 
     private BannedPlayerEntry[] getBannedPlayerEntries() {
         try {
-            OkHttpClient client = getClient();
+            OkHttpClient client = this.apiClientHelper.getClient();
             Request request = new Request.Builder()
-                    .url(getApiHost() + "/api/bannedplayer")
+                    .url(this.apiClientHelper.getApiHost() + "/api/bannedplayer")
                     .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", getApiKey())
+                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
                     .addHeader("server-uuid", serverUUID.toString())
                     .build();
 
@@ -226,11 +170,11 @@ public class WebService implements BaseService {
 
     private BannedIpEntry[] getBannedIpEntries() {
         try {
-            OkHttpClient client = getClient();
+            OkHttpClient client = this.apiClientHelper.getClient();
             Request request = new Request.Builder()
-                    .url(getApiHost() + "/api/bannedip")
+                    .url(this.apiClientHelper.getApiHost() + "/api/bannedip")
                     .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", getApiKey())
+                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
                     .addHeader("server-uuid", serverUUID.toString())
                     .build();
 
@@ -256,12 +200,12 @@ public class WebService implements BaseService {
 
     @Override
     public boolean initializeDatabase() {
-        if (getApiHost().isEmpty()) {
+        if (this.apiClientHelper.getApiHost().isEmpty()) {
             Log.error("API Host is not set. Please set the API Host in the configuration file.");
             return false;
         }
 
-        if (getApiKey().isEmpty()) {
+        if (this.apiClientHelper.getApiKey().isEmpty()) {
             Log.error("API Key is not set. Please set the API Key in the configuration file.");
             return false;
         }
@@ -271,7 +215,7 @@ public class WebService implements BaseService {
             return true;
         } else {
             Log.error("Failed to authenticate with Web API. If you have not setup an API Key, you can create one on the website at "
-                    + getApiHost() + ". Don't forget to set the API Key in the configuration file.");
+                    + this.apiClientHelper.getApiHost() + ". Don't forget to set the API Key in the configuration file.");
             return false;
         }
     }
@@ -359,7 +303,7 @@ public class WebService implements BaseService {
                 = WhitelistedPlayersFileReader.getWhitelistedPlayers(this.serverFilePath);
 
         try {
-            OkHttpClient client = getClient();
+            OkHttpClient client = this.apiClientHelper.getClient();
 
             // Set body of request
             Gson gson = new Gson();
@@ -375,9 +319,9 @@ public class WebService implements BaseService {
             RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
 
             Request request = new Request.Builder()
-                    .url(getApiHost() + "/api/whitelist/push")
+                    .url(this.apiClientHelper.getApiHost() + "/api/whitelist/push")
                     .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", getApiKey())
+                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
                     .addHeader("server-uuid", serverUUID.toString())
                     .post(body)
                     .build();
@@ -390,7 +334,7 @@ public class WebService implements BaseService {
                     Log.debug(LogMessages.SuccessPushLocalWhitelistToDatabase(timeTaken, records));
                     return true;
                 } else {
-                    Log.error("Failed to update database with local records. Response Code: " + response.code());
+                    HandleApiNonSuccess(response, "Error pushing local whitelist to database!");
                 }
             }
         } catch (ConnectException e) {
@@ -417,7 +361,7 @@ public class WebService implements BaseService {
                 = OppedPlayersFileReader.getOppedPlayers(this.serverFilePath);
 
         try {
-            OkHttpClient client = getClient();
+            OkHttpClient client = this.apiClientHelper.getClient();
 
             // Set body of request
             Gson gson = new Gson();
@@ -433,9 +377,9 @@ public class WebService implements BaseService {
             RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
 
             Request request = new Request.Builder()
-                    .url(getApiHost() + "/api/op/push")
+                    .url(this.apiClientHelper.getApiHost() + "/api/op/push")
                     .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", getApiKey())
+                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
                     .addHeader("server-uuid", serverUUID.toString())
                     .post(body)
                     .build();
@@ -448,7 +392,7 @@ public class WebService implements BaseService {
                     Log.debug(LogMessages.SuccessPushLocalWhitelistToDatabase(timeTaken, records));
                     return true;
                 } else {
-                    Log.error("Failed to update database with local records. Response Code: " + response.code());
+                    HandleApiNonSuccess(response, "Error pushing local ops to database!");
                 }
             }
         } catch (ConnectException e) {
@@ -473,7 +417,7 @@ public class WebService implements BaseService {
                 = BannedPlayersFileReader.getBannedPlayers(this.serverFilePath);
 
         try {
-            OkHttpClient client = getClient();
+            OkHttpClient client = this.apiClientHelper.getClient();
 
             // Set body of request
             Gson gson = new Gson();
@@ -490,9 +434,9 @@ public class WebService implements BaseService {
             RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
 
             Request request = new Request.Builder()
-                    .url(getApiHost() + "/api/bannedplayer/push")
+                    .url(this.apiClientHelper.getApiHost() + "/api/bannedplayer/push")
                     .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", getApiKey())
+                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
                     .addHeader("server-uuid", serverUUID.toString())
                     .post(body)
                     .build();
@@ -505,7 +449,7 @@ public class WebService implements BaseService {
                     Log.debug(LogMessages.SuccessPushLocalBannedPlayersToDatabase(timeTaken, records));
                     return true;
                 } else {
-                    Log.error("Failed to update database with local records. Response Code: " + response.code());
+                    HandleApiNonSuccess(response, "Error pushing local banned players to database!");
                 }
             }
         } catch (ConnectException e) {
@@ -531,7 +475,7 @@ public class WebService implements BaseService {
                 = BannedIpsFileReader.getBannedIps(this.serverFilePath);
 
         try {
-            OkHttpClient client = getClient();
+            OkHttpClient client = this.apiClientHelper.getClient();
 
             // Set body of request
             Gson gson = new Gson();
@@ -547,9 +491,9 @@ public class WebService implements BaseService {
             RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
 
             Request request = new Request.Builder()
-                    .url(getApiHost() + "/api/bannedip/push")
+                    .url(this.apiClientHelper.getApiHost() + "/api/bannedip/push")
                     .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", getApiKey())
+                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
                     .addHeader("server-uuid", serverUUID.toString())
                     .post(body)
                     .build();
@@ -562,7 +506,7 @@ public class WebService implements BaseService {
                     Log.debug(LogMessages.SuccessPushLocalBannedIpsToDatabase(timeTaken, records));
                     return true;
                 } else {
-                    Log.error("Failed to update database with local records. Response Code: " + response.code());
+                    HandleApiNonSuccess(response, "Error pushing local banned ips to database!");
                 }
             }
         } catch (ConnectException e) {
@@ -741,11 +685,11 @@ public class WebService implements BaseService {
             String jsonBody = gson.toJson(json);
             RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
 
-            OkHttpClient client = getClient();
+            OkHttpClient client = this.apiClientHelper.getClient();
             Request request = new Request.Builder()
-                    .url(getApiHost() + "/api/whitelist")
+                    .url(this.apiClientHelper.getApiHost() + "/api/whitelist")
                     .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", getApiKey())
+                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
                     .addHeader("server-uuid", serverUUID.toString())
                     .post(body)
                     .build();
@@ -758,7 +702,7 @@ public class WebService implements BaseService {
 
                     return true;
                 } else {
-                    Log.error("Error adding " + name + " to whitelist database! Response Code: " + response.code());
+                    HandleApiNonSuccess(response, "Error adding " + name + " to whitelist database!");
                 }
             }
 
@@ -780,7 +724,7 @@ public class WebService implements BaseService {
 
         long startTime = System.currentTimeMillis();
         try {
-            OkHttpClient client = getClient();
+            OkHttpClient client = this.apiClientHelper.getClient();
             Gson gson = new Gson();
             JsonObject json = new JsonObject();
             json.addProperty("uuid", uuid.toString());
@@ -789,9 +733,9 @@ public class WebService implements BaseService {
             RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
 
             Request request = new Request.Builder()
-                    .url(getApiHost() + "/api/op")
+                    .url(this.apiClientHelper.getApiHost() + "/api/op")
                     .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", getApiKey())
+                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
                     .addHeader("server-uuid", serverUUID.toString())
                     .post(body)
                     .build();
@@ -804,7 +748,7 @@ public class WebService implements BaseService {
 
                     return true;
                 } else {
-                    Log.error("Error opping " + name + " in database! Response Code: " + response.code());
+                    HandleApiNonSuccess(response, "Error opping " + name + " in database!");
                 }
             }
 
@@ -822,11 +766,11 @@ public class WebService implements BaseService {
     public boolean removeWhitelistPlayer(UUID uuid, String name) {
         long startTime = System.currentTimeMillis();
         try {
-            OkHttpClient client = getClient();
+            OkHttpClient client = this.apiClientHelper.getClient();
             Request request = new Request.Builder()
-                    .url(getApiHost() + "/api/whitelist/" + uuid.toString())
+                    .url(this.apiClientHelper.getApiHost() + "/api/whitelist/" + uuid.toString())
                     .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", getApiKey())
+                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
                     .addHeader("server-uuid", serverUUID.toString())
                     .delete()
                     .build();
@@ -839,7 +783,7 @@ public class WebService implements BaseService {
 
                     return true;
                 } else {
-                    Log.error("Error removing " + name + " from whitelist database! Response Code: " + response.code());
+                    HandleApiNonSuccess(response, "Error removing " + name + " from whitelist database!");
                 }
             }
 
@@ -862,11 +806,11 @@ public class WebService implements BaseService {
 
         long startTime = System.currentTimeMillis();
         try {
-            OkHttpClient client = getClient();
+            OkHttpClient client = this.apiClientHelper.getClient();
             Request request = new Request.Builder()
-                    .url(getApiHost() + "/api/op/" + uuid.toString())
+                    .url(this.apiClientHelper.getApiHost() + "/api/op/" + uuid.toString())
                     .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", getApiKey())
+                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
                     .addHeader("server-uuid", serverUUID.toString())
                     .delete()
                     .build();
@@ -879,7 +823,7 @@ public class WebService implements BaseService {
 
                     return true;
                 } else {
-                    Log.error("Error opping " + name + " in database! Response Code: " + response.code());
+                    HandleApiNonSuccess(response, "Error deopping " + name + " in database!");
                 }
             }
         } catch (ConnectException e) {
@@ -910,11 +854,11 @@ public class WebService implements BaseService {
             String jsonBody = gson.toJson(json);
             RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
 
-            OkHttpClient client = getClient();
+            OkHttpClient client = this.apiClientHelper.getClient();
             Request request = new Request.Builder()
-                    .url(getApiHost() + "/api/bannedplayer")
+                    .url(this.apiClientHelper.getApiHost() + "/api/bannedplayer")
                     .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", getApiKey())
+                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
                     .addHeader("server-uuid", serverUUID.toString())
                     .post(body)
                     .build();
@@ -927,7 +871,7 @@ public class WebService implements BaseService {
 
                     return true;
                 } else {
-                    Log.error("Error banning " + name + " in database! Response Code: " + response.code());
+                    HandleApiNonSuccess(response, "Error banning " + name + " in database!");
                 }
             }
 
@@ -957,11 +901,11 @@ public class WebService implements BaseService {
             String jsonBody = gson.toJson(json);
             RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
 
-            OkHttpClient client = getClient();
+            OkHttpClient client = this.apiClientHelper.getClient();
             Request request = new Request.Builder()
-                    .url(getApiHost() + "/api/bannedip")
+                    .url(this.apiClientHelper.getApiHost() + "/api/bannedip")
                     .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", getApiKey())
+                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
                     .addHeader("server-uuid", serverUUID.toString())
                     .post(body)
                     .build();
@@ -974,7 +918,7 @@ public class WebService implements BaseService {
 
                     return true;
                 } else {
-                    Log.error("Error banning " + ip + " in database! Response Code: " + response.code());
+                    HandleApiNonSuccess(response, "Error banning " + ip + " in database!");
                 }
             }
 
@@ -996,11 +940,11 @@ public class WebService implements BaseService {
 
         long startTime = System.currentTimeMillis();
         try {
-            OkHttpClient client = getClient();
+            OkHttpClient client = this.apiClientHelper.getClient();
             Request request = new Request.Builder()
-                    .url(getApiHost() + "/api/bannedplayer/" + uuid.toString())
+                    .url(this.apiClientHelper.getApiHost() + "/api/bannedplayer/" + uuid.toString())
                     .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", getApiKey())
+                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
                     .addHeader("server-uuid", serverUUID.toString())
                     .delete()
                     .build();
@@ -1013,7 +957,7 @@ public class WebService implements BaseService {
 
                     return true;
                 } else {
-                    Log.error("Error unbanning " + name + " in database! Response Code: " + response.code());
+                    HandleApiNonSuccess(response, "Error unbanning " + name + " in database!");
                 }
             }
 
@@ -1036,11 +980,11 @@ public class WebService implements BaseService {
 
         long startTime = System.currentTimeMillis();
         try {
-            OkHttpClient client = getClient();
+            OkHttpClient client = this.apiClientHelper.getClient();
             Request request = new Request.Builder()
-                    .url(getApiHost() + "/api/bannedip/" + ip)
+                    .url(this.apiClientHelper.getApiHost() + "/api/bannedip/" + ip)
                     .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", getApiKey())
+                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
                     .addHeader("server-uuid", serverUUID.toString())
                     .delete()
                     .build();
@@ -1053,7 +997,7 @@ public class WebService implements BaseService {
 
                     return true;
                 } else {
-                    Log.error("Error unbanning " + ip + " in database! Response Code: " + response.code());
+                    HandleApiNonSuccess(response, "Error unbanning " + ip + " in database!");
                 }
             }
 
@@ -1065,5 +1009,18 @@ public class WebService implements BaseService {
         }
 
         return false;
+    }
+
+    private static void HandleApiNonSuccess(Response response, String messagePrefix) {
+        if (!response.isSuccessful() && response.body() != null) {
+            Gson gson = new Gson();
+            try {
+                ErrorMessage error = gson.fromJson(response.body().string(), ErrorMessage.class);
+                Log.error(messagePrefix + " Error: " + error.getMessage());
+                return;
+            } catch (IOException ignored) {}
+
+            Log.error(messagePrefix + " Response Code: " + response.code());
+        }
     }
 }

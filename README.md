@@ -63,9 +63,10 @@ If you like this project and want to support it, consider donating to my [PayPal
 - Push your existing whitelist to the server (/wl copyServerToDatabase) or pull changes from your database (/wl sync).
 - Enjoy!
 
-## Commands (v2.7.0 and above)
-- /wl sync | Refreshes local synced data from database.
-- /wl push | Pushes local server data to the database. Use this if you want to update the database with the current server data.
+## Commands
+- /wl sync [whitelist|op|banned-players|banned-ips] | Refreshes local synced data from database.
+- /wl push [whitelist|op|banned-players|banned-ips] | Pushes local server data to the database. Use this if you want to update the database with the current server data.
+- /wl restart | Restarts the sync thread. Useful if the sync thread stops or has issues.
 
 ## Legacy Commands (For v2.6.0 and below ONLY!)
 
