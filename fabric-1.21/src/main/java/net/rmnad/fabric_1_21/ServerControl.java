@@ -4,7 +4,9 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.server.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.rmnad.Log;
 import net.rmnad.callbacks.IServerControl;
+import net.rmnad.logging.LogMessages;
 
 import java.util.List;
 import java.util.UUID;
@@ -76,5 +78,18 @@ public class ServerControl implements IServerControl {
     public void removeBannedIp(String ip) {
         // Called when IP removed from ban list
         server.getPlayerManager().getIpBanList().remove(ip);
+    }
+
+    @Override
+    public void checkWhitelistEnabled() {
+        if (!server.getPlayerManager().isWhitelistEnabled()) {
+            Log.info(LogMessages.WARN_WHITELIST_NOT_ENABLED);
+            server.getPlayerManager().setWhitelistEnabled(true);
+        }
+    }
+
+    @Override
+    public void versionCheck() {
+        // TODO: Implement version check for Fabric
     }
 }

@@ -4,12 +4,14 @@ package net.rmnad.services;
 import io.reactivex.rxjava3.annotations.Nullable;
 import net.rmnad.Log;
 import net.rmnad.callbacks.*;
+import net.rmnad.config.WhitelistSyncConfig;
 import net.rmnad.json.OppedPlayersFileReader;
 import net.rmnad.json.WhitelistedPlayersFileReader;
 import net.rmnad.logging.LogMessages;
 import net.rmnad.models.BannedPlayer;
 import net.rmnad.models.OppedPlayer;
 import net.rmnad.models.WhitelistedPlayer;
+import okio.Path;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -21,20 +23,10 @@ import java.util.UUID;
 public class SqLiteService implements BaseService {
 
     private final String databasePath;
-    private final String serverFilePath;
-    private final boolean syncingOpList;
-
     private final IServerControl serverControl;
     
-    public SqLiteService(
-            String databasePath,
-            String serverFilePath,
-            boolean syncingOpList,
-            IServerControl serverControl) {
-
-        this.databasePath = databasePath;
-        this.serverFilePath = serverFilePath;
-        this.syncingOpList = syncingOpList;
+    public SqLiteService(IServerControl serverControl) {
+        this.databasePath = WhitelistSyncConfig.Config.getSqliteDatabasePath();
         this.serverControl = serverControl;
     }
 
@@ -102,7 +94,7 @@ public class SqLiteService implements BaseService {
                 stmt = conn.createStatement();
                 stmt.executeUpdate(sql);
 
-                if (this.syncingOpList) {
+                if (WhitelistSyncConfig.Config.isSyncOpList()) {
                     // SQL statement for creating a new table
                     sql = "CREATE TABLE IF NOT EXISTS op (\n"
                             + "	uuid text NOT NULL PRIMARY KEY,\n"
@@ -172,7 +164,7 @@ public class SqLiteService implements BaseService {
         // ArrayList for opped players.
         ArrayList<OppedPlayer> oppedPlayers = new ArrayList<>();
 
-        if (!this.syncingOpList) {
+        if (!WhitelistSyncConfig.Config.isSyncOpList()) {
             Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return oppedPlayers;
         }
@@ -236,7 +228,7 @@ public class SqLiteService implements BaseService {
         boolean success;
         long startTime = System.currentTimeMillis();
 
-        ArrayList<WhitelistedPlayer> whitelistedPlayers = WhitelistedPlayersFileReader.getWhitelistedPlayers(this.serverFilePath);
+        ArrayList<WhitelistedPlayer> whitelistedPlayers = WhitelistedPlayersFileReader.getWhitelistedPlayers();
 
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -273,7 +265,7 @@ public class SqLiteService implements BaseService {
 
     @Override
     public boolean pushLocalOpsToDatabase() {
-        if (!this.syncingOpList) {
+        if (!WhitelistSyncConfig.Config.isSyncOpList()) {
             Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return false;
         }
@@ -284,7 +276,7 @@ public class SqLiteService implements BaseService {
         boolean success;
         long startTime = System.currentTimeMillis();
 
-        ArrayList<OppedPlayer> oppedPlayers = OppedPlayersFileReader.getOppedPlayers(this.serverFilePath);
+        ArrayList<OppedPlayer> oppedPlayers = OppedPlayersFileReader.getOppedPlayers();
 
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -336,7 +328,7 @@ public class SqLiteService implements BaseService {
         boolean success;
         long startTime = System.currentTimeMillis();
 
-        ArrayList<WhitelistedPlayer> localWhitelistedPlayers = WhitelistedPlayersFileReader.getWhitelistedPlayers(this.serverFilePath);
+        ArrayList<WhitelistedPlayer> localWhitelistedPlayers = WhitelistedPlayersFileReader.getWhitelistedPlayers();
 
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -390,7 +382,7 @@ public class SqLiteService implements BaseService {
     public boolean pullDatabaseOpsToLocal() {
 
         // TODO: Compare level and bypassesPlayerLimit, sync if needed
-        if (!this.syncingOpList) {
+        if (!WhitelistSyncConfig.Config.isSyncOpList()) {
             Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return false;
         }
@@ -400,7 +392,7 @@ public class SqLiteService implements BaseService {
 
         long startTime = System.currentTimeMillis();
 
-        ArrayList<OppedPlayer> localOppedPlayers = OppedPlayersFileReader.getOppedPlayers(this.serverFilePath);
+        ArrayList<OppedPlayer> localOppedPlayers = OppedPlayersFileReader.getOppedPlayers();
 
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -499,7 +491,7 @@ public class SqLiteService implements BaseService {
 
     @Override
     public boolean addOppedPlayer(UUID uuid, String name) {
-        if (!this.syncingOpList) {
+        if (!WhitelistSyncConfig.Config.isSyncOpList()) {
             Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return false;
         }
@@ -582,7 +574,7 @@ public class SqLiteService implements BaseService {
 
     @Override
     public boolean removeOppedPlayer(UUID uuid, String name) {
-        if (!this.syncingOpList) {
+        if (!WhitelistSyncConfig.Config.isSyncOpList()) {
             Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return false;
         }

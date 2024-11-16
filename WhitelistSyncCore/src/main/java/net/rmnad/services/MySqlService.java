@@ -3,6 +3,7 @@ package net.rmnad.services;
 import io.reactivex.rxjava3.annotations.Nullable;
 import net.rmnad.Log;
 import net.rmnad.callbacks.*;
+import net.rmnad.config.WhitelistSyncConfig;
 import net.rmnad.json.OppedPlayersFileReader;
 import net.rmnad.json.WhitelistedPlayersFileReader;
 import net.rmnad.logging.LogMessages;
@@ -24,27 +25,17 @@ public class MySqlService implements BaseService {
     private final String username;
     private final String password;
 
-    private final String serverFilePath;
-    private final boolean syncingOpList;
     private final IServerControl serverControl;
 
-    public MySqlService(
-            String databaseName,
-            String ip,
-            int port,
-            String username,
-            String password,
-            String serverFilePath,
-            boolean syncingOpList,
-            IServerControl serverControl) {
+    public MySqlService(IServerControl serverControl) {
 
-        this.databaseName = databaseName;
+        String ip = WhitelistSyncConfig.Config.getMysqlIp();
+        int port = WhitelistSyncConfig.Config.getMysqlPort();
+        this.databaseName = WhitelistSyncConfig.Config.getMysqlDbName();
         this.url = "jdbc:mysql://" + ip + ":" + port + "/?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC";
-        this.username = username;
-        this.password = password;
+        this.username = WhitelistSyncConfig.Config.getMysqlUsername();
+        this.password = WhitelistSyncConfig.Config.getMysqlPassword();
 
-        this.serverFilePath = serverFilePath;
-        this.syncingOpList = syncingOpList;
         this.serverControl = serverControl;
     }
 
@@ -102,7 +93,7 @@ public class MySqlService implements BaseService {
                 stmt.close();
 
                 // Create opped players table if enabled
-                if (this.syncingOpList) {
+                if (WhitelistSyncConfig.Config.isSyncOpList()) {
                     sql = "CREATE TABLE IF NOT EXISTS " + databaseName + ".op ("
                             + "`uuid` VARCHAR(60) NOT NULL,"
                             + "`name` VARCHAR(20) NOT NULL,"
@@ -176,7 +167,7 @@ public class MySqlService implements BaseService {
         // ArrayList for opped players.
         ArrayList<OppedPlayer> oppedPlayers = new ArrayList<>();
 
-        if (!this.syncingOpList) {
+        if (!WhitelistSyncConfig.Config.isSyncOpList()) {
             Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return oppedPlayers;
         }
@@ -238,7 +229,7 @@ public class MySqlService implements BaseService {
         long startTime = System.currentTimeMillis();
 
         ArrayList<WhitelistedPlayer> whitelistedPlayers
-                = WhitelistedPlayersFileReader.getWhitelistedPlayers(this.serverFilePath);
+                = WhitelistedPlayersFileReader.getWhitelistedPlayers();
 
         try {
             // Connect to database.
@@ -271,7 +262,7 @@ public class MySqlService implements BaseService {
 
     @Override
     public boolean pushLocalOpsToDatabase() {
-        if (!this.syncingOpList) {
+        if (!WhitelistSyncConfig.Config.isSyncOpList()) {
             Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return false;
         }
@@ -282,7 +273,7 @@ public class MySqlService implements BaseService {
         long startTime = System.currentTimeMillis();
 
         ArrayList<OppedPlayer> oppedPlayers
-                = OppedPlayersFileReader.getOppedPlayers(this.serverFilePath);
+                = OppedPlayersFileReader.getOppedPlayers();
 
         try {
             // Connect to database.
@@ -332,7 +323,7 @@ public class MySqlService implements BaseService {
             long startTime = System.currentTimeMillis();
 
             ArrayList<WhitelistedPlayer> localWhitelistedPlayers
-                    = WhitelistedPlayersFileReader.getWhitelistedPlayers(this.serverFilePath);
+                    = WhitelistedPlayersFileReader.getWhitelistedPlayers();
 
             // Open connection
             Connection conn = DriverManager.getConnection(url, username, password);
@@ -381,7 +372,7 @@ public class MySqlService implements BaseService {
 
     @Override
     public boolean pullDatabaseOpsToLocal() {
-        if (!this.syncingOpList) {
+        if (!WhitelistSyncConfig.Config.isSyncOpList()) {
             Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return false;
         }
@@ -392,7 +383,7 @@ public class MySqlService implements BaseService {
             long startTime = System.currentTimeMillis();
 
             ArrayList<OppedPlayer> localOppedPlayers
-                    = OppedPlayersFileReader.getOppedPlayers(this.serverFilePath);
+                    = OppedPlayersFileReader.getOppedPlayers();
 
             // Open connection
             Connection conn = DriverManager.getConnection(url, username, password);
@@ -483,7 +474,7 @@ public class MySqlService implements BaseService {
 
     @Override
     public boolean addOppedPlayer(UUID uuid, String name) {
-        if (!this.syncingOpList) {
+        if (!WhitelistSyncConfig.Config.isSyncOpList()) {
             Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return false;
         }
@@ -557,7 +548,7 @@ public class MySqlService implements BaseService {
 
     @Override
     public boolean removeOppedPlayer(UUID uuid, String name) {
-        if (!this.syncingOpList) {
+        if (!WhitelistSyncConfig.Config.isSyncOpList()) {
             Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return false;
         }

@@ -13,4 +13,7 @@ public interface IServerControl {
 
     void addBannedIp(String ip, String reason);
     void removeBannedIp(String ip);
+
+    void checkWhitelistEnabled();
+    void versionCheck();
 }

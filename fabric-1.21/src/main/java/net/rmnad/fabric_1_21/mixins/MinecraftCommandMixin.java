@@ -10,8 +10,11 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.rmnad.Log;
+import net.rmnad.WhitelistSyncCore;
+import net.rmnad.config.WhitelistSyncConfig;
 import net.rmnad.fabric_1_21.WhitelistSync2;
 import net.rmnad.services.BaseService;
+import net.rmnad.services.WebService;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -25,7 +28,7 @@ public class MinecraftCommandMixin {
     private void onCommandExecute(ParseResults<ServerCommandSource> parseResults, String x, CallbackInfo ci) {
         var context = parseResults.getContext().build(parseResults.getReader().getString());
         String command = context.getInput();
-        BaseService whitelistService = WhitelistSync2.whitelistService;
+        BaseService whitelistService = WhitelistSyncCore.whitelistService;
 
         // Ignore if player does not have permission
         if (!context.getSource().hasPermissionLevel(3))
@@ -62,9 +65,9 @@ public class MinecraftCommandMixin {
             }
         }
         else if (command.startsWith("op ")) {
-//            if (!Config.COMMON.SYNC_OP_LIST.get()) {
-//                return;
-//            }
+            if (!WhitelistSyncConfig.Config.isSyncOpList()) {
+                return;
+            }
 
             try {
                 Collection<GameProfile> targets = GameProfileArgumentType.getProfileArgument(context, "targets");
@@ -81,9 +84,9 @@ public class MinecraftCommandMixin {
             }
         }
         else if (command.startsWith("deop ")) {
-//            if (!Config.COMMON.SYNC_OP_LIST.get()) {
-//                return;
-//            }
+            if (!WhitelistSyncConfig.Config.isSyncOpList()) {
+                return;
+            }
 
             try {
                 Collection<GameProfile> targets = GameProfileArgumentType.getProfileArgument(context, "targets");
@@ -100,9 +103,9 @@ public class MinecraftCommandMixin {
             }
         }
         else if (command.startsWith("ban-ip ")) {
-//            if (!Config.COMMON.WEB_SYNC_BANNED_IPS.get() || !(whitelistService instanceof WebService)) {
-//                return;
-//            }
+            if (!WhitelistSyncConfig.Config.isWebSyncBannedIps() || !(whitelistService instanceof WebService)) {
+                return;
+            }
 
             try {
                 String target = StringArgumentType.getString(context, "target");
@@ -131,9 +134,9 @@ public class MinecraftCommandMixin {
             }
         }
         else if (command.startsWith("pardon-ip ")) {
-//            if (!Config.COMMON.WEB_SYNC_BANNED_IPS.get() || !(whitelistService instanceof WebService)) {
-//                return;
-//            }
+            if (!WhitelistSyncConfig.Config.isWebSyncBannedIps() || !(whitelistService instanceof WebService)) {
+                return;
+            }
 
             try {
                 String target = StringArgumentType.getString(context, "target");
@@ -146,9 +149,9 @@ public class MinecraftCommandMixin {
             }
         }
         else if (command.startsWith("ban ")) {
-//            if (!Config.COMMON.WEB_SYNC_BANNED_PLAYERS.get() || !(whitelistService instanceof WebService)) {
-//                return;
-//            }
+            if (!WhitelistSyncConfig.Config.isWebSyncBannedPlayers() || !(whitelistService instanceof WebService)) {
+                return;
+            }
 
             try {
                 Collection<GameProfile> targets = GameProfileArgumentType.getProfileArgument(context, "targets");
@@ -171,9 +174,9 @@ public class MinecraftCommandMixin {
             }
         }
         else if (command.startsWith("pardon ")) {
-//            if (!Config.COMMON.WEB_SYNC_BANNED_PLAYERS.get() || !(whitelistService instanceof WebService)) {
-//                return;
-//            }
+            if (!WhitelistSyncConfig.Config.isWebSyncBannedPlayers() || !(whitelistService instanceof WebService)) {
+                return;
+            }
 
             try {
                 Collection<GameProfile> targets = GameProfileArgumentType.getProfileArgument(context, "targets");

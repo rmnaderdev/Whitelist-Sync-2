@@ -7,7 +7,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.IpBanListEntry;
 import net.minecraft.server.players.UserBanListEntry;
 import net.minecraft.server.players.UserWhiteListEntry;
+import net.minecraftforge.fml.ModList;
+import net.rmnad.Log;
 import net.rmnad.callbacks.IServerControl;
+import net.rmnad.logging.LogMessages;
+import net.rmnad.services.VersionChecker;
 
 import java.util.List;
 import java.util.UUID;
@@ -79,5 +83,30 @@ public class ServerControl implements IServerControl {
     public void removeBannedIp(String ip) {
         // Called when IP removed from ban list
         server.getPlayerList().getIpBans().remove(new IpBanListEntry(ip));
+    }
+
+    @Override
+    public void checkWhitelistEnabled() {
+        // Check if whitelisting is enabled.
+        if (!this.server.getPlayerList().isUsingWhitelist()) {
+            Log.info(LogMessages.WARN_WHITELIST_NOT_ENABLED);
+            this.server.getPlayerList().setUsingWhiteList(true);
+        }
+    }
+
+    @Override
+    public void versionCheck() {
+        try {
+            // If this fails, let the server continue to start up.
+            VersionChecker versionChecker = new VersionChecker();
+            var modInfo = ModList.get().getModContainerById("whitelistsync2");
+            var minecraftInfo = ModList.get().getModContainerById("minecraft");
+
+            if (modInfo.isPresent() && minecraftInfo.isPresent()) {
+                versionChecker.checkVersion(
+                        modInfo.get().getModInfo().getVersion(),
+                        minecraftInfo.get().getModInfo().getVersion());
+            }
+        } catch (Exception ignore) {}
     }
 }

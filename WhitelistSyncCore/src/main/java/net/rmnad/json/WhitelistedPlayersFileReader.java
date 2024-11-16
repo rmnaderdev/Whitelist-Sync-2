@@ -6,6 +6,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import net.rmnad.Log;
 import net.rmnad.models.WhitelistedPlayer;
+import okio.Path;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -20,7 +21,9 @@ public class WhitelistedPlayersFileReader {
     private static JsonParser parser = new JsonParser();
 
     // Get Arraylist of whitelisted players on server.
-    public static ArrayList<WhitelistedPlayer> getWhitelistedPlayers(String serverRootPath) {
+    public static ArrayList<WhitelistedPlayer> getWhitelistedPlayers() {
+        Path serverRootPath = Path.get(".");
+
         ArrayList<WhitelistedPlayer> users = new ArrayList<>();
 
         // Get Json data
@@ -40,7 +43,7 @@ public class WhitelistedPlayersFileReader {
         return users;
     }
 
-    private static JsonArray getWhitelistedPlayersFromFile(String serverRootPath) {
+    private static JsonArray getWhitelistedPlayersFromFile(Path serverRootPath) {
         JsonArray whitelist = null;
         try {
             // Read data as Json array from server directory

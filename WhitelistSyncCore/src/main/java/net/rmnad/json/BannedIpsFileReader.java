@@ -6,6 +6,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import net.rmnad.Log;
 import net.rmnad.models.BannedIp;
+import okio.Path;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -17,7 +18,9 @@ import java.util.ArrayList;
 public class BannedIpsFileReader {
     private static JsonParser parser = new JsonParser();
 
-    public static ArrayList<BannedIp> getBannedIps(String serverRootPath) {
+    public static ArrayList<BannedIp> getBannedIps() {
+        Path serverRootPath = Path.get(".");
+
         ArrayList<BannedIp> bannedPlayers = new ArrayList<>();
 
         // Get Json data
@@ -42,7 +45,7 @@ public class BannedIpsFileReader {
         return bannedPlayers;
     }
 
-    private static JsonArray getBannedIpsFromFile(String serverRootPath) {
+    private static JsonArray getBannedIpsFromFile(Path serverRootPath) {
         JsonArray bannedPlayers = null;
         try {
             // Read data as Json array from server directory
