@@ -11,6 +11,7 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.rmnad.callbacks.IServerControl;
 import net.rmnad.Log;
+import net.rmnad.config.ConfigService;
 import net.rmnad.logging.LogMessages;
 import net.rmnad.services.*;
 
@@ -22,14 +23,13 @@ public class WhitelistSync2
     // Database Service
     public static BaseService whitelistService;
     public static IServerControl serverControl;
+    public static ConfigService configService;
     public static boolean errorOnSetup = false;
 
     public static WhitelistPollingThread pollingThread;
     public static WhitelistSocketThread socketThread;
 
     public WhitelistSync2() {
-        // Register config
-        Config.register(ModLoadingContext.get());
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(CommandsListener.class);
         Log.setLogger(new ForgeLogger());
@@ -60,7 +60,12 @@ public class WhitelistSync2
     }
 
     public static void SetupWhitelistSync(MinecraftServer server) {
-        Log.verbose = Config.COMMON.VERBOSE_LOGGING.get();
+        // Register config
+        configService = new ConfigService(server.getServerDirectory());
+        configService.loadConfig();
+
+
+        Log.verbose = configService.config.isVerboseLogging();
 
         serverControl = new ServerControl(server);
 

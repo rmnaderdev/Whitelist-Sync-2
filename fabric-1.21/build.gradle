@@ -38,8 +38,16 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
+    // https://maven.wispforest.io/#/releases/io/wispforest/owo-lib
+    annotationProcessor modImplementation("io.wispforest:owo-lib:${project.owo_version}")
+
     // Core library dependency
     shade project(path: ':WhitelistSyncCore', configuration: 'shadow')
+
+    // Used for development. These are added by the user later.
+    // Need "minecraftLibrary" so the libraries are used in the dev environment. Without them, the JDBC drivers won't be loaded.
+    modImplementation "curse.maven:mysqlconnector-561280:4684944"
+    modImplementation "curse.maven:sqliteconnector-560832:3582173"
 }
 
 processResources {

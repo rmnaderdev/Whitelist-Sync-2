@@ -2,15 +2,19 @@ package net.rmnad.fabric_1_21;
 
 import net.fabricmc.api.ModInitializer;
 
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.server.MinecraftServer;
 import net.rmnad.Log;
 import net.rmnad.callbacks.IServerControl;
 import net.rmnad.logging.LogMessages;
 import net.rmnad.services.*;
+import net.rmnad.fabric_1_21.WhitelistSync2Config;
 
 public class WhitelistSync2 implements ModInitializer {
 	public static final String MODID = "whitelistsync2";
+
+	public static final WhitelistSync2Config CONFIG = WhitelistSync2Config.createAndLoad();
 
 	// Database Service
 	public static BaseService whitelistService;
@@ -22,8 +26,9 @@ public class WhitelistSync2 implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		// Register config
-		//Config.register(ModLoadingContext.get());
+		CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> {
+			new WhitelistSyncCommands(dispatcher);
+		}));
 
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> {
 			SetupWhitelistSync(server);
@@ -38,7 +43,7 @@ public class WhitelistSync2 implements ModInitializer {
 	}
 
 	public static void SetupWhitelistSync(MinecraftServer server) {
-		//Log.verbose = Config.COMMON.VERBOSE_LOGGING.get();
+		Log.verbose = CONFIG.verboseLogging();
 
 		serverControl = new ServerControl(server);
 
@@ -46,7 +51,7 @@ public class WhitelistSync2 implements ModInitializer {
 
 //		try {
 //			// If this fails, let the server continue to start up.
-//			VersionChecker versionChecker = new VersionChecker(Config.COMMON.WEB_API_HOST.get());
+//			VersionChecker versionChecker = new VersionChecker(CONFIG.webApiHost());
 //			var modInfo = ModList.get().getModContainerById("whitelistsync2");
 //			var minecraftInfo = ModList.get().getModContainerById("minecraft");
 //
@@ -54,57 +59,57 @@ public class WhitelistSync2 implements ModInitializer {
 //				versionChecker.checkVersion(modInfo.get().getModInfo().getVersion(), minecraftInfo.get().getModInfo().getVersion());
 //			}
 //		} catch (Exception ignore) {}
-//
-//		switch (Config.COMMON.DATABASE_MODE.get()) {
-//			case SQLITE:
-//				whitelistService = new SqLiteService(
-//						Config.COMMON.SQLITE_DATABASE_PATH.get(),
-//						server.getServerDirectory().toFile().getAbsolutePath(),
-//						Config.COMMON.SYNC_OP_LIST.get(),
-//						serverControl
-//				);
-//				break;
-//			case MYSQL:
-//				whitelistService = new MySqlService(
-//						Config.COMMON.MYSQL_DB_NAME.get(),
-//						Config.COMMON.MYSQL_IP.get(),
-//						Config.COMMON.MYSQL_PORT.get(),
-//						Config.COMMON.MYSQL_USERNAME.get(),
-//						Config.COMMON.MYSQL_PASSWORD.get(),
-//						server.getServerDirectory().toFile().getAbsolutePath(),
-//						Config.COMMON.SYNC_OP_LIST.get(),
-//						serverControl
-//				);
-//				break;
-//			case WEB:
-//				whitelistService = new WebService(
-//						server.getServerDirectory().toFile().getAbsolutePath(),
-//						Config.COMMON.WEB_API_HOST.get(),
-//						Config.COMMON.WEB_API_KEY.get(),
-//						Config.COMMON.SYNC_OP_LIST.get(),
-//						Config.COMMON.WEB_SYNC_BANNED_PLAYERS.get(),
-//						Config.COMMON.WEB_SYNC_BANNED_IPS.get(),
-//						serverControl
-//				);
-//				break;
-//			default:
-//				Log.error(LogMessages.ERROR_WHITELIST_MODE);
-//				errorOnSetup = true;
-//				break;
-//		}
-//
-//		if (!errorOnSetup) {
-//			if (whitelistService.initializeDatabase()) {
-//				// Database is setup!
-//				// Check if whitelisting is enabled.
-//				if (!server.getPlayerManager().isWhitelistEnabled()) {
-//					Log.info(LogMessages.WARN_WHITELIST_NOT_ENABLED);
-//					server.getPlayerManager().setWhitelistEnabled(true);
-//				}
-//			} else {
-//				errorOnSetup = true;
-//			}
-//		}
+
+		switch (CONFIG.databaseMode()) {
+			case SQLITE:
+				whitelistService = new SqLiteService(
+						CONFIG.sqliteDatabasePath(),
+						server.getRunDirectory().toFile().getAbsolutePath(),
+						CONFIG.syncOpList(),
+						serverControl
+				);
+				break;
+			case MYSQL:
+				whitelistService = new MySqlService(
+						CONFIG.mysqlDbName(),
+						CONFIG.mysqlIp(),
+						CONFIG.mysqlPort(),
+						CONFIG.mysqlUsername(),
+						CONFIG.mysqlPassword(),
+						server.getRunDirectory().toFile().getAbsolutePath(),
+						CONFIG.syncOpList(),
+						serverControl
+				);
+				break;
+			case WEB:
+				whitelistService = new WebService(
+						server.getRunDirectory().toFile().getAbsolutePath(),
+						CONFIG.webApiHost(),
+						CONFIG.webApiKey(),
+						CONFIG.syncOpList(),
+						CONFIG.webSyncBannedPlayers(),
+						CONFIG.webSyncBannedIps(),
+						serverControl
+				);
+				break;
+			default:
+				Log.error(LogMessages.ERROR_WHITELIST_MODE);
+				errorOnSetup = true;
+				break;
+		}
+
+		if (!errorOnSetup) {
+			if (whitelistService.initializeDatabase()) {
+				// Database is setup!
+				// Check if whitelisting is enabled.
+				if (!server.getPlayerManager().isWhitelistEnabled()) {
+					Log.info(LogMessages.WARN_WHITELIST_NOT_ENABLED);
+					server.getPlayerManager().setWhitelistEnabled(true);
+				}
+			} else {
+				errorOnSetup = true;
+			}
+		}
 
 		StartSyncThread();
 
@@ -117,13 +122,13 @@ public class WhitelistSync2 implements ModInitializer {
 
 			socketThread.start();
 		} else {
-//			pollingThread = new WhitelistPollingThread(
-//					whitelistService,
-//					Config.COMMON.SYNC_OP_LIST.get(),
-//					errorOnSetup,
-//					Config.COMMON.SYNC_TIMER.get()
-//			);
-//			pollingThread.start();
+			pollingThread = new WhitelistPollingThread(
+					whitelistService,
+					CONFIG.syncOpList(),
+					errorOnSetup,
+					CONFIG.syncTimer()
+			);
+			pollingThread.start();
 		}
 	}
 

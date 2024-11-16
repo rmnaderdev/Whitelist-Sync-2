@@ -1,23 +1,22 @@
-package net.rmnad.forge_1_21;
+package net.rmnad.fabric_1_21;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.builder.ArgumentBuilder;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.Component;
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Text;
 import net.rmnad.services.WebService;
 
 public class WhitelistSyncCommands {
 
-    public WhitelistSyncCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
+    public WhitelistSyncCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(
-                LiteralArgumentBuilder.<CommandSourceStack>literal("wl")
-                        .requires(cs -> cs.hasPermission(3))
+                CommandManager.literal("wl")
+                        .requires(source -> source.hasPermissionLevel(3))
                         .then(registerSync())
                         .then(registerPush())
                         .then(registerRestart())
@@ -32,88 +31,88 @@ public class WhitelistSyncCommands {
             = new SimpleCommandExceptionType(new LiteralMessage("Error pushing local whitelist to database, please check console for details."));
 
     // Lambdas for each sync method to reduce code duplication
-    private static void syncWhitelist(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    private static void syncWhitelist(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         if (WhitelistSync2.whitelistService.pullDatabaseWhitelistToLocal()) {
-            context.getSource().sendSuccess(() -> Component.literal("Local whitelist up to date with database."), false);
+            context.getSource().sendFeedback(() -> Text.literal("Local whitelist up to date with database."), false);
         } else {
             throw SYNC_DB_ERROR.create();
         }
     }
 
-    private static void syncOps(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    private static void syncOps(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         if (WhitelistSync2.whitelistService.pullDatabaseOpsToLocal()) {
-            context.getSource().sendSuccess(() -> Component.literal("Local op list up to date with database."), false);
+            context.getSource().sendFeedback(() -> Text.literal("Local op list up to date with database."), false);
         } else {
             throw SYNC_DB_ERROR.create();
         }
     }
 
-    private static void syncBannedPlayers(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    private static void syncBannedPlayers(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         if (WhitelistSync2.whitelistService.pullDatabaseBannedPlayersToLocal()) {
-            context.getSource().sendSuccess(() -> Component.literal("Local banned players up to date with database."), false);
+            context.getSource().sendFeedback(() -> Text.literal("Local banned players up to date with database."), false);
         } else {
             throw SYNC_DB_ERROR.create();
         }
     }
 
-    private static void syncBannedIps(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    private static void syncBannedIps(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         if (WhitelistSync2.whitelistService.pullDatabaseBannedIpsToLocal()) {
-            context.getSource().sendSuccess(() -> Component.literal("Local banned ips up to date with database."), false);
+            context.getSource().sendFeedback(() -> Text.literal("Local banned ips up to date with database."), false);
         } else {
             throw SYNC_DB_ERROR.create();
         }
     }
 
     // Lambdas for each sync method to reduce code duplication
-    private static void pushWhitelist(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    private static void pushWhitelist(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         if (WhitelistSync2.whitelistService.pushLocalWhitelistToDatabase()) {
-            context.getSource().sendSuccess(() -> Component.literal("Pushed local whitelist to database."), false);
+            context.getSource().sendFeedback(() -> Text.literal("Pushed local whitelist to database."), false);
         } else {
             throw PUSH_DB_ERROR.create();
         }
     }
 
-    private static void pushOps(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    private static void pushOps(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         if (WhitelistSync2.whitelistService.pushLocalOpsToDatabase()) {
-            context.getSource().sendSuccess(() -> Component.literal("Pushed local op list to database."), false);
+            context.getSource().sendFeedback(() -> Text.literal("Pushed local op list to database."), false);
         } else {
             throw PUSH_DB_ERROR.create();
         }
     }
 
-    private static void pushBannedPlayers(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    private static void pushBannedPlayers(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         if (WhitelistSync2.whitelistService.pushLocalBannedPlayersToDatabase()) {
-            context.getSource().sendSuccess(() -> Component.literal("Pushed local banned players to database."), false);
+            context.getSource().sendFeedback(() -> Text.literal("Pushed local banned players to database."), false);
         } else {
             throw PUSH_DB_ERROR.create();
         }
     }
 
-    private static void pushBannedIps(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    private static void pushBannedIps(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         if (WhitelistSync2.whitelistService.pushLocalBannedIpsToDatabase()) {
-            context.getSource().sendSuccess(() -> Component.literal("Pushed local banned ips to database."), false);
+            context.getSource().sendFeedback(() -> Text.literal("Pushed local banned ips to database."), false);
         } else {
             throw PUSH_DB_ERROR.create();
         }
     }
 
 
-    static ArgumentBuilder<CommandSourceStack, ?> registerSync() {
-        var syncBaseCommand = Commands.literal("sync")
+    static ArgumentBuilder<ServerCommandSource, ?> registerSync() {
+        var syncBaseCommand = CommandManager.literal("sync")
             .executes(context -> {
                 syncWhitelist(context);
 
-                if (Config.COMMON.SYNC_OP_LIST.get()) {
+                if (WhitelistSync2.CONFIG.syncOpList()) {
                     syncOps(context);
                 }
 
                 if (WhitelistSync2.whitelistService instanceof WebService
-                        && Config.COMMON.WEB_SYNC_BANNED_PLAYERS.get()) {
+                        && WhitelistSync2.CONFIG.webSyncBannedPlayers()) {
                     syncBannedPlayers(context);
                 }
 
                 if (WhitelistSync2.whitelistService instanceof WebService
-                        && Config.COMMON.WEB_SYNC_BANNED_IPS.get()) {
+                        && WhitelistSync2.CONFIG.webSyncBannedIps()) {
                     syncBannedIps(context);
                 }
 
@@ -121,25 +120,25 @@ public class WhitelistSyncCommands {
             });
 
         // Handle just whitelist sync
-        syncBaseCommand = syncBaseCommand.then(Commands.literal("whitelist").executes(context -> {
+        syncBaseCommand = syncBaseCommand.then(CommandManager.literal("whitelist").executes(context -> {
             syncWhitelist(context);
             return 0;
         }));
 
         // Handle just op list sync
-        syncBaseCommand = syncBaseCommand.then(Commands.literal("op").executes(context -> {
+        syncBaseCommand = syncBaseCommand.then(CommandManager.literal("op").executes(context -> {
             syncOps(context);
             return 0;
         }));
 
         // Handle just banned players sync
-        syncBaseCommand = syncBaseCommand.then(Commands.literal("banned-players").executes(context -> {
+        syncBaseCommand = syncBaseCommand.then(CommandManager.literal("banned-players").executes(context -> {
             syncBannedPlayers(context);
             return 0;
         }));
 
         // Handle just banned ips sync
-        syncBaseCommand = syncBaseCommand.then(Commands.literal("banned-ips").executes(context -> {
+        syncBaseCommand = syncBaseCommand.then(CommandManager.literal("banned-ips").executes(context -> {
             syncBannedIps(context);
             return 0;
         }));
@@ -147,22 +146,22 @@ public class WhitelistSyncCommands {
         return syncBaseCommand;
     }
 
-    static ArgumentBuilder<CommandSourceStack, ?> registerPush() {
-        var pushBaseCommand = Commands.literal("push")
+    static ArgumentBuilder<ServerCommandSource, ?> registerPush() {
+        var pushBaseCommand = CommandManager.literal("push")
             .executes(context -> {
                 pushWhitelist(context);
 
-                if (Config.COMMON.SYNC_OP_LIST.get()) {
+                if (WhitelistSync2.CONFIG.syncOpList()) {
                     pushOps(context);
                 }
 
                 if (WhitelistSync2.whitelistService instanceof WebService
-                        && Config.COMMON.WEB_SYNC_BANNED_PLAYERS.get()) {
+                        && WhitelistSync2.CONFIG.webSyncBannedPlayers()) {
                     pushBannedPlayers(context);
                 }
 
                 if (WhitelistSync2.whitelistService instanceof WebService
-                        && Config.COMMON.WEB_SYNC_BANNED_IPS.get()) {
+                        && WhitelistSync2.CONFIG.webSyncBannedIps()) {
                     pushBannedIps(context);
                 }
 
@@ -170,25 +169,25 @@ public class WhitelistSyncCommands {
             });
 
         // Handle just whitelist push
-        pushBaseCommand = pushBaseCommand.then(Commands.literal("whitelist").executes(context -> {
+        pushBaseCommand = pushBaseCommand.then(CommandManager.literal("whitelist").executes(context -> {
             pushWhitelist(context);
             return 0;
         }));
 
         // Handle just op list push
-        pushBaseCommand = pushBaseCommand.then(Commands.literal("op").executes(context -> {
+        pushBaseCommand = pushBaseCommand.then(CommandManager.literal("op").executes(context -> {
             pushOps(context);
             return 0;
         }));
 
         // Handle just banned players push
-        pushBaseCommand = pushBaseCommand.then(Commands.literal("banned-players").executes(context -> {
+        pushBaseCommand = pushBaseCommand.then(CommandManager.literal("banned-players").executes(context -> {
             pushBannedPlayers(context);
             return 0;
         }));
 
         // Handle just banned ips push
-        pushBaseCommand = pushBaseCommand.then(Commands.literal("banned-ips").executes(context -> {
+        pushBaseCommand = pushBaseCommand.then(CommandManager.literal("banned-ips").executes(context -> {
             pushBannedIps(context);
             return 0;
         }));
@@ -196,8 +195,8 @@ public class WhitelistSyncCommands {
         return pushBaseCommand;
     }
 
-    static ArgumentBuilder<CommandSourceStack, ?> registerRestart() {
-        return Commands.literal("restart")
+    static ArgumentBuilder<ServerCommandSource, ?> registerRestart() {
+        return CommandManager.literal("restart")
                 .executes(context -> {
                     WhitelistSync2.RestartSyncThread();
                     return 0;
