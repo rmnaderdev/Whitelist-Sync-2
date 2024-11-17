@@ -43,7 +43,7 @@ public class VersionChecker {
         }catch (NoSuchAlgorithmException | KeyManagementException e) {
             throw new RuntimeException(e);
         } catch (Exception e) {
-            Log.error("Error checking latest mod version.", e);
+            Log.error("Error checking latest mod version.");
         }
 
         return null;

@@ -38,6 +38,9 @@ If you like this project and want to support it, consider donating to my [PayPal
 - 1.16.5
 - ~~1.12.2~~ (no longer supported, may come back in the future)
 
+## Supported Fabric Versions
+- 1.21
+
 *Versions not listed above **and before 1.16.5** can be requested as an issue. I will try my best to accommodate. Whitelist Sync Web subscribers take priority.*
 
 ## Installation
@@ -66,8 +69,8 @@ If you like this project and want to support it, consider donating to my [PayPal
 - Enjoy!
 
 ## Commands
-- /wl sync [whitelist|op|banned-players|banned-ips] | Refreshes local synced data from database.
-- /wl push [whitelist|op|banned-players|banned-ips] | Pushes local server data to the database. Use this if you want to update the database with the current server data.
+- /wl sync [whitelist|ops|banned-players|banned-ips] | Refreshes local synced data from database.
+- /wl push [whitelist|ops|banned-players|banned-ips] | Pushes local server data to the database. Use this if you want to update the database with the current server data.
 - /wl restart | Restarts the sync thread. Useful if the sync thread stops or has issues.
 
 ## Legacy Commands (For v2.6.0 and below ONLY!)
@@ -90,11 +93,11 @@ The mod uses polling to check for changes in the database and will update the lo
 
 ## To-Do
 - [x] Get the damn gradle project structure to work
-- [ ] Allow user to sync/push only whitelist, ops, or bans
+- [x] Allow user to sync/push only whitelist, ops, or bans
 
 ## Future Plans
 - [x] Add support for syncing ban lists
-- [ ] Add support for Fabric
+- [x] Add support for Fabric
 - [ ] Add support for BungeeCord
 - [ ] Add support for Spigot
 - [ ] Add support for Paper

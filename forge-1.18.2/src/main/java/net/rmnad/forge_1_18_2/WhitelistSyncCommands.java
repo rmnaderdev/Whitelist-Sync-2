@@ -128,7 +128,7 @@ public class WhitelistSyncCommands {
         }));
 
         // Handle just op list sync
-        syncBaseCommand = syncBaseCommand.then(Commands.literal("op").executes(context -> {
+        syncBaseCommand = syncBaseCommand.then(Commands.literal("ops").executes(context -> {
             syncOps(context);
             return 0;
         }));
@@ -177,7 +177,7 @@ public class WhitelistSyncCommands {
         }));
 
         // Handle just op list push
-        pushBaseCommand = pushBaseCommand.then(Commands.literal("op").executes(context -> {
+        pushBaseCommand = pushBaseCommand.then(Commands.literal("ops").executes(context -> {
             pushOps(context);
             return 0;
         }));

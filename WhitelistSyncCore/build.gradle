@@ -41,7 +41,7 @@ shadowJar {
     relocate('io.reactivex', "${shadeRelocateGroup}.io.reactivex")
     relocate('org.reactivestreams', "${shadeRelocateGroup}.org.reactivestreams")
     relocate('org.slf4j', "${shadeRelocateGroup}.org.slf4j")
-    relocate('com.electronwill.night-config', "${shadeRelocateGroup}.com.electronwill.night-config")
+    relocate('com.electronwill.nightconfig', "${shadeRelocateGroup}.com.electronwill.nightconfig")
 
     archiveBaseName = "WhitelistSyncCore"
     archiveClassifier = ''
