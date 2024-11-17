@@ -1,27 +1,22 @@
 package net.rmnad.services;
 
 import net.rmnad.Log;
+import net.rmnad.WhitelistSyncCore;
 import net.rmnad.logging.LogMessages;
 
 public class WhitelistPollingThread extends Thread {
 
     private final BaseService service;
-    private final boolean syncOpLists;
     private final boolean errorOnSetup;
-    private final int syncTimer;
 
     public WhitelistPollingThread(
             BaseService service,
-            boolean syncOpLists,
-            boolean errorOnSetup,
-            int syncTimer) {
+            boolean errorOnSetup) {
 
         this.setName("WhitelistPollingThread");
         this.setDaemon(true);
         this.service = service;
-        this.syncOpLists = syncOpLists;
         this.errorOnSetup = errorOnSetup;
-        this.syncTimer = syncTimer;
     }
 
     @Override
@@ -44,7 +39,7 @@ public class WhitelistPollingThread extends Thread {
             try {
                 service.pullDatabaseWhitelistToLocal();
 
-                if (syncOpLists) {
+                if (WhitelistSyncCore.CONFIG.syncOpList) {
                     service.pullDatabaseOpsToLocal();
                 }
             } catch (Exception e) {
@@ -52,7 +47,7 @@ public class WhitelistPollingThread extends Thread {
             }
 
             try {
-                Thread.sleep(this.syncTimer * 1000L);
+                Thread.sleep(WhitelistSyncCore.CONFIG.syncTimer * 1000L);
             } catch (InterruptedException ignored) {
                 Log.debug("WhitelistPollingThread interrupted. Exiting.");
                 return;

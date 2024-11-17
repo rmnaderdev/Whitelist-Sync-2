@@ -1,10 +1,14 @@
 package net.rmnad.fabric_1_21;
 
 import com.mojang.authlib.GameProfile;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.rmnad.Log;
 import net.rmnad.callbacks.IServerControl;
+import net.rmnad.logging.LogMessages;
+import net.rmnad.services.VersionChecker;
 
 import java.util.List;
 import java.util.UUID;
@@ -76,5 +80,31 @@ public class ServerControl implements IServerControl {
     public void removeBannedIp(String ip) {
         // Called when IP removed from ban list
         server.getPlayerManager().getIpBanList().remove(ip);
+    }
+
+    @Override
+    public void checkWhitelistEnabled() {
+        if (!server.getPlayerManager().isWhitelistEnabled()) {
+            Log.info(LogMessages.WARN_WHITELIST_NOT_ENABLED);
+            server.getPlayerManager().setWhitelistEnabled(true);
+        }
+    }
+
+    @Override
+    public void versionCheck() {
+        // TODO: Implement version check
+//        var modInfo = FabricLoader.getInstance().getModContainer(WhitelistSync2.MODID);
+//
+//        var minecraftInfo = FabricLoader.getInstance().getModContainer("minecraft");
+//
+//        try {
+//            // If this fails, let the server continue to start up.
+//            VersionChecker versionChecker = new VersionChecker();
+//            if (modInfo.isPresent() && minecraftInfo.isPresent()) {
+//                versionChecker.checkVersion(
+//                        modInfo.get().getMetadata().getVersion().getFriendlyString(),
+//                        minecraftInfo.get().getMetadata().getVersion().getFriendlyString());
+//            }
+//        } catch (Exception ignore) {}
     }
 }

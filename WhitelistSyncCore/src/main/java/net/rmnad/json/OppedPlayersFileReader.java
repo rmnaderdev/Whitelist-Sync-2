@@ -6,6 +6,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import net.rmnad.Log;
 import net.rmnad.models.OppedPlayer;
+import okio.Path;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -20,7 +21,9 @@ public class OppedPlayersFileReader {
     private static JsonParser parser = new JsonParser();
 
     // Get Arraylist of opped players on server.
-    public static ArrayList<OppedPlayer> getOppedPlayers(String serverRootPath) {
+    public static ArrayList<OppedPlayer> getOppedPlayers() {
+        Path serverRootPath = Path.get(".");
+
         ArrayList<OppedPlayer> users = new ArrayList<>();
 
         // Get Json data
@@ -44,7 +47,7 @@ public class OppedPlayersFileReader {
         return users;
     }
 
-    private static JsonArray getOppedPlayersFromFile(String serverRootPath) {
+    private static JsonArray getOppedPlayersFromFile(Path serverRootPath) {
         JsonArray oplist = null;
         try {
             // Read data as Json array from server directory

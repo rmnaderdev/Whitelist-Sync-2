@@ -7,9 +7,15 @@ import net.minecraft.server.management.IPBanEntry;
 import net.minecraft.server.management.ProfileBanEntry;
 import net.minecraft.server.management.WhitelistEntry;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModList;
+import net.rmnad.Log;
 import net.rmnad.callbacks.IServerControl;
+import net.rmnad.logging.LogMessages;
+import net.rmnad.services.VersionChecker;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class ServerControl implements IServerControl {
@@ -79,5 +85,30 @@ public class ServerControl implements IServerControl {
     public void removeBannedIp(String ip) {
         // Called when IP removed from ban list
         server.getPlayerList().getIpBans().remove(new IPBanEntry(ip));
+    }
+
+    @Override
+    public void checkWhitelistEnabled() {
+        // Check if whitelisting is enabled.
+        if (!this.server.getPlayerList().isUsingWhitelist()) {
+            Log.info(LogMessages.WARN_WHITELIST_NOT_ENABLED);
+            this.server.getPlayerList().setUsingWhiteList(true);
+        }
+    }
+
+    @Override
+    public void versionCheck() {
+        try {
+            // If this fails, let the server continue to start up.
+            VersionChecker versionChecker = new VersionChecker();
+            Optional<? extends ModContainer> modInfo = ModList.get().getModContainerById("whitelistsync2");
+            Optional<? extends ModContainer> minecraftInfo = ModList.get().getModContainerById("minecraft");
+
+            if (modInfo.isPresent() && minecraftInfo.isPresent()) {
+                versionChecker.checkVersion(
+                        modInfo.get().getModInfo().getVersion(),
+                        minecraftInfo.get().getModInfo().getVersion());
+            }
+        } catch (Exception ignore) {}
     }
 }

@@ -1,13 +1,19 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "net.rmnad.fabric_1_21.mixins",
+  "package": "net.rmnad.fabric_1_21.mixin",
   "compatibilityLevel": "JAVA_17",
-  "mixins": [],
-  "client": [],
-  "server": [
-    "MinecraftCommandMixin"
+  "mixins": [
+    "MinecraftCommandMixins$MinecraftWhitelistCommandMixin",
+    "MinecraftCommandMixins$MinecraftOpCommandMixin",
+    "MinecraftCommandMixins$MinecraftDeOpCommandMixin",
+    "MinecraftCommandMixins$MinecraftBanCommandMixin",
+    "MinecraftCommandMixins$MinecraftPardonCommandMixin",
+    "MinecraftCommandMixins$MinecraftBanIpCommandMixin",
+    "MinecraftCommandMixins$MinecraftPardonIpCommandMixin"
   ],
+  "client": [],
+  "server": [],
   "injectors": {
     "defaultRequire": 1
   }

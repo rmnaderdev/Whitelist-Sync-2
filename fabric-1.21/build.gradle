@@ -40,6 +40,11 @@ dependencies {
 
     // Core library dependency
     shade project(path: ':WhitelistSyncCore', configuration: 'shadow')
+
+    // Used for development. These are added by the user later.
+    // Need "minecraftLibrary" so the libraries are used in the dev environment. Without them, the JDBC drivers won't be loaded.
+    modImplementation "curse.maven:mysqlconnector-561280:4684944"
+    modImplementation "curse.maven:sqliteconnector-560832:3582173"
 }
 
 processResources {
@@ -69,10 +74,17 @@ jar {
 }
 
 shadowJar {
+    archiveClassifier = "dev-shadow"
+    configurations = [project.configurations.shade]
+}
+
+// Remap must use shadowJar as input
+remapJar {
+    dependsOn shadowJar
+    inputFile.set shadowJar.archiveFile
     archiveBaseName = "WhitelistSync"
     archiveClassifier = "fabric-${minecraft_version}"
     destinationDirectory = file '../target'
-    configurations = [project.configurations.shade]
 }
 
 artifacts {
