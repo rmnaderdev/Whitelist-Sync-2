@@ -1,118 +1,122 @@
 package net.rmnad.config;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.moandjiezana.toml.Toml;
+import com.electronwill.nightconfig.core.ConfigSpec;
+import com.electronwill.nightconfig.core.EnumGetMethod;
+import com.electronwill.nightconfig.core.file.FileConfig;
 import net.rmnad.Log;
 
 import java.io.*;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class WhitelistSyncConfig {
 
-    public static WhitelistSyncModel Config;
+    public static FileConfig config;
 
-    private static Path RuntimeDir = null;
+    public static final String DATABASE_MODE_KEY = "general.databaseMode";
+    public static final String SYNC_OP_LIST_KEY = "general.syncOpList";
+    public static final String SYNC_TIMER_KEY = "general.syncTimer";
+    public static final String VERBOSE_LOGGING_KEY = "general.verboseLogging";
+
+    public static final String MYSQL_DB_NAME_KEY = "mySQL.mysqlDbName";
+    public static final String MYSQL_IP_KEY = "mySQL.mysqlIp";
+    public static final String MYSQL_PORT_KEY = "mySQL.mysqlPort";
+    public static final String MYSQL_USERNAME_KEY = "mySQL.mysqlUsername";
+    public static final String MYSQL_PASSWORD_KEY = "mySQL.mysqlPassword";
+
+    public static final String SQLITE_DATABASE_PATH_KEY = "sqlite.sqliteDatabasePath";
+
+    public static final String WEB_API_HOST_KEY = "web.webApiHost";
+    public static final String WEB_API_KEY_KEY = "web.webApiKey";
+    public static final String WEB_SYNC_BANNED_PLAYERS_KEY = "web.webSyncBannedPlayers";
+    public static final String WEB_SYNC_BANNED_IPS_KEY = "web.webSyncBannedIps";
 
 
-    private static Path getConfigPath() {
-        return RuntimeDir.resolve("config").resolve("whitelistsync2.json");
+    public enum DatabaseMode {
+        MYSQL,
+        SQLITE,
+        WEB
     }
 
-    private static Path getLegacyConfigPath() {
-        return RuntimeDir.resolve("config").resolve("whitelistsync2-common.toml");
-    }
+    // General Settings
+    public DatabaseMode databaseMode = DatabaseMode.SQLITE;
+    public boolean syncOpList = false;
+    public int syncTimer = 60;
+    public boolean verboseLogging = false;
 
-    public static void loadConfig() {
-        loadConfig(null);
-    }
+    // MYSQL Settings
+    public String mysqlDbName = "WhitelistSync";
+    public String mysqlIp = "localhost";
+    public int mysqlPort = 3306;
+    public String mysqlUsername = "root";
+    public String mysqlPassword = "password";
 
-    public static void loadConfig(Path runtimeDir) {
-        if (runtimeDir == null) {
-            RuntimeDir = Paths.get(".");
-        } else {
-            RuntimeDir = runtimeDir;
+    // SQLITE Settings
+    public String sqliteDatabasePath = "./whitelistSync.db";
+
+    // WEB Settings
+    public String webApiHost = "https://whitelistsync.com/";
+    public String webApiKey = "";
+    public boolean webSyncBannedPlayers = false;
+    public boolean webSyncBannedIps = false;
+
+    public void load() {
+        File configFile = new File("config/whitelistSync2-common.toml");
+        configFile.getParentFile().mkdirs();
+
+        config = FileConfig.builder(configFile)
+                .defaultResource("/whitelistSync2-common.toml")
+                .autosave()
+                .build();
+
+        config.load();
+
+        ConfigSpec spec = getConfigSpec();
+        if (!spec.isCorrect(config)) {
+            ConfigSpec.CorrectionListener listener = (action, path, incorrectValue, correctedValue) -> {
+                String pathString = String.join(",", path);
+                Log.warning("Corrected " + pathString + ": was " + incorrectValue + ", is now " + correctedValue);
+            };
+            int numberOfCorrections = spec.correct(config, listener);
+            config.save();
+
         }
 
-        // Does config file exist?
-        if (getConfigPath().toFile().exists()) {
-            Config = readConfig();
-        } else if (getLegacyConfigPath().toFile().exists()) {
-            // Read legacy config file
-            Config = readLegacyConfig();
-            saveConfig();
+        databaseMode = config.getEnum(DATABASE_MODE_KEY, DatabaseMode.class);
+        syncOpList = config.get(SYNC_OP_LIST_KEY);
+        syncTimer = config.get(SYNC_TIMER_KEY);
+        verboseLogging = config.get(VERBOSE_LOGGING_KEY);
 
-            try {
-                if (!getLegacyConfigPath().toFile().renameTo(RuntimeDir.resolve("config").resolve("whitelistsync2.toml.old").toFile())) {
-                    Log.error("Error renaming legacy whitelistsync2 config file.");
-                }
-            } catch (Exception e) {
-                Log.error("Error renaming legacy whitelistsync2 config file: " + e.getMessage());
-            }
+        mysqlDbName = config.get(MYSQL_DB_NAME_KEY);
+        mysqlIp = config.get(MYSQL_IP_KEY);
+        mysqlPort = config.get(MYSQL_PORT_KEY);
+        mysqlUsername = config.get(MYSQL_USERNAME_KEY);
+        mysqlPassword = config.get(MYSQL_PASSWORD_KEY);
 
-            Log.info("Converted legacy whitelistsync2 config file to new format. Old file has been renamed to whitelistsync2.toml.old");
+        sqliteDatabasePath = config.get(SQLITE_DATABASE_PATH_KEY);
 
-        } else {
-            // Create new config file
-            Config = new WhitelistSyncModel();
-            saveConfig();
-            Log.info("Created new whitelistsync2 config file.");
-        }
+        webApiHost = config.get(WEB_API_HOST_KEY);
+        webApiKey = config.get(WEB_API_KEY_KEY);
+        webSyncBannedPlayers = config.get(WEB_SYNC_BANNED_PLAYERS_KEY);
+        webSyncBannedIps = config.get(WEB_SYNC_BANNED_IPS_KEY);
     }
 
-    public static void saveConfig() {
-        // Save config to file
-        if (Config != null) {
-            try (Writer writer = new FileWriter(getConfigPath().toFile())) {
-                Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                gson.toJson(Config, writer);
-            } catch (IOException e) {
-                Log.error("Error saving whitelistsync2 config file: " + e.getMessage());
-            }
-        }
-    }
+    public static ConfigSpec getConfigSpec() {
+        ConfigSpec spec = new ConfigSpec();
 
-    private static WhitelistSyncModel readConfig() {
-        try (Reader reader = new FileReader(getConfigPath().toFile())) {
-            Gson gson = new Gson();
-            return gson.fromJson(reader, WhitelistSyncModel.class);
-        } catch (IOException e) {
-            Log.error("Error reading whitelistsync2 config file: " + e.getMessage());
-        }
+        spec.defineEnum(DATABASE_MODE_KEY, DatabaseMode.SQLITE, EnumGetMethod.NAME);
+        spec.define(SYNC_OP_LIST_KEY, false);
+        spec.define(SYNC_TIMER_KEY, 60);
+        spec.define(VERBOSE_LOGGING_KEY, false);
+        spec.define(MYSQL_DB_NAME_KEY, "WhitelistSync");
+        spec.define(MYSQL_IP_KEY, "localhost");
+        spec.define(MYSQL_PORT_KEY, 3306);
+        spec.define(MYSQL_USERNAME_KEY, "root");
+        spec.define(MYSQL_PASSWORD_KEY, "password");
+        spec.define(SQLITE_DATABASE_PATH_KEY, "./whitelistSync.db");
+        spec.define(WEB_API_HOST_KEY, "https://whitelistsync.com/");
+        spec.define(WEB_API_KEY_KEY, "");
+        spec.define(WEB_SYNC_BANNED_PLAYERS_KEY, false);
+        spec.define(WEB_SYNC_BANNED_IPS_KEY, false);
 
-        return null;
-    }
-
-    private static WhitelistSyncModel readLegacyConfig() {
-        try (Reader reader = new FileReader(getLegacyConfigPath().toFile())) {
-            Toml toml = new Toml().read(reader);
-
-            WhitelistSyncModel config = new WhitelistSyncModel();
-
-            config.syncTimer = toml.getLong("general.syncTimer").intValue();
-            config.syncOpList = toml.getBoolean("general.syncOpList");
-            config.databaseMode = WhitelistSyncModel.DatabaseMode.valueOf(toml.getString("general.databaseMode"));
-            config.verboseLogging = toml.getBoolean("general.verboseLogging");
-
-            config.mysqlDbName = toml.getString("mySQL.mysqlDbName");
-            config.mysqlIp = toml.getString("mySQL.mysqlIp");
-            config.mysqlUsername = toml.getString("mySQL.mysqlUsername");
-            config.mysqlPassword = toml.getString("mySQL.mysqlPassword");
-            config.mysqlPort = toml.getLong("mySQL.mysqlPort").intValue();
-
-            config.sqliteDatabasePath = toml.getString("sqlite.sqliteDatabasePath");
-
-            config.webApiHost = toml.getString("web.webApiHost");
-            config.webApiKey = toml.getString("web.webApiKey");
-            config.webSyncBannedPlayers = toml.getBoolean("web.webSyncBannedPlayers");
-            config.webSyncBannedIps = toml.getBoolean("web.webSyncBannedIps");
-
-            return config;
-        } catch (IOException e) {
-            Log.error("Error reading whitelistsync2 legacy config file: " + e.getMessage());
-        }
-
-        return null;
+        return spec;
     }
 }

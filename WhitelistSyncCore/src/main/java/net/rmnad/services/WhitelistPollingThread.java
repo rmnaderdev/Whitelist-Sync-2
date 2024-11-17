@@ -1,7 +1,7 @@
 package net.rmnad.services;
 
 import net.rmnad.Log;
-import net.rmnad.config.WhitelistSyncConfig;
+import net.rmnad.WhitelistSyncCore;
 import net.rmnad.logging.LogMessages;
 
 public class WhitelistPollingThread extends Thread {
@@ -39,7 +39,7 @@ public class WhitelistPollingThread extends Thread {
             try {
                 service.pullDatabaseWhitelistToLocal();
 
-                if (WhitelistSyncConfig.Config.isSyncOpList()) {
+                if (WhitelistSyncCore.CONFIG.syncOpList) {
                     service.pullDatabaseOpsToLocal();
                 }
             } catch (Exception e) {
@@ -47,7 +47,7 @@ public class WhitelistPollingThread extends Thread {
             }
 
             try {
-                Thread.sleep(WhitelistSyncConfig.Config.getSyncTimer() * 1000L);
+                Thread.sleep(WhitelistSyncCore.CONFIG.syncTimer * 1000L);
             } catch (InterruptedException ignored) {
                 Log.debug("WhitelistPollingThread interrupted. Exiting.");
                 return;

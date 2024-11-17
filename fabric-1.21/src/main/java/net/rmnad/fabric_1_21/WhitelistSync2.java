@@ -6,7 +6,6 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.rmnad.Log;
 import net.rmnad.WhitelistSyncCore;
-import net.rmnad.config.WhitelistSyncConfig;
 import net.rmnad.logging.LogMessages;
 
 public class WhitelistSync2 implements ModInitializer {
@@ -19,6 +18,8 @@ public class WhitelistSync2 implements ModInitializer {
 		}));
 
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+			// Register config
+			WhitelistSyncCore.LoadConfig();
 			WhitelistSyncCore.SetupWhitelistSync(new ServerControl(server));
 		});
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
@@ -27,14 +28,5 @@ public class WhitelistSync2 implements ModInitializer {
 
 		Log.setLogger(new FabricLogger());
 		Log.info(LogMessages.HELLO_MESSAGE);
-
-		// Register config
-		WhitelistSyncCore.LoadConfig();
-
-		if(WhitelistSyncConfig.Config.isSyncOpList()) {
-			Log.info(LogMessages.OP_SYNC_ENABLED);
-		} else {
-			Log.info(LogMessages.OP_SYNC_DISABLED);
-		}
 	}
 }

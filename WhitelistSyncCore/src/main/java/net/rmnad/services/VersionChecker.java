@@ -2,7 +2,7 @@ package net.rmnad.services;
 
 import com.google.gson.Gson;
 import net.rmnad.Log;
-import net.rmnad.config.WhitelistSyncConfig;
+import net.rmnad.WhitelistSyncCore;
 import net.rmnad.logging.LogMessages;
 import net.rmnad.models.api.ModVersionInfo;
 import okhttp3.OkHttpClient;
@@ -20,7 +20,7 @@ public class VersionChecker {
     private final ApiClientHelper apiClientHelper;
 
     public VersionChecker() {
-        this.apiClientHelper = new ApiClientHelper(WhitelistSyncConfig.Config.getWebApiHost(), null);
+        this.apiClientHelper = new ApiClientHelper(WhitelistSyncCore.CONFIG.webApiHost, null);
     }
 
     public ModVersionInfo getLatestVersion() {
@@ -63,4 +63,13 @@ public class VersionChecker {
         }
     }
 
+    public void checkVersion(String currentModVersionStr, String currentMinecraftVersionStr) {
+        ModVersionInfo versionInfo = this.getLatestVersion();
+
+        // Parse the version strings
+        ArtifactVersion currentModVersion = new DefaultArtifactVersion(currentModVersionStr);
+        ArtifactVersion currentMinecraftVersion = new DefaultArtifactVersion(currentMinecraftVersionStr);
+
+        checkVersion(currentModVersion, currentMinecraftVersion);
+    }
 }

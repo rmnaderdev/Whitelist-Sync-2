@@ -18,7 +18,8 @@ dependencies {
     compileOnly "org.apache.maven:maven-artifact:3.6.3"
     shade 'com.squareup.okhttp3:okhttp:[4.12.0,5.0)'
     shade 'com.microsoft.signalr:signalr:7.0.0'
-    shade 'com.moandjiezana.toml:toml4j:0.7.2'
+    shade 'com.electronwill.night-config:toml:3.6.0'
+    shade 'org.slf4j:slf4j-simple:1.7.30'
 }
 
 jar {
@@ -40,6 +41,7 @@ shadowJar {
     relocate('io.reactivex', "${shadeRelocateGroup}.io.reactivex")
     relocate('org.reactivestreams', "${shadeRelocateGroup}.org.reactivestreams")
     relocate('org.slf4j', "${shadeRelocateGroup}.org.slf4j")
+    relocate('com.electronwill.night-config', "${shadeRelocateGroup}.com.electronwill.night-config")
 
     archiveBaseName = "WhitelistSyncCore"
     archiveClassifier = ''

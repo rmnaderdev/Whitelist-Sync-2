@@ -3,19 +3,20 @@ package net.rmnad.services;
 
 import io.reactivex.rxjava3.annotations.Nullable;
 import net.rmnad.Log;
+import net.rmnad.WhitelistSyncCore;
 import net.rmnad.callbacks.*;
-import net.rmnad.config.WhitelistSyncConfig;
 import net.rmnad.json.OppedPlayersFileReader;
 import net.rmnad.json.WhitelistedPlayersFileReader;
 import net.rmnad.logging.LogMessages;
 import net.rmnad.models.BannedPlayer;
 import net.rmnad.models.OppedPlayer;
 import net.rmnad.models.WhitelistedPlayer;
-import okio.Path;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.UUID;
+
+import static net.rmnad.WhitelistSyncCore.CONFIG;
 
 /**
  * Service for SQLITE Databases
@@ -26,7 +27,7 @@ public class SqLiteService implements BaseService {
     private final IServerControl serverControl;
     
     public SqLiteService(IServerControl serverControl) {
-        this.databasePath = WhitelistSyncConfig.Config.getSqliteDatabasePath();
+        this.databasePath = WhitelistSyncCore.CONFIG.sqliteDatabasePath;
         this.serverControl = serverControl;
     }
 
@@ -94,7 +95,7 @@ public class SqLiteService implements BaseService {
                 stmt = conn.createStatement();
                 stmt.executeUpdate(sql);
 
-                if (WhitelistSyncConfig.Config.isSyncOpList()) {
+                if (WhitelistSyncCore.CONFIG.syncOpList) {
                     // SQL statement for creating a new table
                     sql = "CREATE TABLE IF NOT EXISTS op (\n"
                             + "	uuid text NOT NULL PRIMARY KEY,\n"
@@ -164,7 +165,7 @@ public class SqLiteService implements BaseService {
         // ArrayList for opped players.
         ArrayList<OppedPlayer> oppedPlayers = new ArrayList<>();
 
-        if (!WhitelistSyncConfig.Config.isSyncOpList()) {
+        if (!WhitelistSyncCore.CONFIG.syncOpList) {
             Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return oppedPlayers;
         }
@@ -265,7 +266,7 @@ public class SqLiteService implements BaseService {
 
     @Override
     public boolean pushLocalOpsToDatabase() {
-        if (!WhitelistSyncConfig.Config.isSyncOpList()) {
+        if (!WhitelistSyncCore.CONFIG.syncOpList) {
             Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return false;
         }
@@ -382,7 +383,7 @@ public class SqLiteService implements BaseService {
     public boolean pullDatabaseOpsToLocal() {
 
         // TODO: Compare level and bypassesPlayerLimit, sync if needed
-        if (!WhitelistSyncConfig.Config.isSyncOpList()) {
+        if (!WhitelistSyncCore.CONFIG.syncOpList) {
             Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return false;
         }
@@ -491,7 +492,7 @@ public class SqLiteService implements BaseService {
 
     @Override
     public boolean addOppedPlayer(UUID uuid, String name) {
-        if (!WhitelistSyncConfig.Config.isSyncOpList()) {
+        if (!WhitelistSyncCore.CONFIG.syncOpList) {
             Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return false;
         }
@@ -574,7 +575,7 @@ public class SqLiteService implements BaseService {
 
     @Override
     public boolean removeOppedPlayer(UUID uuid, String name) {
-        if (!WhitelistSyncConfig.Config.isSyncOpList()) {
+        if (!WhitelistSyncCore.CONFIG.syncOpList) {
             Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return false;
         }

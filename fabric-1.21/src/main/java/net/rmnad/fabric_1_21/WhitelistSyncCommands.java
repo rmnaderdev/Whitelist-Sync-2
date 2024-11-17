@@ -10,7 +10,6 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.rmnad.WhitelistSyncCore;
-import net.rmnad.config.WhitelistSyncConfig;
 import net.rmnad.services.WebService;
 
 public class WhitelistSyncCommands {
@@ -104,17 +103,17 @@ public class WhitelistSyncCommands {
             .executes(context -> {
                 syncWhitelist(context);
 
-                if (WhitelistSyncConfig.Config.isSyncOpList()) {
+                if (WhitelistSyncCore.CONFIG.syncOpList) {
                     syncOps(context);
                 }
 
                 if (WhitelistSyncCore.whitelistService instanceof WebService
-                        && WhitelistSyncConfig.Config.isWebSyncBannedPlayers()) {
+                        && WhitelistSyncCore.CONFIG.webSyncBannedPlayers) {
                     syncBannedPlayers(context);
                 }
 
                 if (WhitelistSyncCore.whitelistService instanceof WebService
-                        && WhitelistSyncConfig.Config.isWebSyncBannedIps()) {
+                        && WhitelistSyncCore.CONFIG.webSyncBannedIps) {
                     syncBannedIps(context);
                 }
 
@@ -153,17 +152,17 @@ public class WhitelistSyncCommands {
             .executes(context -> {
                 pushWhitelist(context);
 
-                if (WhitelistSyncConfig.Config.isSyncOpList()) {
+                if (WhitelistSyncCore.CONFIG.syncOpList) {
                     pushOps(context);
                 }
 
                 if (WhitelistSyncCore.whitelistService instanceof WebService
-                        && WhitelistSyncConfig.Config.isWebSyncBannedPlayers()) {
+                        && WhitelistSyncCore.CONFIG.webSyncBannedPlayers) {
                     pushBannedPlayers(context);
                 }
 
                 if (WhitelistSyncCore.whitelistService instanceof WebService
-                        && WhitelistSyncConfig.Config.isWebSyncBannedIps()) {
+                        && WhitelistSyncCore.CONFIG.webSyncBannedIps) {
                     pushBannedIps(context);
                 }
 

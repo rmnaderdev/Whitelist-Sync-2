@@ -38,9 +38,6 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    // https://maven.wispforest.io/#/releases/io/wispforest/owo-lib
-    annotationProcessor modImplementation("io.wispforest:owo-lib:${project.owo_version}")
-
     // Core library dependency
     shade project(path: ':WhitelistSyncCore', configuration: 'shadow')
 
@@ -77,10 +74,17 @@ jar {
 }
 
 shadowJar {
+    archiveClassifier = "dev-shadow"
+    configurations = [project.configurations.shade]
+}
+
+// Remap must use shadowJar as input
+remapJar {
+    dependsOn shadowJar
+    inputFile.set shadowJar.archiveFile
     archiveBaseName = "WhitelistSync"
     archiveClassifier = "fabric-${minecraft_version}"
     destinationDirectory = file '../target'
-    configurations = [project.configurations.shade]
 }
 
 artifacts {

@@ -13,7 +13,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.rmnad.Log;
 import net.rmnad.WhitelistSyncCore;
-import net.rmnad.config.WhitelistSyncConfig;
 import net.rmnad.services.BaseService;
 import net.rmnad.services.WebService;
 
@@ -63,7 +62,7 @@ public class CommandsListener {
             }
         }
         else if (command.startsWith("op ")) {
-            if (!WhitelistSyncConfig.Config.isSyncOpList()) {
+            if (!WhitelistSyncCore.CONFIG.syncOpList) {
                 return;
             }
 
@@ -82,7 +81,7 @@ public class CommandsListener {
             }
         }
         else if (command.startsWith("deop ")) {
-            if (!WhitelistSyncConfig.Config.isSyncOpList()) {
+            if (!WhitelistSyncCore.CONFIG.syncOpList) {
                 return;
             }
 
@@ -101,7 +100,7 @@ public class CommandsListener {
             }
         }
         else if (command.startsWith("ban-ip ")) {
-            if (!WhitelistSyncConfig.Config.isWebSyncBannedIps() || !(whitelistService instanceof WebService)) {
+            if (!WhitelistSyncCore.CONFIG.webSyncBannedIps || !(whitelistService instanceof WebService)) {
                 return;
             }
 
@@ -132,7 +131,7 @@ public class CommandsListener {
             }
         }
         else if (command.startsWith("pardon-ip ")) {
-            if (!WhitelistSyncConfig.Config.isWebSyncBannedIps() || !(whitelistService instanceof WebService)) {
+            if (!WhitelistSyncCore.CONFIG.webSyncBannedIps || !(whitelistService instanceof WebService)) {
                 return;
             }
 
@@ -147,7 +146,7 @@ public class CommandsListener {
             }
         }
         else if (command.startsWith("ban ")) {
-            if (!WhitelistSyncConfig.Config.isWebSyncBannedPlayers() || !(whitelistService instanceof WebService)) {
+            if (!WhitelistSyncCore.CONFIG.webSyncBannedPlayers || !(whitelistService instanceof WebService)) {
                 return;
             }
 
@@ -172,7 +171,7 @@ public class CommandsListener {
             }
         }
         else if (command.startsWith("pardon ")) {
-            if (!WhitelistSyncConfig.Config.isWebSyncBannedPlayers() || !(whitelistService instanceof WebService)) {
+            if (!WhitelistSyncCore.CONFIG.webSyncBannedPlayers || !(whitelistService instanceof WebService)) {
                 return;
             }
 

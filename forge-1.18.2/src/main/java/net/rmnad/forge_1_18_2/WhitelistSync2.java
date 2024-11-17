@@ -1,19 +1,14 @@
 package net.rmnad.forge_1_18_2;
 
-import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.rmnad.Log;
 import net.rmnad.WhitelistSyncCore;
-import net.rmnad.callbacks.IServerControl;
-import net.rmnad.config.WhitelistSyncConfig;
 import net.rmnad.logging.LogMessages;
-import net.rmnad.services.*;
 
 @Mod(WhitelistSync2.MODID)
 public class WhitelistSync2
@@ -34,12 +29,6 @@ public class WhitelistSync2
     @SubscribeEvent
     public void registerCommands(RegisterCommandsEvent event){
         WhitelistSyncCommands.registerCommands(event.getDispatcher());
-
-        if(WhitelistSyncConfig.Config.isSyncOpList()) {
-            Log.info(LogMessages.OP_SYNC_ENABLED);
-        } else {
-            Log.info(LogMessages.OP_SYNC_DISABLED);
-        }
     }
 
     // Server Started Event

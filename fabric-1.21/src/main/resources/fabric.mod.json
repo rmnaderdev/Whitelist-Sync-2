@@ -16,7 +16,7 @@
 	],
 	"license": "${mod_license}",
 	"icon": "assets/whitelistsync2/logo.webp",
-	"environment": "*",
+	"environment": "server",
 	"entrypoints": {
 		"main": [
 			"net.rmnad.fabric_1_21.WhitelistSync2"

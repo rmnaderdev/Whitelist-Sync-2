@@ -12,23 +12,23 @@ public class WhitelistSyncCore {
     public static WhitelistPollingThread pollingThread;
     public static WhitelistSocketThread socketThread;
 
+    public static final WhitelistSyncConfig CONFIG = new WhitelistSyncConfig();
+
     public static boolean errorOnSetup = false;
 
     public static void LoadConfig() {
-        // Register config
-        WhitelistSyncConfig.loadConfig();
+        CONFIG.load();
     }
 
     public static void SetupWhitelistSync(IServerControl serverControl) {
         currentServerControl = serverControl;
-
-        Log.verbose = WhitelistSyncConfig.Config.isVerboseLogging();
+        Log.verbose = CONFIG.verboseLogging;
 
         LogMessages.ShowModStartupHeaderMessage();
 
         currentServerControl.versionCheck();
 
-        switch (WhitelistSyncConfig.Config.getDatabaseMode()) {
+        switch (CONFIG.databaseMode) {
             case SQLITE:
                 whitelistService = new SqLiteService(currentServerControl);
                 break;

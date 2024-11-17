@@ -8,7 +8,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.rmnad.WhitelistSyncCore;
 import net.rmnad.Log;
-import net.rmnad.config.WhitelistSyncConfig;
 import net.rmnad.logging.LogMessages;
 
 @Mod(WhitelistSync2.MODID)
@@ -30,12 +29,6 @@ public class WhitelistSync2
     @SubscribeEvent
     public void registerCommands(RegisterCommandsEvent event){
         WhitelistSyncCommands.registerCommands(event.getDispatcher());
-
-        if(WhitelistSyncConfig.Config.isSyncOpList()) {
-            Log.info(LogMessages.OP_SYNC_ENABLED);
-        } else {
-            Log.info(LogMessages.OP_SYNC_DISABLED);
-        }
     }
 
     // Server Started Event

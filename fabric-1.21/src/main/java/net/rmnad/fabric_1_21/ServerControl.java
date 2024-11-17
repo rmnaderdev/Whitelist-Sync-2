@@ -1,12 +1,14 @@
 package net.rmnad.fabric_1_21;
 
 import com.mojang.authlib.GameProfile;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.rmnad.Log;
 import net.rmnad.callbacks.IServerControl;
 import net.rmnad.logging.LogMessages;
+import net.rmnad.services.VersionChecker;
 
 import java.util.List;
 import java.util.UUID;
@@ -90,6 +92,19 @@ public class ServerControl implements IServerControl {
 
     @Override
     public void versionCheck() {
-        // TODO: Implement version check for Fabric
+        // TODO: Implement version check
+//        var modInfo = FabricLoader.getInstance().getModContainer(WhitelistSync2.MODID);
+//
+//        var minecraftInfo = FabricLoader.getInstance().getModContainer("minecraft");
+//
+//        try {
+//            // If this fails, let the server continue to start up.
+//            VersionChecker versionChecker = new VersionChecker();
+//            if (modInfo.isPresent() && minecraftInfo.isPresent()) {
+//                versionChecker.checkVersion(
+//                        modInfo.get().getMetadata().getVersion().getFriendlyString(),
+//                        minecraftInfo.get().getMetadata().getVersion().getFriendlyString());
+//            }
+//        } catch (Exception ignore) {}
     }
 }

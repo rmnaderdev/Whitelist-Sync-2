@@ -5,8 +5,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.reactivex.rxjava3.annotations.Nullable;
 import net.rmnad.Log;
+import net.rmnad.WhitelistSyncCore;
 import net.rmnad.callbacks.IServerControl;
-import net.rmnad.config.WhitelistSyncConfig;
 import net.rmnad.json.BannedIpsFileReader;
 import net.rmnad.json.BannedPlayersFileReader;
 import net.rmnad.json.OppedPlayersFileReader;
@@ -30,8 +30,8 @@ public class WebService implements BaseService {
 
     public WebService(IServerControl serverControl) {
 
-        String apiHost = WhitelistSyncConfig.Config.getWebApiHost();
-        String apiKey = WhitelistSyncConfig.Config.getWebApiKey();
+        String apiHost = WhitelistSyncCore.CONFIG.webApiHost;
+        String apiKey = WhitelistSyncCore.CONFIG.webApiKey;
 
         this.apiClientHelper = new ApiClientHelper(apiHost, apiKey);
         this.serverControl = serverControl;
@@ -228,7 +228,7 @@ public class WebService implements BaseService {
     public ArrayList<OppedPlayer> getOppedPlayersFromDatabase() {
         ArrayList<OppedPlayer> oppedPlayers = new ArrayList<>();
 
-        if (!WhitelistSyncConfig.Config.isSyncOpList()) {
+        if (!WhitelistSyncCore.CONFIG.syncOpList) {
             Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return oppedPlayers;
         }
@@ -335,7 +335,7 @@ public class WebService implements BaseService {
 
     @Override
     public boolean pushLocalOpsToDatabase() {
-        if (!WhitelistSyncConfig.Config.isSyncOpList()) {
+        if (!WhitelistSyncCore.CONFIG.syncOpList) {
             Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return false;
         }
@@ -392,7 +392,7 @@ public class WebService implements BaseService {
     }
 
     public boolean pushLocalBannedPlayersToDatabase() {
-        if (!WhitelistSyncConfig.Config.isWebSyncBannedPlayers()) {
+        if (!WhitelistSyncCore.CONFIG.webSyncBannedPlayers) {
             Log.error(LogMessages.ALERT_BANNED_PLAYERS_SYNC_DISABLED);
             return false;
         }
@@ -450,7 +450,7 @@ public class WebService implements BaseService {
 
     @Override
     public boolean pushLocalBannedIpsToDatabase() {
-        if (!WhitelistSyncConfig.Config.isWebSyncBannedIps()) {
+        if (!WhitelistSyncCore.CONFIG.webSyncBannedIps) {
             Log.error(LogMessages.ALERT_BANNED_IPS_SYNC_DISABLED);
             return false;
         }
@@ -547,7 +547,7 @@ public class WebService implements BaseService {
 
     @Override
     public boolean pullDatabaseOpsToLocal() {
-        if (!WhitelistSyncConfig.Config.isSyncOpList()) {
+        if (!WhitelistSyncCore.CONFIG.syncOpList) {
             Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return false;
         }
@@ -592,7 +592,7 @@ public class WebService implements BaseService {
 
     @Override
     public boolean pullDatabaseBannedPlayersToLocal() {
-        if (!WhitelistSyncConfig.Config.isWebSyncBannedPlayers()) {
+        if (!WhitelistSyncCore.CONFIG.webSyncBannedPlayers) {
             Log.error(LogMessages.ALERT_BANNED_PLAYERS_SYNC_DISABLED);
             return false;
         }
@@ -629,7 +629,7 @@ public class WebService implements BaseService {
 
     @Override
     public boolean pullDatabaseBannedIpsToLocal() {
-        if (!WhitelistSyncConfig.Config.isWebSyncBannedIps()) {
+        if (!WhitelistSyncCore.CONFIG.webSyncBannedIps) {
             Log.error(LogMessages.ALERT_BANNED_IPS_SYNC_DISABLED);
             return false;
         }
@@ -704,7 +704,7 @@ public class WebService implements BaseService {
 
     @Override
     public boolean addOppedPlayer(UUID uuid, String name) {
-        if (!WhitelistSyncConfig.Config.isSyncOpList()) {
+        if (!WhitelistSyncCore.CONFIG.syncOpList) {
             Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return false;
         }
@@ -786,7 +786,7 @@ public class WebService implements BaseService {
 
     @Override
     public boolean removeOppedPlayer(UUID uuid, String name) {
-        if (!WhitelistSyncConfig.Config.isSyncOpList()) {
+        if (!WhitelistSyncCore.CONFIG.syncOpList) {
             Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return false;
         }
@@ -825,7 +825,7 @@ public class WebService implements BaseService {
 
     @Override
     public boolean addBannedPlayer(UUID uuid, String name, @Nullable String reason) {
-        if (!WhitelistSyncConfig.Config.isWebSyncBannedPlayers()) {
+        if (!WhitelistSyncCore.CONFIG.webSyncBannedPlayers) {
             Log.error(LogMessages.ALERT_BANNED_PLAYERS_SYNC_DISABLED);
             return false;
         }
@@ -873,7 +873,7 @@ public class WebService implements BaseService {
 
     @Override
     public boolean addBannedIp(String ip, @Nullable String reason) {
-        if (!WhitelistSyncConfig.Config.isWebSyncBannedIps()) {
+        if (!WhitelistSyncCore.CONFIG.webSyncBannedIps) {
             Log.error(LogMessages.ALERT_BANNED_IPS_SYNC_DISABLED);
             return false;
         }
@@ -920,7 +920,7 @@ public class WebService implements BaseService {
 
     @Override
     public boolean removeBannedPlayer(UUID uuid, String name) {
-        if (!WhitelistSyncConfig.Config.isWebSyncBannedPlayers()) {
+        if (!WhitelistSyncCore.CONFIG.webSyncBannedPlayers) {
             Log.error(LogMessages.ALERT_BANNED_PLAYERS_SYNC_DISABLED);
             return false;
         }
@@ -960,7 +960,7 @@ public class WebService implements BaseService {
 
     @Override
     public boolean removeBannedIp(String ip) {
-        if (!WhitelistSyncConfig.Config.isWebSyncBannedIps()) {
+        if (!WhitelistSyncCore.CONFIG.webSyncBannedIps) {
             Log.error(LogMessages.ALERT_BANNED_IPS_SYNC_DISABLED);
             return false;
         }

@@ -2,8 +2,8 @@ package net.rmnad.services;
 
 import com.microsoft.signalr.*;
 import net.rmnad.Log;
+import net.rmnad.WhitelistSyncCore;
 import net.rmnad.callbacks.*;
-import net.rmnad.config.WhitelistSyncConfig;
 import net.rmnad.logging.LogMessages;
 import net.rmnad.models.api.BannedIpEntry;
 import net.rmnad.models.api.BannedPlayerEntry;
@@ -88,15 +88,15 @@ public class WhitelistSocketThread extends Thread {
                 Log.info("WebSyncThread: Sync requested from server.");
                 this.service.pullDatabaseWhitelistToLocal();
 
-                if (WhitelistSyncConfig.Config.isSyncOpList()) {
+                if (WhitelistSyncCore.CONFIG.syncOpList) {
                     this.service.pullDatabaseOpsToLocal();
                 }
 
-                if (WhitelistSyncConfig.Config.isWebSyncBannedPlayers()) {
+                if (WhitelistSyncCore.CONFIG.webSyncBannedPlayers) {
                     this.service.pullDatabaseBannedPlayersToLocal();
                 }
 
-                if (WhitelistSyncConfig.Config.isWebSyncBannedIps()) {
+                if (WhitelistSyncCore.CONFIG.webSyncBannedIps) {
                     this.service.pullDatabaseBannedIpsToLocal();
                 }
             });
@@ -125,7 +125,7 @@ public class WhitelistSocketThread extends Thread {
                 }
             }, WhitelistEntry[].class, String.class);
 
-            if (WhitelistSyncConfig.Config.isSyncOpList()) {
+            if (WhitelistSyncCore.CONFIG.syncOpList) {
                 hubConnection.on("OpUpdated", (data, serverUuidStr) -> {
 
                     UUID serverUUID = serverUuidStr != null ? UUID.fromString(serverUuidStr) : null;
@@ -152,7 +152,7 @@ public class WhitelistSocketThread extends Thread {
                 }, OpEntry[].class, String.class);
             }
 
-            if (WhitelistSyncConfig.Config.isWebSyncBannedPlayers()) {
+            if (WhitelistSyncCore.CONFIG.webSyncBannedPlayers) {
                 hubConnection.on("BannedPlayerUpdated", (data, serverUuidStr) -> {
 
                     UUID serverUUID = serverUuidStr != null ? UUID.fromString(serverUuidStr) : null;
@@ -180,7 +180,7 @@ public class WhitelistSocketThread extends Thread {
                 }, BannedPlayerEntry[].class, String.class);
             }
 
-            if (WhitelistSyncConfig.Config.isWebSyncBannedIps()) {
+            if (WhitelistSyncCore.CONFIG.webSyncBannedIps) {
                 hubConnection.on("BannedIpUpdated", (data, serverUuidStr) -> {
 
                     UUID serverUUID = serverUuidStr != null ? UUID.fromString(serverUuidStr) : null;
