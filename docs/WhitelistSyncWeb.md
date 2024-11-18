@@ -13,11 +13,9 @@ A service that allows you to seamlessly sync your whitelisted players, opped pla
 - Support for syncing banned players and banned IPs
 - Currently supporting Minecraft Forge and Fabric. Spigot versions are planned depending on demand
 
-### Video Demo
+### Demo
 
-[Whitelist Demo MP4](./assets/whitelisting.mp4)
-
-[Opping/Banning Demo MP4](./assets/opping-banning.mp4)
+![Demo Example](./assets/demo.gif)
 
 ## Pricing and Beta Access
 
