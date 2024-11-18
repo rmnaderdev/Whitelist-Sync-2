@@ -15,9 +15,9 @@ A service that allows you to seamlessly sync your whitelisted players, opped pla
 
 ### Video Demo
 
-<video src='./assets/whitelisting.mp4' width=600></video>
+[Whitelist Demo MP4](./assets/whitelisting.mp4)
 
-<video src='./assets/opping-banning.mp4' width=600></video>
+[Opping/Banning Demo MP4](./assets/opping-banning.mp4)
 
 ## Pricing and Beta Access
 
