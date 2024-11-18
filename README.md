@@ -4,17 +4,11 @@ Introducing Whitelist Sync!
 ===========================
 
 
-### A mod that allows you to sync the whitelists, ops list, banned players (Web only), and banned IPs (Web only) from multiple Minecraft servers together using one MySQL db, SQLite db, or our NEW [Whitelist Sync Web](https://whitelistsync.com) service!
-This mod listens for whitelist, op, ban, and ban-ip changes (using the normal Minecraft commands) on all of your servers and will update all other forge servers connected to the same database or the same account (on [Whitelist Sync Web](https://whitelistsync.com))!
+### A mod that allows you to sync the whitelists, ops list, banned players (Web only), and banned IPs (Web only) from multiple Minecraft servers together using one MySQL db, SQLite db, or the NEW [Whitelist Sync Web](https://whitelistsync.com) service!
+This mod listens for whitelist, op, ban, and ban-ip changes (using the normal Minecraft commands) on all of your servers and will update all other forge servers connected to the same database.
 
-## New in v2.7.0
-- Added support for syncing banned players and IPs to the database. (Only supported when using the Whitelist Sync web service)
-- Removed old whitelist sync commands. Normal Minecraft commands can be used now and the mod will update the database accordingly. (Use `/wl sync` to pull from the database and `/wl push` to push to the database still)
-- Added support for new Web Service database option (currently in beta). See [Whitelist Sync Web](https://whitelistsync.com/) for details.
-
-## New in v2.5.0
-- No more shadowed JDBC dependencies! **MANUAL STEP REQUIRED for v2.5.0.** See Installation section below.
-- `copyServerToDatabase` commands have been changed to `push`.
+## Whitelist Sync Web
+Whitelist Sync Web is a new service that allows you to sync your whitelist, ops, banned players, and banned IPs across all of your servers in real-time. This service is a paid service, but it does have a free tier for you to try out. This service is the easiest way to sync your servers and requires no setup on your end other than installing the mod and setting the API key. Interested in leaning more? [Click here](./docs/WhitelistSyncWeb.md).
 
 ## Download
 All releases can be found on the [Modrinth](https://modrinth.com/mod/wlsync2) page or on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/whitelistsync2).
@@ -23,7 +17,7 @@ All releases can be found on the [Modrinth](https://modrinth.com/mod/wlsync2) pa
 For issues with the mod please open an issue on [GitHub](https://github.com/rmnaderdev/Whitelist-Sync-2/issues). For other support requests, feature requests, or other general discussion. Please join the [Discord Server](https://discord.gg/7FMJN4kurr).
 
 ## Support the project
-If you like this project and want to support it, consider donating to my [PayPal](https://www.paypal.com/paypalme/PSVFX), [buymeacoffee](https://buymeacoffee.com/potatodotjar) or using the new [Whitelist Sync Web](https://whitelistsync.com) service! Any amount is appreciated!
+If you like this project and want to support it, consider donating to my [PayPal](https://www.paypal.com/paypalme/PSVFX), [buymeacoffee](https://buymeacoffee.com/potatodotjar) or by using the new [Whitelist Sync Web](./docs/WhitelistSyncWeb.md) service! Any amount is appreciated!
 
 ## Supported Forge Versions
 - 1.21.3
@@ -45,12 +39,12 @@ If you like this project and want to support it, consider donating to my [PayPal
 
 ## Installation
 
-#### For Web Sync (Recommended, easiest setup, paid service):
+#### For Web Sync (Recommended, easiest setup):
 - Create login to [Whitelist Sync Web](https://whitelistsync.com) and create an account/group for your servers.
-- On the account, click manage. You will see a section for API keys. Create an API key and copy the GUID.
+- On the account, click manage. You will see a section for API keys. Create an API key and copy the key.
 - Download this mod and add the jar file to your mods folder.
 - Run your server once and set up the config (whitelistsync.cfg/whitelistsync-common.toml located in the config folder).
-- Set the database type to "WEB" and paste the GUID into the API key field. Adjust other settings as needed.
+- Set the database type to "WEB" and paste the key you copied into the API key field. Adjust other settings as needed.
 - Run the server and make sure it connects to the web service.
 - All done! You can now manage all your servers from the Whitelist Sync Web interface in real-time!
 
