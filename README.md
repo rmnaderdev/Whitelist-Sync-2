@@ -8,7 +8,7 @@ Introducing Whitelist Sync!
 This mod listens for whitelist, op, ban, and ban-ip changes (using the normal Minecraft commands) on all of your servers and will update all other forge servers connected to the same database.
 
 ## Whitelist Sync Web
-Whitelist Sync Web is a new service that allows you to sync your whitelist, ops, banned players, and banned IPs across all of your servers in real-time. This service is a paid service, but it does have a free tier for you to try out. This service is the easiest way to sync your servers and requires no setup on your end other than installing the mod and setting the API key. Interested in leaning more? [Click here](./docs/WhitelistSyncWeb.md).
+Whitelist Sync Web is a new service that allows you to sync your whitelist, ops, banned players, and banned IPs across all of your servers in real-time. This service is a paid service, but it does have a free tier for you to try out. This service is the easiest way to sync your servers and requires no setup on your end other than installing the mod and setting the API key. Interested in learning more? [Click here](./docs/WhitelistSyncWeb.md).
 
 ## Download
 All releases can be found on the [Modrinth](https://modrinth.com/mod/wlsync2) page or on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/whitelistsync2).
