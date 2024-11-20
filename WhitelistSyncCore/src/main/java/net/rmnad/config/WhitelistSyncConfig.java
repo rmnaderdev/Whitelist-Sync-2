@@ -59,11 +59,11 @@ public class WhitelistSyncConfig {
     public boolean webSyncBannedIps = false;
 
     public void load() {
-        File configFile = new File("config/whitelistSync2-common.toml");
+        File configFile = new File("config/whitelistsync2-common.toml");
         configFile.getParentFile().mkdirs();
 
         config = FileConfig.builder(configFile)
-                .defaultResource("/whitelistSync2-common.toml")
+                .defaultResource("/whitelistsync2-common.toml")
                 .autosave()
                 .build();
 
