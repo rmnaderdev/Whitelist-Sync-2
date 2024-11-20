@@ -4,7 +4,7 @@ Introducing Whitelist Sync!
 ===========================
 
 
-### A mod that allows you to sync the whitelists, ops list, banned players (Web only), and banned IPs (Web only) from multiple Minecraft servers together using one MySQL db, SQLite db, or the NEW [Whitelist Sync Web](https://whitelistsync.com) service!
+### A mod that allows you to sync the whitelists, ops list, banned players (Web only), and banned IPs (Web only) from multiple Minecraft servers together using one MySQL db, SQLite db, or the NEW [Whitelist Sync Web](./docs/WhitelistSyncWeb.md) service!
 This mod listens for whitelist, op, ban, and ban-ip changes (using the normal Minecraft commands) on all of your servers and will update all other forge servers connected to the same database.
 
 ## Whitelist Sync Web
@@ -43,13 +43,7 @@ If you like this project and want to support it, consider donating to my [PayPal
 ## Installation
 
 #### For Web Sync (Recommended, easiest setup):
-- Create login to [Whitelist Sync Web](https://whitelistsync.com) and create an account/group for your servers.
-- On the account, click manage. You will see a section for API keys. Create an API key and copy the key.
-- Download this mod and add the jar file to your mods folder.
-- Run your server once and set up the config (whitelistsync.cfg/whitelistsync-common.toml located in the config folder).
-- Set the database type to "WEB" and paste the key you copied into the API key field. Adjust other settings as needed.
-- Run the server and make sure it connects to the web service.
-- All done! You can now manage all your servers from the Whitelist Sync Web interface in real-time!
+- See the Whitelist Sync Web setup on the [dedicated page](./docs/WhitelistSyncWeb.md)
 
 #### For SQLite database config (Self-hosted):
 - Download this mod AND the [SQLite DB connector](https://modrinth.com/plugin/sqlite-jdbc) mod and add both jar files to your mods folder.
