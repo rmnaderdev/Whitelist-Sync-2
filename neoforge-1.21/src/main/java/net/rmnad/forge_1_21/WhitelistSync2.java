@@ -6,9 +6,9 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
-import net.rmnad.WhitelistSyncCore;
-import net.rmnad.Log;
-import net.rmnad.logging.LogMessages;
+import net.rmnad.core.WhitelistSyncCore;
+import net.rmnad.core.Log;
+import net.rmnad.core.logging.LogMessages;
 
 
 @Mod(WhitelistSync2.MODID)

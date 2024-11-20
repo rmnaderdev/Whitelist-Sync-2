@@ -1,6 +1,6 @@
 package net.rmnad.fabric_1_21;
 
-import net.rmnad.WhitelistSyncLogger;
+import net.rmnad.core.WhitelistSyncLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

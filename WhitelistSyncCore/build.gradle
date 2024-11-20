@@ -6,6 +6,8 @@ repositories {
     mavenCentral()
 }
 
+group = mod_group_id + ".core"
+
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
 configurations {
@@ -26,7 +28,7 @@ jar {
     archiveClassifier = 'unshaded'
 }
 
-var shadeRelocateGroup = 'net.rmnad.shade'
+var shadeRelocateGroup = 'net.rmnad.core.shade'
 
 shadowJar {
     dependencies {

@@ -11,10 +11,10 @@ import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.CommandEvent;
-import net.rmnad.Log;
-import net.rmnad.WhitelistSyncCore;
-import net.rmnad.services.BaseService;
-import net.rmnad.services.WebService;
+import net.rmnad.core.Log;
+import net.rmnad.core.WhitelistSyncCore;
+import net.rmnad.core.services.BaseService;
+import net.rmnad.core.services.WebService;
 
 import java.util.Collection;
 

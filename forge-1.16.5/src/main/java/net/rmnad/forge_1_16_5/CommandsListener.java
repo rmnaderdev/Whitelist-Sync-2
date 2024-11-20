@@ -11,10 +11,10 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.rmnad.Log;
-import net.rmnad.WhitelistSyncCore;
-import net.rmnad.services.BaseService;
-import net.rmnad.services.WebService;
+import net.rmnad.core.Log;
+import net.rmnad.core.WhitelistSyncCore;
+import net.rmnad.core.services.BaseService;
+import net.rmnad.core.services.WebService;
 
 import java.util.Collection;
 

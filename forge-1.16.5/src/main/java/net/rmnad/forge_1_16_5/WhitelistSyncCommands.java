@@ -10,8 +10,8 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.util.text.StringTextComponent;
-import net.rmnad.WhitelistSyncCore;
-import net.rmnad.services.WebService;
+import net.rmnad.core.WhitelistSyncCore;
+import net.rmnad.core.services.WebService;
 
 public class WhitelistSyncCommands {
 

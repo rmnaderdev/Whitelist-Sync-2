@@ -4,9 +4,9 @@ import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.rmnad.Log;
-import net.rmnad.WhitelistSyncCore;
-import net.rmnad.logging.LogMessages;
+import net.rmnad.core.Log;
+import net.rmnad.core.WhitelistSyncCore;
+import net.rmnad.core.logging.LogMessages;
 
 public class WhitelistSync2 implements ModInitializer {
 	public static final String MODID = "whitelistsync2";

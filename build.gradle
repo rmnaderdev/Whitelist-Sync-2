@@ -49,14 +49,16 @@ clean {
     delete "target"
 }
 
-//task copyConfigToRun(type: Copy) {
-//    def fileToCopy = file('whitelistsync2-common.toml') // Specify the file to copy
-//    subprojects.findAll { subproject ->
-//        subproject.name.startsWith('forge')
-//    }.each { subproject ->
-//        copy {
-//            from fileToCopy
-//            into subproject.file('run/config')
-//        }
-//    }
-//}
+task copyConfigToRun(type: Copy) {
+    def fileToCopy = file('whitelistsync2-common.toml') // Specify the file to copy
+    subprojects.findAll { subproject ->
+        subproject.name.startsWith('forge')
+        || subproject.name.startsWith('fabric')
+        || subproject.name.startsWith('neoforge')
+    }.each { subproject ->
+        copy {
+            from fileToCopy
+            into subproject.file('run/config')
+        }
+    }
+}

@@ -1,14 +1,12 @@
 package net.rmnad.fabric_1_21;
 
 import com.mojang.authlib.GameProfile;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.rmnad.Log;
-import net.rmnad.callbacks.IServerControl;
-import net.rmnad.logging.LogMessages;
-import net.rmnad.services.VersionChecker;
+import net.rmnad.core.Log;
+import net.rmnad.core.callbacks.IServerControl;
+import net.rmnad.core.logging.LogMessages;
 
 import java.util.List;
 import java.util.UUID;

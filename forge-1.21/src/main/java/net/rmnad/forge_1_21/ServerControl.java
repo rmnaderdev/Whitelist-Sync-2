@@ -8,10 +8,10 @@ import net.minecraft.server.players.IpBanListEntry;
 import net.minecraft.server.players.UserBanListEntry;
 import net.minecraft.server.players.UserWhiteListEntry;
 import net.minecraftforge.fml.ModList;
-import net.rmnad.Log;
-import net.rmnad.callbacks.IServerControl;
-import net.rmnad.logging.LogMessages;
-import net.rmnad.services.VersionChecker;
+import net.rmnad.core.Log;
+import net.rmnad.core.callbacks.IServerControl;
+import net.rmnad.core.logging.LogMessages;
+import net.rmnad.core.services.VersionChecker;
 
 import java.util.List;
 import java.util.UUID;

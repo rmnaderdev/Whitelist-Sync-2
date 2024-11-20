@@ -6,9 +6,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
-import net.rmnad.Log;
-import net.rmnad.WhitelistSyncCore;
-import net.rmnad.logging.LogMessages;
+import net.rmnad.core.Log;
+import net.rmnad.core.WhitelistSyncCore;
+import net.rmnad.core.logging.LogMessages;
 
 @Mod(WhitelistSync2.MODID)
 public class WhitelistSync2

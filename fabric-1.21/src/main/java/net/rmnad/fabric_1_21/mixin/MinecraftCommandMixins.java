@@ -4,9 +4,9 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.dedicated.command.*;
 import net.minecraft.text.Text;
-import net.rmnad.Log;
-import net.rmnad.WhitelistSyncCore;
-import net.rmnad.services.WebService;
+import net.rmnad.core.Log;
+import net.rmnad.core.WhitelistSyncCore;
+import net.rmnad.core.services.WebService;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Collection;
 
-import static net.rmnad.WhitelistSyncCore.whitelistService;
+import static net.rmnad.core.WhitelistSyncCore.whitelistService;
 
 public class MinecraftCommandMixins {
 
