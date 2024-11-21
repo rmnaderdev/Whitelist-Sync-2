@@ -1,4 +1,4 @@
-package net.rmnad.forge_1_21;
+package net.rmnad.neoforge_1_21;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.LiteralMessage;

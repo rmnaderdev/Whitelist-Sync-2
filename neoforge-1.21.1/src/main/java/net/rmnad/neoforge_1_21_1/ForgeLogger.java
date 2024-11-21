@@ -1,4 +1,4 @@
-package net.rmnad.forge_1_21;
+package net.rmnad.neoforge_1_21_1;
 
 import net.rmnad.core.WhitelistSyncLogger;
 import org.apache.logging.log4j.LogManager;
