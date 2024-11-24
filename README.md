@@ -34,9 +34,15 @@ If you like this project and want to support it, consider donating to my [PayPal
 
 ## Supported Fabric Versions
 - 1.21
+- 1.21.1
+- 1.21.2
+- 1.21.3
 
 ## Supported NeoForge Versions
 - 1.21
+- 1.21.1
+- 1.21.2
+- 1.21.3
 
 *Versions not listed above **and before 1.16.5** can be requested as an issue. I will try my best to accommodate. Whitelist Sync Web subscribers take priority.*
 
