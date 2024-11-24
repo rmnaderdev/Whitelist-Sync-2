@@ -37,5 +37,4 @@ include ':fabric-1.21.3'
 
 include ':neoforge-1.21'
 include ':neoforge-1.21.1'
-include ':neoforge-1.21.2'
 include ':neoforge-1.21.3'
