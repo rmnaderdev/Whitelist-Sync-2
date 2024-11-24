@@ -1,4 +1,4 @@
-package net.rmnad.forge_1_21;
+package net.rmnad.neoforge_1_21;
 
 import com.google.common.net.InetAddresses;
 import com.mojang.authlib.GameProfile;

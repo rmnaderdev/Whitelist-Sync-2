@@ -1,4 +1,4 @@
-package net.rmnad.forge_1_21;
+package net.rmnad.neoforge_1_21_1;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.network.chat.Component;
