@@ -4,11 +4,11 @@ Introducing Whitelist Sync!
 ===========================
 
 
-### A mod that allows you to sync the whitelists, ops list, banned players (Web only), and banned IPs (Web only) from multiple Minecraft servers together using one MySQL db, SQLite db, or the NEW [Whitelist Sync Web](https://info.whitelistsync.com/docs/WhitelistSyncWeb.html) service!
+### A mod that allows you to sync the whitelists, ops list, banned players (Web only), and banned IPs (Web only) from multiple Minecraft servers together using one MySQL db, SQLite db, or the NEW [Whitelist Sync Web](https://whitelistsync.com/getting-started) service!
 This mod listens for whitelist, op, ban, and ban-ip changes (using the normal Minecraft commands) on all of your servers and will update all other forge servers connected to the same database.
 
 ## Whitelist Sync Web
-Whitelist Sync Web is a new service that allows you to sync your whitelist, ops, banned players, and banned IPs across all of your servers in real-time. This service is a paid service, but it does have a free tier for you to try out. This service is the easiest way to sync your servers and requires no setup on your end other than installing the mod and setting the API key. Interested in learning more? [Click here](https://info.whitelistsync.com/docs/WhitelistSyncWeb.html).
+Whitelist Sync Web is a new service that allows you to sync your whitelist, ops, banned players, and banned IPs across all of your servers in real-time. This service is a paid service, but it does have a free tier for you to try out. This service is the easiest way to sync your servers and requires no setup on your end other than installing the mod and setting the API key. Interested in learning more? [Click here](https://whitelistsync.com/getting-started).
 
 ## Download
 All releases can be found on the [Modrinth](https://modrinth.com/mod/wlsync2) page or on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/whitelistsync2).
@@ -17,7 +17,7 @@ All releases can be found on the [Modrinth](https://modrinth.com/mod/wlsync2) pa
 For issues with the mod please open an issue on [GitHub](https://github.com/rmnaderdev/Whitelist-Sync-2/issues). For other support requests, feature requests, or other general discussion. Please join the [Discord Server](https://discord.gg/7FMJN4kurr).
 
 ## Support the project
-If you like this project and want to support it, consider donating to my [PayPal](https://www.paypal.com/paypalme/PSVFX), [buymeacoffee](https://buymeacoffee.com/potatodotjar) or by using the new [Whitelist Sync Web](https://info.whitelistsync.com/docs/WhitelistSyncWeb.html) service! Any amount is appreciated!
+If you like this project and want to support it, consider donating to my [PayPal](https://www.paypal.com/paypalme/PSVFX), [buymeacoffee](https://buymeacoffee.com/potatodotjar) or by using the new [Whitelist Sync Web](https://whitelistsync.com/getting-started) service! Any amount is appreciated!
 
 ## Supported Forge Versions
 - 1.21.3
@@ -50,7 +50,7 @@ If you like this project and want to support it, consider donating to my [PayPal
 ## Installation
 
 #### For Web Sync (Recommended, easiest setup):
-- See the Whitelist Sync Web setup on the [dedicated page](https://info.whitelistsync.com/docs/WhitelistSyncWeb.html)
+- See the Whitelist Sync Web setup on the [dedicated page](https://whitelistsync.com/getting-started)
 
 #### For SQLite database config (Self-hosted):
 - Download this mod AND the [SQLite DB connector](https://modrinth.com/plugin/sqlite-jdbc) mod and add both jar files to your mods folder.
