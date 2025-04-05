@@ -33,6 +33,7 @@ If you like this project and want to support it, consider donating to my [PayPal
 - ~~1.12.2~~ (no longer supported, may come back in the future)
 
 ## Supported Fabric Versions
+- 1.21.5
 - 1.21.4
 - 1.21.3
 - 1.21.2
@@ -41,6 +42,7 @@ If you like this project and want to support it, consider donating to my [PayPal
 - 1.20.1
 
 ## Supported NeoForge Versions
+- 1.21.5
 - 1.21.4
 - 1.21.3
 - 1.21.1
