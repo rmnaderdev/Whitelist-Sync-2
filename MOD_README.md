@@ -38,6 +38,7 @@ If you like this project and want to support it, consider donating to my [PayPal
 - 1.21.2
 - 1.21.1
 - 1.21
+- 1.20.1
 
 ## Supported NeoForge Versions
 - 1.21.4

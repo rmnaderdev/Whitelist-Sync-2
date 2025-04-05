@@ -30,6 +30,7 @@ include ':forge-1.21'
 include ':forge-1.21.1'
 include ':forge-1.21.3'
 
+include ':fabric-1.20.1'
 include ':fabric-1.21'
 include ':fabric-1.21.1'
 include ':fabric-1.21.2'
