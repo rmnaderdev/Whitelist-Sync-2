@@ -104,3 +104,4 @@ The mod uses polling to check for changes in the database and will update the lo
 - [ ] Add support for Paper
 
 Please post your bugs to [GitHub](https://github.com/rmnaderdev/Whitelist-Sync-2/issues "GitHub") or better yet make a pull request!
+
