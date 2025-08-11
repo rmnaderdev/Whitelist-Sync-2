@@ -17,7 +17,7 @@ All releases can be found on the [Modrinth](https://modrinth.com/mod/wlsync2) pa
 For issues with the mod please open an issue on [GitHub](https://github.com/rmnaderdev/Whitelist-Sync-2/issues). For other support requests, feature requests, or other general discussion. Please join the [Discord Server](https://discord.gg/7FMJN4kurr).
 
 ## Support the project
-If you like this project and want to support it, consider donating to my [PayPal](https://www.paypal.com/paypalme/PSVFX), [buymeacoffee](https://buymeacoffee.com/potatodotjar) or by using the new [Whitelist Sync Web](https://whitelistsync.com/getting-started) service! Any amount is appreciated!
+If you like this project and want to support it, consider donating to my [buymeacoffee](https://buymeacoffee.com/potatodotjar) or by using the new [Whitelist Sync Web](https://whitelistsync.com/getting-started) service! Any amount is appreciated!
 
 ## Supported Forge Versions
 - 1.21.3
@@ -104,4 +104,5 @@ The mod uses polling to check for changes in the database and will update the lo
 - [ ] Add support for Paper
 
 Please post your bugs to [GitHub](https://github.com/rmnaderdev/Whitelist-Sync-2/issues "GitHub") or better yet make a pull request!
+
 
