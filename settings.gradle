@@ -44,5 +44,7 @@ include ':neoforge-1.21.3'
 include ':neoforge-1.21.4'
 include ':neoforge-1.21.5'
 include ':neoforge-1.21.8'
-include ':neoforge-1.21.9'
-include ':neoforge-1.21.10'
+
+// Disabling these for now. Its not working
+//include ':neoforge-1.21.9'
+//include ':neoforge-1.21.10'
