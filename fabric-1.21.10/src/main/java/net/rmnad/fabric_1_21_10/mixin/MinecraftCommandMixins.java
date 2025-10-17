@@ -26,8 +26,8 @@ public class MinecraftCommandMixins {
             try {
                 for (GameProfile target : targets) {
                     // Custom logic for handling whitelist add
-                    Log.debug("[Intercept] Player " + target.getName() + " is being added to the whitelist.");
-                    whitelistService.addWhitelistPlayer(target.getId(), target.getName());
+                    Log.debug("[Intercept] Player " + target.name() + " is being added to the whitelist.");
+                    whitelistService.addWhitelistPlayer(target.id(), target.name());
                 }
 
             } catch (Exception e) {
@@ -41,8 +41,8 @@ public class MinecraftCommandMixins {
             try {
                 for (GameProfile target : targets) {
                     // Custom logic for handling whitelist remove
-                    Log.debug("[Intercept] Player " + target.getName() + " is being removed from the whitelist.");
-                    whitelistService.removeWhitelistPlayer(target.getId(), target.getName());
+                    Log.debug("[Intercept] Player " + target.name() + " is being removed from the whitelist.");
+                    whitelistService.removeWhitelistPlayer(target.id(), target.name());
                 }
 
             } catch (Exception e) {
@@ -65,8 +65,8 @@ public class MinecraftCommandMixins {
             try {
                 for (GameProfile target : targets) {
                     // Custom logic for handling op command
-                    Log.debug("[Intercept] Player " + target.getName() + " is being opped.");
-                    whitelistService.addOppedPlayer(target.getId(), target.getName());
+                    Log.debug("[Intercept] Player " + target.name() + " is being opped.");
+                    whitelistService.addOppedPlayer(target.id(), target.name());
                 }
 
             } catch (Exception e) {
@@ -89,8 +89,8 @@ public class MinecraftCommandMixins {
             try {
                 for (GameProfile target : targets) {
                     // Custom logic for handling deop command
-                    Log.debug("[Intercept] Player " + target.getName() + " is being deopped.");
-                    whitelistService.removeOppedPlayer(target.getId(), target.getName());
+                    Log.debug("[Intercept] Player " + target.name() + " is being deopped.");
+                    whitelistService.removeOppedPlayer(target.id(), target.name());
                 }
 
             } catch (Exception e) {
@@ -113,8 +113,8 @@ public class MinecraftCommandMixins {
             try {
                 for (GameProfile target : targets) {
                     // Custom logic for handling ban command
-                    Log.debug("[Intercept] Player " + target.getName() + " is being banned. Reason: " + (reason != null ? reason : "No reason provided."));
-                    whitelistService.addBannedPlayer(target.getId(), target.getName(), reason != null ? reason.getString() : null);
+                    Log.debug("[Intercept] Player " + target.name() + " is being banned. Reason: " + (reason != null ? reason : "No reason provided."));
+                    whitelistService.addBannedPlayer(target.id(), target.name(), reason != null ? reason.getString() : null);
                 }
 
             } catch (Exception e) {
@@ -137,8 +137,8 @@ public class MinecraftCommandMixins {
             try {
                 for (GameProfile target : targets) {
                     // Custom logic for handling pardon command
-                    Log.debug("[Intercept] Player " + target.getName() + " is being unbanned.");
-                    whitelistService.removeBannedPlayer(target.getId(), target.getName());
+                    Log.debug("[Intercept] Player " + target.name() + " is being unbanned.");
+                    whitelistService.removeBannedPlayer(target.id(), target.name());
                 }
 
             } catch (Exception e) {

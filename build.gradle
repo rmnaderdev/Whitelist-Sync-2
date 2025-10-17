@@ -1,34 +1,19 @@
-// Workaround for Shadow not supporting Java 19 classes.
-// Remove this once Shadow updates.
-// See: https://github.com/johnrengelman/shadow/pull/770
-// See: https://discord.com/channels/722722769950998560/793019909055578113/978939925061857315
-buildscript {
-    configurations.all {
-        resolutionStrategy {
-            force("org.ow2.asm:asm:9.5")
-            force("org.ow2.asm:asm-commons:9.5")
-        }
-    }
-}
-
 plugins {
-    id 'com.gradleup.shadow' version '8.3.5'
+    id 'com.gradleup.shadow' version '9.2.2'
     id 'java'
     id 'maven-publish'
+    id 'org.jetbrains.gradle.plugin.idea-ext' version '1.3'
 }
-
-apply plugin: 'eclipse'
 
 allprojects {
     repositories {
+        mavenCentral()
         mavenLocal()
         gradlePluginPortal()
         maven { url 'https://libraries.minecraft.net/' }
         maven { url "https://cursemaven.com" }
         maven { url = 'https://maven.neoforged.net/releases' }
     }
-
-    apply plugin: 'java'
 
     group = mod_group_id
     version = mod_version
@@ -39,8 +24,6 @@ subprojects {
     apply plugin: 'com.gradleup.shadow'
     apply plugin: 'maven-publish'
 
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
     }
@@ -50,12 +33,12 @@ clean {
     delete "target"
 }
 
-task copyConfigToRun(type: Copy) {
+tasks.register('copyConfigToRun', Copy) {
     def fileToCopy = file('whitelistsync2-common.toml') // Specify the file to copy
     subprojects.findAll { subproject ->
         subproject.name.startsWith('forge')
-        || subproject.name.startsWith('fabric')
-        || subproject.name.startsWith('neoforge')
+                || subproject.name.startsWith('fabric')
+                || subproject.name.startsWith('neoforge')
     }.each { subproject ->
         copy {
             from fileToCopy

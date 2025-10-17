@@ -1,13 +1,16 @@
 plugins {
-    id 'fabric-loom' version '1.10-SNAPSHOT'
+    id 'fabric-loom' version '1.11-SNAPSHOT'
     id 'maven-publish'
 }
 
-project.archivesBaseName = "${project.archivesBaseName}-fabric-${minecraft_version}"
+//project.archivesBaseName = "${project.archivesBaseName}-fabric-${minecraft_version}"
 version = project.mod_version
 group = project.mod_group_id
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = JavaLanguageVersion.of(21) // Need this here so eclipse task generates correctly.
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
 
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 

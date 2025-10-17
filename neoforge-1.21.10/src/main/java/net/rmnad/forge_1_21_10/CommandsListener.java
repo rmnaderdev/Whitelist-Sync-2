@@ -8,6 +8,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.commands.arguments.MessageArgument;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.NameAndId;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.CommandEvent;
@@ -33,12 +34,12 @@ public class CommandsListener {
 
         if (command.startsWith("whitelist add")) {
             try {
-                Collection<GameProfile> targets = GameProfileArgument.getGameProfiles(context, "targets");
+                Collection<NameAndId> targets = GameProfileArgument.getGameProfiles(context, "targets");
 
-                for (GameProfile target : targets) {
+                for (NameAndId target : targets) {
                     // Custom logic for handling whitelist add
-                    Log.debug("[Intercept] Player " + target.getName() + " is being added to the whitelist.");
-                    whitelistService.addWhitelistPlayer(target.getId(), target.getName());
+                    Log.debug("[Intercept] Player " + target.name() + " is being added to the whitelist.");
+                    whitelistService.addWhitelistPlayer(target.id(), target.name());
                 }
 
             } catch (Exception e) {
@@ -48,12 +49,12 @@ public class CommandsListener {
         }
         else if (command.startsWith("whitelist remove")) {
             try {
-                Collection<GameProfile> targets = GameProfileArgument.getGameProfiles(context, "targets");
+                Collection<NameAndId> targets = GameProfileArgument.getGameProfiles(context, "targets");
 
-                for (GameProfile target : targets) {
+                for (NameAndId target : targets) {
                     // Custom logic for handling whitelist remove
-                    Log.debug("[Intercept] Player " + target.getName() + " is being removed from the whitelist.");
-                    whitelistService.removeWhitelistPlayer(target.getId(), target.getName());
+                    Log.debug("[Intercept] Player " + target.name() + " is being removed from the whitelist.");
+                    whitelistService.removeWhitelistPlayer(target.id(), target.name());
                 }
 
             } catch (Exception e) {
@@ -67,12 +68,12 @@ public class CommandsListener {
             }
 
             try {
-                Collection<GameProfile> targets = GameProfileArgument.getGameProfiles(context, "targets");
+                Collection<NameAndId> targets = GameProfileArgument.getGameProfiles(context, "targets");
 
-                for (GameProfile target : targets) {
+                for (NameAndId target : targets) {
                     // Custom logic for handling op command
-                    Log.debug("[Intercept] Player " + target.getName() + " is being opped.");
-                    whitelistService.addOppedPlayer(target.getId(), target.getName());
+                    Log.debug("[Intercept] Player " + target.name() + " is being opped.");
+                    whitelistService.addOppedPlayer(target.id(), target.name());
                 }
 
             } catch (Exception e) {
@@ -86,12 +87,12 @@ public class CommandsListener {
             }
 
             try {
-                Collection<GameProfile> targets = GameProfileArgument.getGameProfiles(context, "targets");
+                Collection<NameAndId> targets = GameProfileArgument.getGameProfiles(context, "targets");
 
-                for (GameProfile target : targets) {
+                for (NameAndId target : targets) {
                     // Custom logic for handling deop command
-                    Log.debug("[Intercept] Player " + target.getName() + " is being deopped.");
-                    whitelistService.removeOppedPlayer(target.getId(), target.getName());
+                    Log.debug("[Intercept] Player " + target.name() + " is being deopped.");
+                    whitelistService.removeOppedPlayer(target.id(), target.name());
                 }
 
             } catch (Exception e) {
@@ -151,7 +152,7 @@ public class CommandsListener {
             }
 
             try {
-                Collection<GameProfile> targets = GameProfileArgument.getGameProfiles(context, "targets");
+                Collection<NameAndId> targets = GameProfileArgument.getGameProfiles(context, "targets");
                 String reason = null;
                 try {
                     reason = MessageArgument.getMessage(context, "reason").getString();
@@ -159,10 +160,10 @@ public class CommandsListener {
                     // No reason provided
                 }
 
-                for (GameProfile target : targets) {
+                for (NameAndId target : targets) {
                     // Custom logic for handling ban command
-                    Log.debug("[Intercept] Player " + target.getName() + " is being banned. Reason: " + (reason != null ? reason : "No reason provided."));
-                    whitelistService.addBannedPlayer(target.getId(), target.getName(), reason);
+                    Log.debug("[Intercept] Player " + target.name() + " is being banned. Reason: " + (reason != null ? reason : "No reason provided."));
+                    whitelistService.addBannedPlayer(target.id(), target.name(), reason);
                 }
 
             } catch (Exception e) {
@@ -176,12 +177,12 @@ public class CommandsListener {
             }
 
             try {
-                Collection<GameProfile> targets = GameProfileArgument.getGameProfiles(context, "targets");
+                Collection<NameAndId> targets = GameProfileArgument.getGameProfiles(context, "targets");
 
-                for (GameProfile target : targets) {
+                for (NameAndId target : targets) {
                     // Custom logic for handling pardon command
-                    Log.debug("[Intercept] Player " + target.getName() + " is being unbanned.");
-                    whitelistService.removeBannedPlayer(target.getId(), target.getName());
+                    Log.debug("[Intercept] Player " + target.name() + " is being unbanned.");
+                    whitelistService.removeBannedPlayer(target.id(), target.name());
                 }
 
             } catch (Exception e) {

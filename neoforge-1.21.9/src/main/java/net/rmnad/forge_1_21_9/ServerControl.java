@@ -1,10 +1,10 @@
 package net.rmnad.forge_1_21_9;
 
-import com.mojang.authlib.GameProfile;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.IpBanListEntry;
+import net.minecraft.server.players.NameAndId;
 import net.minecraft.server.players.UserBanListEntry;
 import net.minecraft.server.players.UserWhiteListEntry;
 import net.neoforged.fml.ModList;
@@ -27,35 +27,35 @@ public class ServerControl implements IServerControl {
     @Override
     public void addWhitelistPlayer(UUID uuid, String name) {
         // Called when user added to whitelist
-        server.getPlayerList().getWhiteList().add(new UserWhiteListEntry(new GameProfile(uuid, name)));
+        server.getPlayerList().getWhiteList().add(new UserWhiteListEntry(new NameAndId(uuid, name)));
     }
 
     @Override
     public void removeWhitelistPlayer(UUID uuid, String name) {
         // Called when user removed from whitelist
-        server.getPlayerList().getWhiteList().remove(new UserWhiteListEntry(new GameProfile(uuid, name)));
+        server.getPlayerList().getWhiteList().remove(new UserWhiteListEntry(new NameAndId(uuid, name)));
     }
 
     @Override
     public void addOpPlayer(UUID uuid, String name) {
         // Called when user added to op list
-        server.getPlayerList().op(new GameProfile(uuid, name));
+        server.getPlayerList().op(new NameAndId(uuid, name));
     }
 
     @Override
     public void removeOpPlayer(UUID uuid, String name) {
         // Called when user removed from op list
-        server.getPlayerList().deop(new GameProfile(uuid, name));
+        server.getPlayerList().deop(new NameAndId(uuid, name));
     }
 
     @Override
     public void addBannedPlayer(UUID uuid, String name, String reason) {
         // Called when user added to ban list
-        GameProfile gameProfile = new GameProfile(uuid, name);
+        NameAndId gameProfile = new NameAndId(uuid, name);
         server.getPlayerList().getBans().add(new UserBanListEntry(gameProfile, null, null, null, reason));
 
         // If the player is online, kick them
-        ServerPlayer onlinePlayer = server.getPlayerList().getPlayer(gameProfile.getId());
+        ServerPlayer onlinePlayer = server.getPlayerList().getPlayer(gameProfile.id());
         if (onlinePlayer != null) {
             onlinePlayer.connection.disconnect(Component.translatable("multiplayer.disconnect.banned"));
         }
@@ -64,7 +64,7 @@ public class ServerControl implements IServerControl {
     @Override
     public void removeBannedPlayer(UUID uuid, String name) {
         // Called when user removed from ban list
-        server.getPlayerList().getBans().remove(new UserBanListEntry(new GameProfile(uuid, name)));
+        server.getPlayerList().getBans().remove(new UserBanListEntry(new NameAndId(uuid, name)));
     }
 
     @Override
@@ -88,9 +88,9 @@ public class ServerControl implements IServerControl {
     @Override
     public void checkWhitelistEnabled() {
         // Check if whitelisting is enabled.
-        if (!this.server.getPlayerList().isUsingWhitelist()) {
+        if (!this.server.isUsingWhitelist()) {
             Log.info(LogMessages.WARN_WHITELIST_NOT_ENABLED);
-            this.server.getPlayerList().setUsingWhiteList(true);
+            this.server.setUsingWhitelist(true);
         }
     }
 
