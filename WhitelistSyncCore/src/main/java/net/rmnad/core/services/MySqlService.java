@@ -73,7 +73,7 @@ public class MySqlService implements BaseService {
 
 
                 // Create database
-                String sql = "CREATE DATABASE IF NOT EXISTS " + databaseName + ";";
+                String sql = "CREATE DATABASE IF NOT EXISTS `" + databaseName + "`;";
 
                 // Create statement
                 Connection conn = DriverManager.getConnection(url, username, password);
@@ -82,7 +82,7 @@ public class MySqlService implements BaseService {
                 stmt.close();
 
                 // Create whitelist table
-                sql = "CREATE TABLE IF NOT EXISTS " + databaseName + ".whitelist ("
+                sql = "CREATE TABLE IF NOT EXISTS `" + databaseName + "`.`whitelist` ("
                         + "`uuid` VARCHAR(60) NOT NULL,"
                         + "`name` VARCHAR(20) NOT NULL,"
                         + "`whitelisted` TINYINT NOT NULL DEFAULT 1,"
@@ -94,7 +94,7 @@ public class MySqlService implements BaseService {
 
                 // Create opped players table if enabled
                 if (WhitelistSyncCore.CONFIG.syncOpList) {
-                    sql = "CREATE TABLE IF NOT EXISTS " + databaseName + ".op ("
+                    sql = "CREATE TABLE IF NOT EXISTS `" + databaseName + "`.`op` ("
                             + "`uuid` VARCHAR(60) NOT NULL,"
                             + "`name` VARCHAR(20) NOT NULL,"
                             + "`isOp` TINYINT NOT NULL DEFAULT 1,"
@@ -136,7 +136,7 @@ public class MySqlService implements BaseService {
             Connection conn = DriverManager.getConnection(url, username, password);
             long startTime = System.currentTimeMillis();
 
-            String sql = "SELECT uuid, name FROM " + databaseName + ".whitelist WHERE whitelisted = true;";
+            String sql = "SELECT uuid, name FROM `" + databaseName + "`.`whitelist` WHERE whitelisted = true;";
             PreparedStatement stmt = conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
 
@@ -180,7 +180,7 @@ public class MySqlService implements BaseService {
             Connection conn = DriverManager.getConnection(url, username, password);
             long startTime = System.currentTimeMillis();
 
-            String sql = "SELECT uuid, name FROM " + databaseName + ".op WHERE isOp = true;";
+            String sql = "SELECT uuid, name FROM `" + databaseName + "`.`op` WHERE isOp = true;";
             PreparedStatement stmt = conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
 
@@ -238,7 +238,7 @@ public class MySqlService implements BaseService {
             for (WhitelistedPlayer player : whitelistedPlayers) {
 
                 if (player.getUuid() != null && player.getName() != null) {
-                    PreparedStatement stmt = conn.prepareStatement("INSERT IGNORE INTO " + databaseName + ".whitelist(uuid, name, whitelisted) VALUES (?, ?, true)");
+                    PreparedStatement stmt = conn.prepareStatement("INSERT IGNORE INTO `" + databaseName + "`.`whitelist`(uuid, name, whitelisted) VALUES (?, ?, true)");
                     stmt.setString(1, player.getUuid());
                     stmt.setString(2, player.getName());
                     stmt.executeUpdate();
@@ -282,7 +282,7 @@ public class MySqlService implements BaseService {
             for (OppedPlayer player : oppedPlayers) {
 
                 if (player.getUuid() != null && player.getName() != null) {
-                    PreparedStatement stmt = conn.prepareStatement("INSERT IGNORE INTO " + databaseName + ".op(uuid, name, isOp) VALUES (?, ?, true)");
+                    PreparedStatement stmt = conn.prepareStatement("INSERT IGNORE INTO `" + databaseName + "`.`op`(uuid, name, isOp) VALUES (?, ?, true)");
                     stmt.setString(1, player.getUuid());
                     stmt.setString(2, player.getName());
                     stmt.executeUpdate();
@@ -328,7 +328,7 @@ public class MySqlService implements BaseService {
             // Open connection
             Connection conn = DriverManager.getConnection(url, username, password);
 
-            String sql = "SELECT name, uuid, whitelisted FROM " + databaseName + ".whitelist";
+            String sql = "SELECT name, uuid, whitelisted FROM `" + databaseName + "`.`whitelist`";
             PreparedStatement stmt = conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
 
@@ -388,7 +388,7 @@ public class MySqlService implements BaseService {
             // Open connection
             Connection conn = DriverManager.getConnection(url, username, password);
 
-            String sql = "SELECT uuid, name, isOp FROM " + databaseName + ".op";
+            String sql = "SELECT uuid, name, isOp FROM `" + databaseName + "`.`op`";
             PreparedStatement stmt = conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
 
@@ -451,7 +451,7 @@ public class MySqlService implements BaseService {
             // Open connection=
             Connection conn = DriverManager.getConnection(url, username, password);
 
-            String sql = "REPLACE INTO " + databaseName + ".whitelist(uuid, name, whitelisted) VALUES (?, ?, true)";
+            String sql = "REPLACE INTO `" + databaseName + "`.`whitelist`(uuid, name, whitelisted) VALUES (?, ?, true)";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, uuid.toString());
             stmt.setString(2, name);
@@ -484,7 +484,7 @@ public class MySqlService implements BaseService {
             // Open connection=
             Connection conn = DriverManager.getConnection(url, username, password);
 
-            String sql = "REPLACE INTO " + databaseName + ".op(uuid, name, isOp) VALUES (?, ?, true)";
+            String sql = "REPLACE INTO `" + databaseName + "`.`op`(uuid, name, isOp) VALUES (?, ?, true)";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, uuid.toString());
             stmt.setString(2, name);
@@ -525,7 +525,7 @@ public class MySqlService implements BaseService {
             // Open connection=
             Connection conn = DriverManager.getConnection(url, username, password);
 
-            String sql = "REPLACE INTO " + databaseName + ".whitelist(uuid, name, whitelisted) VALUES (?, ?, false)";
+            String sql = "REPLACE INTO `" + databaseName + "`.`whitelist`(uuid, name, whitelisted) VALUES (?, ?, false)";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, uuid.toString());
             stmt.setString(2, name);
@@ -559,7 +559,7 @@ public class MySqlService implements BaseService {
             // Open connection=
             Connection conn = DriverManager.getConnection(url, username, password);
 
-            String sql = "REPLACE INTO " + databaseName + ".op(uuid, name, isOp) VALUES (?, ?, false)";
+            String sql = "REPLACE INTO `" + databaseName + "`.`op`(uuid, name, isOp) VALUES (?, ?, false)";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, uuid.toString());
             stmt.setString(2, name);
