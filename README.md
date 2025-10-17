@@ -10,14 +10,14 @@ This mod listens for whitelist, op, ban, and ban-ip changes (using the normal Mi
 ## Whitelist Sync Web
 Whitelist Sync Web is a new service that allows you to sync your whitelist, ops, banned players, and banned IPs across all of your servers in real-time. This service is a paid service, but it does have a free tier for you to try out. This service is the easiest way to sync your servers and requires no setup on your end other than installing the mod and setting the API key. Interested in learning more? [Click here](https://whitelistsync.com/getting-started).
 
+## Support the project
+If you like this project and want to support it, consider donating [using this link](https://whitelistsync.com/supporters). Any amount is appreciated!
+
 ## Download
 All releases can be found on the [Modrinth](https://modrinth.com/mod/wlsync2) page or on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/whitelistsync2).
 
 ## Support/Questions/Feedback
 For issues with the mod please open an issue on [GitHub](https://github.com/rmnaderdev/Whitelist-Sync-2/issues). For other support requests, feature requests, or other general discussion. Please join the [Discord Server](https://discord.gg/7FMJN4kurr).
-
-## Support the project
-If you like this project and want to support it, consider donating to my [buymeacoffee](https://buymeacoffee.com/potatodotjar) or by using the new [Whitelist Sync Web](https://whitelistsync.com/getting-started) service! Any amount is appreciated!
 
 ## Supported Forge Versions
 - 1.21.3
@@ -33,6 +33,10 @@ If you like this project and want to support it, consider donating to my [buymea
 - ~~1.12.2~~ (no longer supported, may come back in the future)
 
 ## Supported Fabric Versions
+- 1.21.10
+- 1.21.8
+- 1.21.7
+- 1.21.6
 - 1.21.5
 - 1.21.4
 - 1.21.3
@@ -42,6 +46,9 @@ If you like this project and want to support it, consider donating to my [buymea
 - 1.20.1
 
 ## Supported NeoForge Versions
+- 1.21.10
+- 1.21.9
+- 1.21.8
 - 1.21.5
 - 1.21.4
 - 1.21.3

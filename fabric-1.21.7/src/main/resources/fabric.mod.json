@@ -1,0 +1,32 @@
+{
+	"schemaVersion": 1,
+	"id": "${mod_id}",
+	"version": "${mod_version}",
+	"name": "${mod_name}",
+	"description": "${mod_description}",
+	"authors": [
+		"${mod_authors}"
+	],
+	"contact": {
+		"homepage": "${mod_page}",
+		"sources": "${mod_page}"
+	},
+	"mixins": [
+		"whitelistsync2.mixins.json"
+	],
+	"license": "${mod_license}",
+	"icon": "assets/whitelistsync2/logo.webp",
+	"environment": "server",
+	"entrypoints": {
+		"main": [
+          "net.rmnad.fabric_1_21_7.WhitelistSync2"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=${loader_version}",
+		"minecraft": "~${minecraft_version}",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {}
+}
