@@ -4,6 +4,7 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id 'net.neoforged.moddev' version '2.0.115'
+    id 'com.modrinth.minotaur' version '2.+'
 }
 
 java {
@@ -91,16 +92,34 @@ processResources {
     }
 }
 
+jar {
+    archiveClassifier.set('slim')
+    manifest {
+        attributes([
+                "Specification-Title"     : "${project.name}",
+                "Specification-Vendor"    : "rmnaderdev",
+                "Specification-Version"   : "${project.version}",
+                "Implementation-Title"    : "${project.name}",
+                "Implementation-Version"  : "${project.version}",
+                "Implementation-Vendor"   : "rmnaderdev",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}
+
 shadowJar {
     archiveBaseName = "WhitelistSync"
     archiveClassifier = "neoforge-${minecraft_version}"
     destinationDirectory = file '../target'
     configurations = [project.configurations.shade]
 }
+assemble.dependsOn shadowJar
+jar {
+    shadowJar {}
+}
 
 artifacts {
     archives shadowJar
-    shadow shadowJar
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -114,3 +133,29 @@ idea {
         downloadJavadoc = true
     }
 }
+
+def changeLogProvider = rootProject.providers.fileContents(
+        rootProject.layout.projectDirectory.file("CHANGELOG.md")
+).asText
+
+modrinth {
+    System.println("Modrinth token: ${System.getenv("MODRINTH_TOKEN") != null}")
+    System.println("Changelog \n${changeLogProvider.get()}")
+    token = System.getenv("MODRINTH_TOKEN")
+    projectId = 'DcCsQ8S5'
+    versionNumber = "${project.version}-neoforge-${minecraft_version}"
+    versionName = "Whitelist Sync ${project.version} (NeoForge ${minecraft_version})"
+    versionType = 'release'
+    uploadFile = shadowJar
+    gameVersions = [minecraft_version]
+    loaders = ['neoforge']
+    changelog = changeLogProvider.present ? changeLogProvider.get() : "No changelog."
+    dependencies = []
+}
+
+tasks.modrinth.dependsOn(shadowJar)
+
+// Optional: only publish on tags
+//tasks.modrinth.onlyIf {
+//    System.getenv("GITHUB_REF")?.startsWith("refs/tags/")
+//}
