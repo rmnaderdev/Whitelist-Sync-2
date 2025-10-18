@@ -162,5 +162,4 @@ shadowJar {
 
 artifacts {
     archives shadowJar
-    shadow shadowJar
 }

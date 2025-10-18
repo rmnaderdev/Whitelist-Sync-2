@@ -3,7 +3,8 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.moddev' version '2.0.115'
+    id 'net.neoforged.moddev'
+    id 'com.modrinth.minotaur'
 }
 
 java {
@@ -91,16 +92,32 @@ processResources {
     }
 }
 
+jar {
+    archiveClassifier.set('slim')
+    manifest {
+        attributes([
+                "Specification-Title"     : "${project.name}",
+                "Specification-Vendor"    : "rmnaderdev",
+                "Specification-Version"   : "${project.version}",
+                "Implementation-Title"    : "${project.name}",
+                "Implementation-Version"  : "${project.version}",
+                "Implementation-Vendor"   : "rmnaderdev",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+    shadowJar {}
+}
+
 shadowJar {
     archiveBaseName = "WhitelistSync"
     archiveClassifier = "neoforge-${minecraft_version}"
     destinationDirectory = file '../target'
     configurations = [project.configurations.shade]
 }
+assemble.dependsOn shadowJar
 
 artifacts {
     archives shadowJar
-    shadow shadowJar
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -113,4 +130,35 @@ idea {
         downloadSources = true
         downloadJavadoc = true
     }
+}
+
+def changeLogProvider = rootProject.providers.fileContents(
+        rootProject.layout.projectDirectory.file("CHANGELOG.md")
+).asText
+
+modrinth {
+    System.println("Modrinth token: ${System.getenv("MODRINTH_TOKEN") != null}")
+    token = System.getenv("MODRINTH_TOKEN")
+    projectId = 'DcCsQ8S5'
+    versionNumber = "${minecraft_version}-${project.version}"
+    versionName = "Whitelist Sync ${project.version} (NeoForge ${minecraft_version})"
+    versionType = 'release'
+    uploadFile = tasks.named('shadowJar').flatMap { it.archiveFile }
+    gameVersions = [minecraft_version]
+    loaders = ['neoforge']
+    changelog = changeLogProvider.present ? changeLogProvider.get() : "No changelog."
+    dependencies = []
+}
+
+tasks.named('modrinth') {
+    dependsOn(tasks.named('shadowJar'))
+    doFirst {
+        def jarFile = tasks.named('shadowJar').get().archiveFile.get().asFile
+        println "modrinth: resolved shadowJar -> ${jarFile} (exists? ${jarFile.exists()})"
+        if (!jarFile.exists()) throw new GradleException("modrinth: shadowJar file not found: ${jarFile}")
+    }
+}
+
+tasks.modrinth.onlyIf {
+    System.getenv("GITHUB_REF")?.startsWith("refs/tags/")
 }

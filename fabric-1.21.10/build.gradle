@@ -1,5 +1,8 @@
+import com.modrinth.minotaur.dependencies.ModDependency
+
 plugins {
     id 'fabric-loom'
+    id 'com.modrinth.minotaur'
 }
 
 //project.archivesBaseName = "${project.archivesBaseName}-fabric-${minecraft_version}"
@@ -14,29 +17,6 @@ java {
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 
 ext.buildNumber = System.getenv().BUILD_NUMBER ?: "Dev"
-//def changeLogProvider = rootProject.providers.fileContents(
-//    rootProject.layout.projectDirectory.file("CHANGELOG.md")
-//).asText
-//
-//modrinth {
-//    token = System.getenv("MODRINTH_TOKEN")          // set in CI secrets
-//    projectId = 'DcCsQ8S5'                    // e.g. 'abcd1234'
-//    versionNumber = "${project.version}-fabric-${minecraft_version}"
-//    versionName = "Whitelist Sync ${project.version} (Fabric ${minecraft_version})"
-//    versionType = 'release'                          // or 'beta'/'alpha'
-//    uploadFile = tasks.remapJar                      // publish the remapped jar
-//    gameVersions = [ minecraft_version ]             // from gradle.properties
-//    loaders = [ 'fabric' ]
-//    changelog = changeLogProvider.present ? changeLogProvider.get() : "No changelog."
-//    dependencies = []
-//}
-//
-//tasks.modrinth.dependsOn tasks.remapJar
-
-// Optional: only publish on tags
-//tasks.modrinth.onlyIf {
-//    System.getenv("GITHUB_REF")?.startsWith("refs/tags/")
-//}
 
 loom {
 //    splitEnvironmentSourceSets()
@@ -94,7 +74,10 @@ java {
 
 jar {
     from("LICENSE") {
-        rename { "${it}_${project.base.archivesName.get()}"}
+        rename { "${it}_${project.base.archivesName.get()}" }
+    }
+    from {
+        configurations.shade.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
 
@@ -106,7 +89,6 @@ shadowJar {
 // Remap must use shadowJar as input
 remapJar {
     dependsOn shadowJar
-    inputFile.set shadowJar.archiveFile
     archiveBaseName = "WhitelistSync"
     archiveClassifier = "fabric-${minecraft_version}"
     destinationDirectory = file '../target'
@@ -114,5 +96,28 @@ remapJar {
 
 artifacts {
     archives shadowJar
-    shadow shadowJar
+}
+
+def changeLogProvider = rootProject.providers.fileContents(
+        rootProject.layout.projectDirectory.file("CHANGELOG.md")
+).asText
+
+modrinth {
+    System.println("Modrinth token: ${System.getenv("MODRINTH_TOKEN") != null}")
+    token = System.getenv("MODRINTH_TOKEN")
+    projectId = 'DcCsQ8S5'
+    versionNumber = "${minecraft_version}-${project.version}"
+    versionName = "Whitelist Sync ${project.version} (Fabric ${minecraft_version})"
+    versionType = 'release'
+    uploadFile = remapJar
+    gameVersions = [minecraft_version]
+    loaders = ['fabric']
+    changelog = changeLogProvider.present ? changeLogProvider.get() : "No changelog."
+    dependencies = [
+        new ModDependency('P7dR8mSH', 'required')
+    ]
+}
+
+tasks.modrinth.onlyIf {
+    System.getenv("GITHUB_REF")?.startsWith("refs/tags/")
 }
