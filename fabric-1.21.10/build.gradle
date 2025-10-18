@@ -114,7 +114,7 @@ modrinth {
     loaders = ['fabric']
     changelog = changeLogProvider.present ? changeLogProvider.get() : "No changelog."
     dependencies = [
-        new ModDependency('P7dR8mSH', 'required')
+        new com.modrinth.minotaur.dependencies.ModDependency('P7dR8mSH', 'required')
     ]
 }
 

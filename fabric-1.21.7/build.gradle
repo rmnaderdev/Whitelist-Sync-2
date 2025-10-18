@@ -1,9 +1,9 @@
 plugins {
     id 'fabric-loom'
     id 'maven-publish'
+    id 'com.modrinth.minotaur'
 }
 
-//project.archivesBaseName = "${project.archivesBaseName}-fabric-${minecraft_version}"
 version = project.mod_version
 group = project.mod_group_id
 
@@ -18,13 +18,11 @@ ext.buildNumber = System.getenv().BUILD_NUMBER ?: "Dev"
 
 loom {
 //    splitEnvironmentSourceSets()
-
     mods {
         "whitelistsync2" {
             sourceSet sourceSets.main
         }
     }
-
 }
 
 configurations {
@@ -37,15 +35,8 @@ dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-    // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
-    // Core library dependency
     shade project(path: ':WhitelistSyncCore', configuration: 'shadow')
-
-    // Used for development. These are added by the user later.
-    // Need "minecraftLibrary" so the libraries are used in the dev environment. Without them, the JDBC drivers won't be loaded.
     modImplementation "curse.maven:mysqlconnector-561280:4684944"
     modImplementation "curse.maven:sqliteconnector-560832:3582173"
 }
@@ -61,18 +52,17 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 java {
-    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-    // if it is present.
-    // If you remove this line, sources will not be generated.
     withSourcesJar()
-
     sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21
 }
 
 jar {
     from("LICENSE") {
-        rename { "${it}_${project.base.archivesName.get()}"}
+        rename { "${it}_${project.base.archivesName.get()}" }
+    }
+    from {
+        configurations.shade.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
 
@@ -81,10 +71,8 @@ shadowJar {
     configurations = [project.configurations.shade]
 }
 
-// Remap must use shadowJar as input
 remapJar {
     dependsOn shadowJar
-    inputFile.set shadowJar.archiveFile
     archiveBaseName = "WhitelistSync"
     archiveClassifier = "fabric-${minecraft_version}"
     destinationDirectory = file '../target'
@@ -92,4 +80,28 @@ remapJar {
 
 artifacts {
     archives shadowJar
+}
+
+def changeLogProvider = rootProject.providers.fileContents(
+        rootProject.layout.projectDirectory.file("CHANGELOG.md")
+).asText
+
+modrinth {
+    System.println("Modrinth token: ${System.getenv("MODRINTH_TOKEN") != null}")
+    token = System.getenv("MODRINTH_TOKEN")
+    projectId = 'DcCsQ8S5'
+    versionNumber = "${minecraft_version}-${project.version}"
+    versionName = "Whitelist Sync ${project.version} (Fabric ${minecraft_version})"
+    versionType = 'release'
+    uploadFile = remapJar
+    gameVersions = [minecraft_version]
+    loaders = ['fabric']
+    changelog = changeLogProvider.present ? changeLogProvider.get() : "No changelog."
+    dependencies = [
+        new com.modrinth.minotaur.dependencies.ModDependency('P7dR8mSH', 'required')
+    ]
+}
+
+tasks.modrinth.onlyIf {
+    System.getenv("GITHUB_REF")?.startsWith("refs/tags/")
 }
