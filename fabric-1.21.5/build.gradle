@@ -1,7 +1,6 @@
 plugins {
     id 'fabric-loom'
-    id 'maven-publish'
-    id 'com.modrinth.minotaur'
+    id 'me.shedaniel.unified-publishing'
 }
 
 version = project.mod_version
@@ -100,22 +99,46 @@ def changeLogProvider = rootProject.providers.fileContents(
         rootProject.layout.projectDirectory.file("CHANGELOG.md")
 ).asText
 
-modrinth {
-    System.println("Modrinth token: ${System.getenv("MODRINTH_TOKEN") != null}")
-    token = System.getenv("MODRINTH_TOKEN")
-    projectId = 'DcCsQ8S5'
-    versionNumber = "${minecraft_version}-${project.version}"
-    versionName = "Whitelist Sync ${project.version} (Fabric ${minecraft_version})"
-    versionType = 'release'
-    uploadFile = remapJar
-    gameVersions = [minecraft_version]
-    loaders = ['fabric']
-    changelog = changeLogProvider.present ? changeLogProvider.get() : "No changelog."
-    dependencies = [
-        new com.modrinth.minotaur.dependencies.ModDependency('P7dR8mSH', 'required')
-    ]
+unifiedPublishing {
+    project {
+        changelog = changeLogProvider.present ? changeLogProvider.get() : "No changelog."
+        releaseType = "release"
+        gameVersions = [minecraft_version]
+        gameLoaders = ["fabric"]
+
+        mainPublication tasks.remapJar
+
+        relations {
+            depends {
+                curseforge = "fabric-api"
+                modrinth = "fabric-api"
+            }
+        }
+
+        var cfToken = System.getenv("CF_TOKEN")
+        System.println("Curseforge token: ${cfToken != null}")
+        if (cfToken != null && System.getenv("GITHUB_REF")?.startsWith("refs/tags/")) {
+            curseforge {
+                token = cfToken
+                id = "274793"
+                displayName = "WhitelistSync-${project.version}-fabric-${minecraft_version}"
+            }
+        } else {
+            System.out.println("Curseforge publication skipped.")
+        }
+
+        var mrToken = System.getenv("MODRINTH_TOKEN")
+        System.println("Modrinth token: ${mrToken != null}")
+        if (mrToken != null && System.getenv("GITHUB_REF")?.startsWith("refs/tags/")) {
+            modrinth {
+                token = mrToken
+                id = "DcCsQ8S5"
+                displayName = "Whitelist Sync (Fabric ${minecraft_version})"
+                version = "${minecraft_version}-${project.version}"
+            }
+        } else {
+            System.out.println("Modrinth publication skipped.")
+        }
+    }
 }
 
-tasks.modrinth.onlyIf {
-    System.getenv("GITHUB_REF")?.startsWith("refs/tags/")
-}
