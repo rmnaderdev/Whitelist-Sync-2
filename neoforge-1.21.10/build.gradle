@@ -140,22 +140,27 @@ def changeLogProvider = rootProject.providers.fileContents(
 
 modrinth {
     System.println("Modrinth token: ${System.getenv("MODRINTH_TOKEN") != null}")
-    System.println("Changelog \n${changeLogProvider.get()}")
     token = System.getenv("MODRINTH_TOKEN")
     projectId = 'DcCsQ8S5'
-    versionNumber = "${project.version}-neoforge-${minecraft_version}"
+    versionNumber = "${minecraft_version}-${project.version}"
     versionName = "Whitelist Sync ${project.version} (NeoForge ${minecraft_version})"
     versionType = 'release'
-    uploadFile = shadowJar
+    uploadFile = tasks.named('shadowJar').flatMap { it.archiveFile }
     gameVersions = [minecraft_version]
     loaders = ['neoforge']
     changelog = changeLogProvider.present ? changeLogProvider.get() : "No changelog."
     dependencies = []
 }
 
-tasks.modrinth.dependsOn(shadowJar)
+tasks.named('modrinth') {
+    dependsOn(tasks.named('shadowJar'))
+    doFirst {
+        def jarFile = tasks.named('shadowJar').get().archiveFile.get().asFile
+        println "modrinth: resolved shadowJar -> ${jarFile} (exists? ${jarFile.exists()})"
+        if (!jarFile.exists()) throw new GradleException("modrinth: shadowJar file not found: ${jarFile}")
+    }
+}
 
-// Optional: only publish on tags
-//tasks.modrinth.onlyIf {
-//    System.getenv("GITHUB_REF")?.startsWith("refs/tags/")
-//}
+tasks.modrinth.onlyIf {
+    System.getenv("GITHUB_REF")?.startsWith("refs/tags/")
+}
