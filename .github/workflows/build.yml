@@ -31,4 +31,4 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: build
-        run: ./gradlew build --info --stacktrace
+        run: ./gradlew build
