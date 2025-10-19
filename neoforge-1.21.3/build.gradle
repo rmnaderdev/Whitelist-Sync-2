@@ -1,9 +1,6 @@
 plugins {
-    id 'java-library'
-    id 'eclipse'
-    id 'idea'
-    id 'maven-publish'
-    id 'net.neoforged.moddev' version '2.0.115'
+    id 'net.neoforged.moddev'
+    id 'me.shedaniel.unified-publishing'
 }
 
 java {
@@ -91,16 +88,32 @@ processResources {
     }
 }
 
+jar {
+    archiveClassifier.set('slim')
+    manifest {
+        attributes([
+                "Specification-Title"     : "${project.name}",
+                "Specification-Vendor"    : "rmnaderdev",
+                "Specification-Version"   : "${project.version}",
+                "Implementation-Title"    : "${project.name}",
+                "Implementation-Version"  : "${project.version}",
+                "Implementation-Vendor"   : "rmnaderdev",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+    shadowJar {}
+}
+
 shadowJar {
     archiveBaseName = "WhitelistSync"
     archiveClassifier = "neoforge-${minecraft_version}"
     destinationDirectory = file '../target'
     configurations = [project.configurations.shade]
 }
+assemble.dependsOn shadowJar
 
 artifacts {
     archives shadowJar
-    shadow shadowJar
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -112,5 +125,42 @@ idea {
     module {
         downloadSources = true
         downloadJavadoc = true
+    }
+}
+
+def changeLogProvider = rootProject.providers.fileContents(
+        rootProject.layout.projectDirectory.file("CHANGELOG.md")
+).asText
+
+unifiedPublishing {
+    project {
+        changelog = changeLogProvider.present ? changeLogProvider.get() : "No changelog."
+        releaseType = "release"
+        gameVersions = [minecraft_version]
+        gameLoaders = ["neoforge"]
+        mainPublication tasks.shadowJar
+        var cfToken = System.getenv("CF_TOKEN")
+        System.println("Curseforge token: ${cfToken != null}")
+        if (cfToken != null && System.getenv("GITHUB_REF")?.startsWith("refs/tags/")) {
+            curseforge {
+                token = cfToken
+                id = "274793"
+                displayName = "WhitelistSync-${project.version}-neoforge-${minecraft_version}"
+            }
+        } else {
+            System.out.println("Curseforge publication skipped.")
+        }
+        var mrToken = System.getenv("MODRINTH_TOKEN")
+        System.println("Modrinth token: ${mrToken != null}")
+        if (mrToken != null && System.getenv("GITHUB_REF")?.startsWith("refs/tags/")) {
+            modrinth {
+                token = mrToken
+                id = "DcCsQ8S5"
+                displayName = "Whitelist Sync (NeoForge ${minecraft_version})"
+                version = "${minecraft_version}-${project.version}"
+            }
+        } else {
+            System.out.println("Modrinth publication skipped.")
+        }
     }
 }

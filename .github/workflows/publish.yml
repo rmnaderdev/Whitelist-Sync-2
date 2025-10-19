@@ -1,5 +1,8 @@
-name: build
-on: [ pull_request ]
+name: publish
+on:
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   build:
@@ -20,5 +23,9 @@ jobs:
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
 
-      - name: build
-        run: ./gradlew build
+      - name: Publish to Modrinth and CurseForge
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          CF_TOKEN: ${{ secrets.CF_TOKEN }}
+        run: |
+          ./gradlew publishUnified --no-daemon --info --stacktrace

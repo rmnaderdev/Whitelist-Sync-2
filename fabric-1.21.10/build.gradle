@@ -1,6 +1,6 @@
 plugins {
-    id 'fabric-loom' version '1.11-SNAPSHOT'
-    id 'maven-publish'
+    id 'fabric-loom'
+    id 'me.shedaniel.unified-publishing'
 }
 
 //project.archivesBaseName = "${project.archivesBaseName}-fabric-${minecraft_version}"
@@ -72,7 +72,10 @@ java {
 
 jar {
     from("LICENSE") {
-        rename { "${it}_${project.base.archivesName.get()}"}
+        rename { "${it}_${project.base.archivesName.get()}" }
+    }
+    from {
+        configurations.shade.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
 
@@ -84,7 +87,6 @@ shadowJar {
 // Remap must use shadowJar as input
 remapJar {
     dependsOn shadowJar
-    inputFile.set shadowJar.archiveFile
     archiveBaseName = "WhitelistSync"
     archiveClassifier = "fabric-${minecraft_version}"
     destinationDirectory = file '../target'
@@ -92,5 +94,51 @@ remapJar {
 
 artifacts {
     archives shadowJar
-    shadow shadowJar
+}
+
+def changeLogProvider = rootProject.providers.fileContents(
+        rootProject.layout.projectDirectory.file("CHANGELOG.md")
+).asText
+
+unifiedPublishing {
+    project {
+        changelog = changeLogProvider.present ? changeLogProvider.get() : "No changelog."
+        releaseType = "release"
+        gameVersions = [minecraft_version]
+        gameLoaders = ["fabric"]
+
+        mainPublication tasks.remapJar // Declares the publicated jar
+
+        relations {
+            depends { // Mark as a required dependency
+                curseforge = "fabric-api" // Optional, project slug
+                modrinth = "fabric-api" // Optional, project slug or id
+            }
+        }
+
+        var cfToken = System.getenv("CF_TOKEN")
+        System.println("Curseforge token: ${cfToken != null}")
+        if (cfToken != null && System.getenv("GITHUB_REF")?.startsWith("refs/tags/")) {
+            curseforge {
+                token = cfToken
+                id = "274793"
+                displayName = "WhitelistSync-${project.version}-fabric-${minecraft_version}"
+            }
+        } else {
+            System.out.println("Curseforge publication skipped.")
+        }
+
+        var mrToken = System.getenv("MODRINTH_TOKEN")
+        System.println("Modrinth token: ${mrToken != null}")
+        if (mrToken != null && System.getenv("GITHUB_REF")?.startsWith("refs/tags/")) {
+            modrinth {
+                token = mrToken
+                id = "DcCsQ8S5"
+                displayName = "Whitelist Sync (Fabric ${minecraft_version})"
+                version = "${minecraft_version}-${project.version}"
+            }
+        } else {
+            System.out.println("Modrinth publication skipped.")
+        }
+    }
 }
