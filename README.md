@@ -59,6 +59,8 @@ For issues with the mod please open an issue on [GitHub](https://github.com/rmna
 
 ## Installation
 
+*Note: This mod does not support servers running in offline mode.*
+
 #### For Web Sync (Recommended, easiest setup):
 - See the Whitelist Sync Web setup on the [dedicated page](https://whitelistsync.com/getting-started)
 
@@ -97,7 +99,7 @@ For issues with the mod please open an issue on [GitHub](https://github.com/rmna
 - /wlop sync | Pulls list of ops from the database and updates local server ops.
 - /wlop push | Pushes local server ops to database and merges them in. (Versions before v1.5.0 use /wlop copyServerToDatabase)
 
-The mod uses polling to check for changes in the database and will update the local server whitelist and ops list accordingly. The polling interval can be set in the config file.
+The mod uses polling to check for changes in the self-hosted databases and will update the local server whitelist and ops list accordingly. The polling interval can be set in the config file.
 
 ## To-Do
 - [x] Get the damn gradle project structure to work
@@ -111,6 +113,3 @@ The mod uses polling to check for changes in the database and will update the lo
 - [ ] Add support for Paper
 
 Please post your bugs to [GitHub](https://github.com/rmnaderdev/Whitelist-Sync-2/issues "GitHub") or better yet make a pull request!
-
-
-
