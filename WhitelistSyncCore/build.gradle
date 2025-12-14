@@ -44,7 +44,12 @@ shadowJar {
     relocate('org.slf4j', "${shadeRelocateGroup}.org.slf4j")
     relocate('com.electronwill.nightconfig', "${shadeRelocateGroup}.com.electronwill.nightconfig")
     relocate('com.mysql', "${shadeRelocateGroup}.com.mysql")
-    relocate('org.sqlite', "${shadeRelocateGroup}.org.sqlite")
+
+    // Do not relocate SQLite JDBC native loader classes. This breaks it.
+    //    relocate('org.sqlite', "${shadeRelocateGroup}.org.sqlite") {
+    //        exclude 'org.sqlite.SQLiteJDBCLoader*'
+    //        exclude 'org.sqlite.core.NativeDB*'
+    //    }
 
     archiveBaseName = "WhitelistSyncCore"
     archiveClassifier = ''

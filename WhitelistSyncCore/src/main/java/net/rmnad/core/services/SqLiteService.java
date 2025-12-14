@@ -70,7 +70,7 @@ public class SqLiteService implements BaseService {
         try {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException e) {
-            Log.error("Failed to init org.sqlite.JDBC driver. Is the SQLite library missing? Try downloading it from https://modrinth.com/plugin/sqlite-jdbc and add it to your mods folder.");
+            Log.error("Failed to init org.sqlite.JDBC driver. Please report this to the developer.");
             Log.error(e.getMessage(), e);
             success = false;
         }

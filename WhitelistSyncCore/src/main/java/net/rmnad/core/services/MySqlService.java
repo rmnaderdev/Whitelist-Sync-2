@@ -48,7 +48,7 @@ public class MySqlService implements BaseService {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
         } catch (Exception e) {
-            Log.error("Failed to init com.mysql.cj.jdbc.Driver. Is the MySQL library missing? Try downloading it from https://modrinth.com/plugin/mysql-jdbc and add it to your mods folder.");
+            Log.error("Failed to init com.mysql.cj.jdbc.Driver. Please report this to the developer.");
             Log.error(e.getMessage(), e);
             isSuccess = false;
         }
