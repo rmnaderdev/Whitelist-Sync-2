@@ -1,4 +1,4 @@
-package net.rmnad.forge_1_19;
+package net.rmnad.whitelistsyncmod;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.network.chat.Component;

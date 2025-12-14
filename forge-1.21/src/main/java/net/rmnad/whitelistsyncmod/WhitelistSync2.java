@@ -1,4 +1,4 @@
-package net.rmnad.forge_1_21;
+package net.rmnad.whitelistsyncmod;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;

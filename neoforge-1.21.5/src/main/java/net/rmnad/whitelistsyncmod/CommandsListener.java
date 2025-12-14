@@ -35,7 +35,7 @@ public class CommandsListener {
             try {
                 Collection<GameProfile> targets = GameProfileArgument.getGameProfiles(context, "targets");
 
-                for (GameProfile target : targets) {
+                for (var target : targets) {
                     // Custom logic for handling whitelist add
                     Log.debug("[Intercept] Player " + target.getName() + " is being added to the whitelist.");
                     whitelistService.addWhitelistPlayer(target.getId(), target.getName());
@@ -50,7 +50,7 @@ public class CommandsListener {
             try {
                 Collection<GameProfile> targets = GameProfileArgument.getGameProfiles(context, "targets");
 
-                for (GameProfile target : targets) {
+                for (var target : targets) {
                     // Custom logic for handling whitelist remove
                     Log.debug("[Intercept] Player " + target.getName() + " is being removed from the whitelist.");
                     whitelistService.removeWhitelistPlayer(target.getId(), target.getName());
@@ -69,7 +69,7 @@ public class CommandsListener {
             try {
                 Collection<GameProfile> targets = GameProfileArgument.getGameProfiles(context, "targets");
 
-                for (GameProfile target : targets) {
+                for (var target : targets) {
                     // Custom logic for handling op command
                     Log.debug("[Intercept] Player " + target.getName() + " is being opped.");
                     whitelistService.addOppedPlayer(target.getId(), target.getName());
@@ -88,7 +88,7 @@ public class CommandsListener {
             try {
                 Collection<GameProfile> targets = GameProfileArgument.getGameProfiles(context, "targets");
 
-                for (GameProfile target : targets) {
+                for (var target : targets) {
                     // Custom logic for handling deop command
                     Log.debug("[Intercept] Player " + target.getName() + " is being deopped.");
                     whitelistService.removeOppedPlayer(target.getId(), target.getName());
@@ -159,7 +159,7 @@ public class CommandsListener {
                     // No reason provided
                 }
 
-                for (GameProfile target : targets) {
+                for (var target : targets) {
                     // Custom logic for handling ban command
                     Log.debug("[Intercept] Player " + target.getName() + " is being banned. Reason: " + (reason != null ? reason : "No reason provided."));
                     whitelistService.addBannedPlayer(target.getId(), target.getName(), reason);
@@ -178,7 +178,7 @@ public class CommandsListener {
             try {
                 Collection<GameProfile> targets = GameProfileArgument.getGameProfiles(context, "targets");
 
-                for (GameProfile target : targets) {
+                for (var target : targets) {
                     // Custom logic for handling pardon command
                     Log.debug("[Intercept] Player " + target.getName() + " is being unbanned.");
                     whitelistService.removeBannedPlayer(target.getId(), target.getName());
