@@ -4,10 +4,11 @@
 - Added support for new Minecraft versions for NeoForge and Fabric:
   - fabric-1.21.11
   - neoforge-1.21.11
-
 - Added SQLite and MySQL database drivers back into the mod jar. **External connector mod jars are no longer required.**
 - Refactored package names to be consistent across all versions and loaders.
 - Fixed bug with command mixin not casting to correct object type causing error on command execution.
+- Fixed version checker not working.
+- Fixed issue reading banned player and ip json when it contains a record with no reason.
 
 ## [2.8.2] - 2025-10-17
 Added support for new Minecraft versions for NeoForge and Fabric:

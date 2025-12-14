@@ -24,13 +24,15 @@ public class BannedPlayersFileReader {
         ArrayList<BannedPlayer> bannedPlayers = new ArrayList<>();
 
         // Get Json data
-        getBannedPlayersFromFile(serverRootPath).forEach((record) -> {
-            String uuid = ((JsonObject) record).get("uuid").getAsString();
-            String name = ((JsonObject) record).get("name").getAsString();
-            String created = ((JsonObject) record).get("created").getAsString();
-            String source = ((JsonObject) record).get("source").getAsString();
-            String expires = ((JsonObject) record).get("expires").getAsString();
-            String reason = ((JsonObject) record).get("reason").getAsString();
+        getBannedPlayersFromFile(serverRootPath).forEach((element) -> {
+            JsonObject record = element.getAsJsonObject();
+
+            String uuid = record.get("uuid").getAsString();
+            String name = record.get("name").getAsString();
+            String created = record.get("created").getAsString();
+            String source = record.get("source").getAsString();
+            String expires = record.get("expires").getAsString();
+            String reason = record.has("reason") ? record.get("reason").getAsString() : null;
 
             // Create DTO
             BannedPlayer bannedPlayer = new BannedPlayer();

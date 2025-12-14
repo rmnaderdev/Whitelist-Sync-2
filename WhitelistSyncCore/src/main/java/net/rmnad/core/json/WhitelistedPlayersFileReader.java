@@ -27,9 +27,11 @@ public class WhitelistedPlayersFileReader {
         ArrayList<WhitelistedPlayer> users = new ArrayList<>();
 
         // Get Json data
-        getWhitelistedPlayersFromFile(serverRootPath).forEach((record) -> {
-            String uuid = ((JsonObject) record).get("uuid").getAsString();
-            String name = ((JsonObject) record).get("name").getAsString();
+        getWhitelistedPlayersFromFile(serverRootPath).forEach((element) -> {
+            JsonObject record = element.getAsJsonObject();
+
+            String uuid = record.get("uuid").getAsString();
+            String name = record.get("name").getAsString();
 
             // Create DTO
             WhitelistedPlayer whitelistedPlayer = new WhitelistedPlayer();

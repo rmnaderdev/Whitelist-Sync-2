@@ -27,11 +27,13 @@ public class OppedPlayersFileReader {
         ArrayList<OppedPlayer> users = new ArrayList<>();
 
         // Get Json data
-        getOppedPlayersFromFile(serverRootPath).forEach((record) -> {
-            String uuid = ((JsonObject) record).get("uuid").getAsString();
-            String name = ((JsonObject) record).get("name").getAsString();
-            int level = ((JsonObject) record).get("level").getAsInt();
-            boolean bypassesPlayerLimit = ((JsonObject) record).get("bypassesPlayerLimit").getAsBoolean();
+        getOppedPlayersFromFile(serverRootPath).forEach((element) -> {
+            JsonObject record = element.getAsJsonObject();
+
+            String uuid = record.get("uuid").getAsString();
+            String name = record.get("name").getAsString();
+            int level = record.get("level").getAsInt();
+            boolean bypassesPlayerLimit = record.get("bypassesPlayerLimit").getAsBoolean();
 
             // Create DTO
             OppedPlayer oppedPlayer = new OppedPlayer();
@@ -39,7 +41,6 @@ public class OppedPlayersFileReader {
             oppedPlayer.setName(name);
             oppedPlayer.setLevel(level);
             oppedPlayer.setBypassesPlayerLimit(bypassesPlayerLimit);
-
             
             users.add(oppedPlayer);
         });
