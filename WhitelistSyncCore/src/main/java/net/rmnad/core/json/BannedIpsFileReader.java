@@ -24,12 +24,14 @@ public class BannedIpsFileReader {
         ArrayList<BannedIp> bannedPlayers = new ArrayList<>();
 
         // Get Json data
-        getBannedIpsFromFile(serverRootPath).forEach((record) -> {
-            String ip = ((JsonObject) record).get("ip").getAsString();
-            String created = ((JsonObject) record).get("created").getAsString();
-            String source = ((JsonObject) record).get("source").getAsString();
-            String expires = ((JsonObject) record).get("expires").getAsString();
-            String reason = ((JsonObject) record).get("reason").getAsString();
+        getBannedIpsFromFile(serverRootPath).forEach((element) -> {
+            JsonObject record = element.getAsJsonObject();
+
+            String ip = record.get("ip").getAsString();
+            String created = record.get("created").getAsString();
+            String source = record.get("source").getAsString();
+            String expires = record.get("expires").getAsString();
+            String reason = record.has("reason") ? record.get("reason").getAsString() : null;
 
             // Create DTO
             BannedIp bannedPlayer = new BannedIp();
