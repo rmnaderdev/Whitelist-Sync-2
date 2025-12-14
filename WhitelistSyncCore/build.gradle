@@ -19,6 +19,8 @@ dependencies {
     shade 'com.microsoft.signalr:signalr:7.0.0'
     shade 'com.electronwill.night-config:toml:3.6.0'
     shade 'org.slf4j:slf4j-simple:1.7.30'
+    shade 'com.mysql:mysql-connector-j:9.5.0'
+    shade 'org.xerial:sqlite-jdbc:3.51.1.0'
 }
 
 jar {
@@ -41,11 +43,14 @@ shadowJar {
     relocate('org.reactivestreams', "${shadeRelocateGroup}.org.reactivestreams")
     relocate('org.slf4j', "${shadeRelocateGroup}.org.slf4j")
     relocate('com.electronwill.nightconfig', "${shadeRelocateGroup}.com.electronwill.nightconfig")
+    relocate('com.mysql', "${shadeRelocateGroup}.com.mysql")
+    relocate('org.sqlite', "${shadeRelocateGroup}.org.sqlite")
 
     archiveBaseName = "WhitelistSyncCore"
     archiveClassifier = ''
     destinationDirectory = file '../target'
     configurations = [project.configurations.shade]
+    mergeServiceFiles()
 }
 
 artifacts {

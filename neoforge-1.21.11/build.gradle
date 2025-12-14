@@ -76,10 +76,6 @@ dependencies {
     // Core library dependency
     shade project(path: ':WhitelistSyncCore', configuration: 'shadow')
     runtimeOnly project(path: ':WhitelistSyncCore', configuration: 'shadow')
-
-    // Used for development. These are added by the user later.
-    runtimeOnly "curse.maven:mysqlconnector-561280:4684944"
-    runtimeOnly "curse.maven:sqliteconnector-560832:3582173"
 }
 
 processResources {
