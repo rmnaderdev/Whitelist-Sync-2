@@ -19,7 +19,7 @@
 	"environment": "server",
 	"entrypoints": {
 		"main": [
-          "net.rmnad.fabric_1_21_1.WhitelistSync2"
+          "net.rmnad.whitelistsyncmod.WhitelistSync2"
 		]
 	},
 	"depends": {
