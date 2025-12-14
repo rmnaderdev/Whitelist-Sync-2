@@ -33,6 +33,7 @@ For issues with the mod please open an issue on [GitHub](https://github.com/rmna
 - ~~1.12.2~~ (no longer supported, may come back in the future)
 
 ## Supported Fabric Versions
+- 1.21.11
 - 1.21.10
 - 1.21.8
 - 1.21.7
@@ -46,6 +47,7 @@ For issues with the mod please open an issue on [GitHub](https://github.com/rmna
 - 1.20.1
 
 ## Supported NeoForge Versions
+- 1.21.11
 - 1.21.10
 - 1.21.9
 - 1.21.8
@@ -64,14 +66,14 @@ For issues with the mod please open an issue on [GitHub](https://github.com/rmna
 #### For Web Sync (Recommended, easiest setup):
 - See the Whitelist Sync Web setup on the [dedicated page](https://whitelistsync.com/getting-started)
 
-#### For SQLite database config (Self-hosted):
-- Download this mod AND the [SQLite DB connector](https://modrinth.com/plugin/minecraft-sqlite-jdbc) mod and add both jar files to your mods folder.
+#### For SQLite database config (Requires self-hosted SQLite database):
+- Download this mod and add it to your mods folder.
 - Run your server once and set up the config (whitelistsync.cfg/whitelistsync-common.toml located in the config folder) and configure your database settings and timers.
 - NOTE: Be sure to make the database path the same for all the servers you want to link together!
 - When the server runs it is going to make a new database unless one already exists. If you want to push your current whitelist to the new database use "/wl copyServerToDatabase" then you can start all of your other servers and they will sync to the database.
 
-#### For MySQL database (Self-hosted):
-- Download this mod AND either the [MySQL DB connector **for Forge**](https://modrinth.com/plugin/mysql-jdbc) or [MySQL DB connector **for Fabric & NeoForge**](https://modrinth.com/mod/mysql-driver) mod and add both jar files to your mods folder.
+#### For MySQL database (Requires self-hosted MySQL database):
+- Download this mod and add it to your mods folder.
 - Run your server once and set up the config (whitelistsync.cfg/whitelistsync-common.toml located in the config folder) and configure your database settings and timers.
 - Set up your mySQL database IP, port, and authentication as well as the Sync Timer.
 - Run server and make sure the database connects. **Note:** Mod will make its own database and table for you or connect to an existing one.
@@ -100,16 +102,5 @@ For issues with the mod please open an issue on [GitHub](https://github.com/rmna
 - /wlop push | Pushes local server ops to database and merges them in. (Versions before v1.5.0 use /wlop copyServerToDatabase)
 
 The mod uses polling to check for changes in the self-hosted databases and will update the local server whitelist and ops list accordingly. The polling interval can be set in the config file.
-
-## To-Do
-- [x] Get the damn gradle project structure to work
-- [x] Allow user to sync/push only whitelist, ops, or bans
-
-## Future Plans
-- [x] Add support for syncing ban lists
-- [x] Add support for Fabric
-- [ ] Add support for BungeeCord
-- [ ] Add support for Spigot
-- [ ] Add support for Paper
 
 Please post your bugs to [GitHub](https://github.com/rmnaderdev/Whitelist-Sync-2/issues "GitHub") or better yet make a pull request!
