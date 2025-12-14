@@ -28,7 +28,7 @@ public class VersionChecker {
             OkHttpClient client = this.apiClientHelper.getClient();
 
             Request request = new Request.Builder()
-                    .url(this.apiClientHelper.getApiHost() + "/api/ModUpdate")
+                    .url(this.apiClientHelper.getApiHost() + "/api/modupdate")
                     .addHeader("content-type", "application/json")
                     .build();
 
