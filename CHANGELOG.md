@@ -7,6 +7,7 @@
 
 - Added SQLite and MySQL database drivers back into the mod jar. **External connector mod jars are no longer required.**
 - Refactored package names to be consistent across all versions and loaders.
+- Fixed bug with command mixin not casting to correct object type causing error on command execution.
 
 ## [2.8.2] - 2025-10-17
 Added support for new Minecraft versions for NeoForge and Fabric:
