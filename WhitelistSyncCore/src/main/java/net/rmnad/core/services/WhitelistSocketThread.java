@@ -55,7 +55,9 @@ public class WhitelistSocketThread extends Thread {
             HttpHubConnectionBuilder hubConnectionBuilder = HubConnectionBuilder
                     .create(this.service.apiClientHelper.getApiHost() + "/hubs/whitelistsyncmodhub")
                     .withHeader("X-Api-Key", this.service.apiClientHelper.getApiKey())
-                    .withHeader("server-uuid", this.service.serverUUID.toString());
+                    .withHeader("server-uuid", this.service.serverUUID.toString())
+                    .withTransport(TransportEnum.WEBSOCKETS)
+                    .shouldSkipNegotiate(true);
 
             if (this.service.apiClientHelper.getApiHost().startsWith("https://localhost")) {
                 X509TrustManager trustManager = new X509TrustManager() {
