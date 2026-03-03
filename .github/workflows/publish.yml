@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: whitelist-sync-2-arc-runner
     steps:
       - name: checkout repository
         uses: actions/checkout@v4
