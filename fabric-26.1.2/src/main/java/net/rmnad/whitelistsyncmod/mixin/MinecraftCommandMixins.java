@@ -1,9 +1,9 @@
 package net.rmnad.whitelistsyncmod.mixin;
 
-import net.minecraft.server.PlayerConfigEntry;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.dedicated.command.*;
-import net.minecraft.text.Text;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.commands.*;
+import net.minecraft.server.players.NameAndId;
 import net.rmnad.core.Log;
 import net.rmnad.core.WhitelistSyncCore;
 import net.rmnad.core.services.WebService;
@@ -21,8 +21,8 @@ public class MinecraftCommandMixins {
     @Mixin(WhitelistCommand.class)
     public abstract static class MinecraftWhitelistCommandMixin {
 
-        @Inject(method = "executeAdd", at = @At("HEAD"), cancellable = true)
-        private static void injectExecuteAdd(ServerCommandSource source, Collection<PlayerConfigEntry> targets, CallbackInfoReturnable<Integer> cir) {
+        @Inject(method = "addPlayers", at = @At("HEAD"), cancellable = true)
+        private static void injectExecuteAdd(CommandSourceStack source, Collection<NameAndId> targets, CallbackInfoReturnable<Integer> cir) {
             try {
                 for (var target : targets) {
                     // Custom logic for handling whitelist add
@@ -36,8 +36,8 @@ public class MinecraftCommandMixins {
             }
         }
 
-        @Inject(method = "executeRemove", at = @At("HEAD"), cancellable = true)
-        private static void injectExecuteRemove(ServerCommandSource source, Collection<PlayerConfigEntry> targets, CallbackInfoReturnable<Integer> cir) {
+        @Inject(method = "removePlayers", at = @At("HEAD"), cancellable = true)
+        private static void injectExecuteRemove(CommandSourceStack source, Collection<NameAndId> targets, CallbackInfoReturnable<Integer> cir) {
             try {
                 for (var target : targets) {
                     // Custom logic for handling whitelist remove
@@ -56,8 +56,8 @@ public class MinecraftCommandMixins {
     @Mixin(OpCommand.class)
     public abstract static class MinecraftOpCommandMixin {
 
-        @Inject(method = "op", at = @At("HEAD"), cancellable = true)
-        private static void injectOp(ServerCommandSource source, Collection<PlayerConfigEntry> targets, CallbackInfoReturnable<Integer> cir) {
+        @Inject(method = "opPlayers", at = @At("HEAD"), cancellable = true)
+        private static void injectOp(CommandSourceStack source, Collection<NameAndId> targets, CallbackInfoReturnable<Integer> cir) {
             if (!WhitelistSyncCore.CONFIG.syncOpList) {
                 return;
             }
@@ -77,20 +77,20 @@ public class MinecraftCommandMixins {
 
     }
 
-    @Mixin(DeOpCommand.class)
+    @Mixin(DeOpCommands.class)
     public abstract static class MinecraftDeOpCommandMixin {
 
-        @Inject(method = "deop", at = @At("HEAD"), cancellable = true)
-        private static void injectDeop(ServerCommandSource source, Collection<PlayerConfigEntry> targets, CallbackInfoReturnable<Integer> cir) {
+        @Inject(method = "deopPlayers", at = @At("HEAD"), cancellable = true)
+        private static void injectDeop(CommandSourceStack source, Collection<NameAndId> players, CallbackInfoReturnable<Integer> cir) {
             if (!WhitelistSyncCore.CONFIG.syncOpList) {
                 return;
             }
 
             try {
-                for (var target : targets) {
+                for (var player : players) {
                     // Custom logic for handling deop command
-                    Log.debug("[Intercept] Player " + target.name() + " is being deopped.");
-                    whitelistService.removeOppedPlayer(target.id(), target.name());
+                    Log.debug("[Intercept] Player " + player.name() + " is being deopped.");
+                    whitelistService.removeOppedPlayer(player.id(), player.name());
                 }
 
             } catch (Exception e) {
@@ -101,20 +101,20 @@ public class MinecraftCommandMixins {
 
     }
 
-    @Mixin(BanCommand.class)
+    @Mixin(BanPlayerCommands.class)
     public abstract static class MinecraftBanCommandMixin {
 
-        @Inject(method = "ban", at = @At("HEAD"), cancellable = true)
-        private static void injectBan(ServerCommandSource source, Collection<PlayerConfigEntry> targets, Text reason, CallbackInfoReturnable<Integer> cir) {
+        @Inject(method = "banPlayers", at = @At("HEAD"), cancellable = true)
+        private static void injectBan(CommandSourceStack source, Collection<NameAndId> players, Component reason, CallbackInfoReturnable<Integer> cir) {
             if (!WhitelistSyncCore.CONFIG.webSyncBannedPlayers || !(whitelistService instanceof WebService)) {
                 return;
             }
 
             try {
-                for (var target : targets) {
+                for (var player : players) {
                     // Custom logic for handling ban command
-                    Log.debug("[Intercept] Player " + target.name() + " is being banned. Reason: " + (reason != null ? reason : "No reason provided."));
-                    whitelistService.addBannedPlayer(target.id(), target.name(), reason != null ? reason.getString() : null);
+                    Log.debug("[Intercept] Player " + player.name() + " is being banned. Reason: " + (reason != null ? reason : "No reason provided."));
+                    whitelistService.addBannedPlayer(player.id(), player.name(), reason != null ? reason.getString() : null);
                 }
 
             } catch (Exception e) {
@@ -128,17 +128,17 @@ public class MinecraftCommandMixins {
     @Mixin(PardonCommand.class)
     public abstract static class MinecraftPardonCommandMixin {
 
-        @Inject(method = "pardon", at = @At("HEAD"), cancellable = true)
-        private static void injectPardon(ServerCommandSource source, Collection<PlayerConfigEntry> targets, CallbackInfoReturnable<Integer> cir) {
+        @Inject(method = "pardonPlayers", at = @At("HEAD"), cancellable = true)
+        private static void injectPardon(CommandSourceStack source, Collection<NameAndId> players, CallbackInfoReturnable<Integer> cir) {
             if (!WhitelistSyncCore.CONFIG.webSyncBannedPlayers || !(whitelistService instanceof WebService)) {
                 return;
             }
 
             try {
-                for (var target : targets) {
+                for (var player : players) {
                     // Custom logic for handling pardon command
-                    Log.debug("[Intercept] Player " + target.name() + " is being unbanned.");
-                    whitelistService.removeBannedPlayer(target.id(), target.name());
+                    Log.debug("[Intercept] Player " + player.name() + " is being unbanned.");
+                    whitelistService.removeBannedPlayer(player.id(), player.name());
                 }
 
             } catch (Exception e) {
@@ -149,18 +149,18 @@ public class MinecraftCommandMixins {
 
     }
 
-    @Mixin(BanIpCommand.class)
+    @Mixin(BanIpCommands.class)
     public abstract static class MinecraftBanIpCommandMixin {
 
         @Inject(method = "banIp", at = @At("HEAD"), cancellable = true)
-        private static void injectBanIp(ServerCommandSource source, String targetIp, Text reason, CallbackInfoReturnable<Integer> cir) {
+        private static void injectBanIp(CommandSourceStack source, String ip, Component reason, CallbackInfoReturnable<Integer> cir) {
             if (!WhitelistSyncCore.CONFIG.webSyncBannedIps || !(whitelistService instanceof WebService)) {
                 return;
             }
 
             try {
-                Log.debug("[Intercept] IP " + targetIp + " is being banned.");
-                whitelistService.addBannedIp(targetIp, reason != null ? reason.getString() : null);
+                Log.debug("[Intercept] IP " + ip + " is being banned.");
+                whitelistService.addBannedIp(ip, reason != null ? reason.getString() : null);
             } catch (Exception e) {
                 cir.setReturnValue(0);
                 Log.error("Error handling ban-ip command: " + e.getMessage());
@@ -172,15 +172,15 @@ public class MinecraftCommandMixins {
     @Mixin(PardonIpCommand.class)
     public abstract static class MinecraftPardonIpCommandMixin {
 
-        @Inject(method = "pardonIp", at = @At("HEAD"), cancellable = true)
-        private static void injectPardonIp(ServerCommandSource source, String target, CallbackInfoReturnable<Integer> cir) {
+        @Inject(method = "unban", at = @At("HEAD"), cancellable = true)
+        private static void injectPardonIp(CommandSourceStack source, String ip, CallbackInfoReturnable<Integer> cir) {
             if (!WhitelistSyncCore.CONFIG.webSyncBannedIps || !(whitelistService instanceof WebService)) {
                 return;
             }
 
             try {
-                Log.debug("[Intercept] IP " + target + " is being unbanned.");
-                whitelistService.removeBannedIp(target);
+                Log.debug("[Intercept] IP " + ip + " is being unbanned.");
+                whitelistService.removeBannedIp(ip);
             } catch (Exception e) {
                 cir.setReturnValue(0);
                 Log.error("Error handling pardon-ip command: " + e.getMessage());
