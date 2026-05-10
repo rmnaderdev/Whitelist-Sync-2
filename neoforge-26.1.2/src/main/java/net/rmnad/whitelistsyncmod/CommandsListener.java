@@ -1,7 +1,6 @@
 package net.rmnad.whitelistsyncmod;
 
 import com.google.common.net.InetAddresses;
-import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
