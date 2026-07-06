@@ -3,8 +3,10 @@ description = "WhitelistSyncCore"
 group = mod_group_id + ".core"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    // Every consumer (Fabric/NeoForge) is Java 21+, so there is no longer a reason
+    // to target Java 8 (the Forge 1.16.5 module that required it has been removed).
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 configurations {
@@ -38,7 +40,6 @@ shadowJar {
     relocate('okio', "${shadeRelocateGroup}.okio")
     relocate('org.json', "${shadeRelocateGroup}.org.json")
     relocate('kotlin', "${shadeRelocateGroup}.kotlin")
-    relocate('com.google.gson', "${shadeRelocateGroup}.com.google.gson")
     relocate('io.reactivex', "${shadeRelocateGroup}.io.reactivex")
     relocate('org.reactivestreams', "${shadeRelocateGroup}.org.reactivestreams")
     relocate('org.slf4j', "${shadeRelocateGroup}.org.slf4j")
