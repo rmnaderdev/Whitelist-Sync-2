@@ -70,5 +70,5 @@ Copy the closest existing subproject dir, update its `gradle.properties` (mappin
 
 ## CI
 
-- **PR builds:** `.github/workflows/build.yml` runs `./gradlew build` on `whitelist-sync-2-arc-runner`
+- **PR builds:** `.github/workflows/build.yml` runs `./gradlew build` on `self-hosted`
 - **Releases:** `.github/workflows/publish.yml` triggers on `v*` tags, runs `./gradlew publishUnified`
