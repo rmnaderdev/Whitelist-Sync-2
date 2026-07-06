@@ -1,12 +1,18 @@
 // Shared NeoForge build logic, applied via `apply from` from each neoforge-* subproject.
 // The subproject's own build.gradle declares the plugins; its gradle.properties supplies
 // the per-version values, `java_version` (21|25), and (pre-26 only) parchment_* props.
-def javaVer = JavaVersion.toVersion(project.findProperty('java_version') ?: '21')
+def javaVerNum = (project.findProperty('java_version') ?: '21') as Integer
+def javaVer = JavaVersion.toVersion(javaVerNum)
 
 version = project.mod_version
 group = project.mod_group_id
 
 java {
+    // Provision the matching JDK (21|25) so the build is portable regardless of
+    // which JDK launches Gradle.
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(javaVerNum)
+    }
     sourceCompatibility = javaVer
     targetCompatibility = javaVer
 }

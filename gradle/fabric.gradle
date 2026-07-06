@@ -61,6 +61,11 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 java {
+    // Provision the matching JDK per generation (yarn=21, mojmap=25) so the build
+    // is portable regardless of which JDK launches Gradle.
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(releaseVer)
+    }
     withSourcesJar()
     sourceCompatibility = javaVer
     targetCompatibility = javaVer
