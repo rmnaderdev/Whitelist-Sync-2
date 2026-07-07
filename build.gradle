@@ -8,8 +8,6 @@ plugins {
 allprojects {
     repositories {
         mavenCentral()
-        mavenLocal()
-        gradlePluginPortal()
         maven { url 'https://libraries.minecraft.net/' }
         maven { url "https://cursemaven.com" }
         maven { url = 'https://maven.neoforged.net/releases' }
@@ -36,8 +34,7 @@ clean {
 tasks.register('copyConfigToRun', Copy) {
     def fileToCopy = file('whitelistsync2-common.toml') // Specify the file to copy
     subprojects.findAll { subproject ->
-        subproject.name.startsWith('forge')
-                || subproject.name.startsWith('fabric')
+        subproject.name.startsWith('fabric')
                 || subproject.name.startsWith('neoforge')
     }.each { subproject ->
         copy {

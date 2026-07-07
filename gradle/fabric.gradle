@@ -1,0 +1,155 @@
+// Shared Fabric build logic, applied via `apply from` from each fabric-* subproject.
+// The subproject's own build.gradle declares the plugins (loom vs loom-remap) and
+// its gradle.properties supplies the per-version values + `fabric_gen` (yarn|mojmap).
+//
+// Generations:
+//   yarn   -> Java 21, yarn mappings, modImplementation deps, publish remapJar
+//   mojmap -> Java 25, Mojang mappings (no yarn), implementation deps, publish shadowJar
+def fabricGen = project.findProperty('fabric_gen') ?: 'yarn'
+def isMojmap = fabricGen == 'mojmap'
+def javaVer = isMojmap ? JavaVersion.VERSION_25 : JavaVersion.VERSION_21
+def releaseVer = isMojmap ? 25 : 21
+
+version = project.mod_version
+group = project.mod_group_id
+
+println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'} [fabric_gen=${fabricGen}]"
+
+ext.buildNumber = System.getenv().BUILD_NUMBER ?: "Dev"
+
+loom {
+    mods {
+        "whitelistsync2" {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+// Shared source of truth for the files that are identical across every fabric version.
+sourceSets.main.java.srcDir "$rootDir/fabric-common/java"
+sourceSets.main.resources.srcDir "$rootDir/fabric-common/resources"
+
+configurations {
+    shade
+    implementation.extendsFrom shade
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+
+    if (isMojmap) {
+        implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+        implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    } else {
+        mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+        modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+        modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    }
+
+    // Core library (shaded into the mod jar)
+    shade project(path: ':WhitelistSyncCore', configuration: 'shadow')
+}
+
+processResources {
+    filesMatching(['fabric.mod.json']) {
+        expand project.properties
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = releaseVer
+}
+
+java {
+    // Provision the matching JDK per generation (yarn=21, mojmap=25) so the build
+    // is portable regardless of which JDK launches Gradle.
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(releaseVer)
+    }
+    withSourcesJar()
+    sourceCompatibility = javaVer
+    targetCompatibility = javaVer
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${project.base.archivesName.get()}" }
+    }
+    from {
+        configurations.shade.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+if (isMojmap) {
+    // Plain loom: the shaded jar is already in the runtime (Mojang) namespace, so it
+    // is the published artifact directly.
+    shadowJar {
+        configurations = [project.configurations.shade]
+        archiveBaseName = "WhitelistSync"
+        archiveClassifier = "fabric-${minecraft_version}"
+        destinationDirectory = file '../target'
+    }
+} else {
+    // loom-remap: shade first (dev namespace), then remap to the distribution namespace.
+    shadowJar {
+        archiveClassifier = "dev-shadow"
+        configurations = [project.configurations.shade]
+    }
+    remapJar {
+        dependsOn shadowJar
+        archiveBaseName = "WhitelistSync"
+        archiveClassifier = "fabric-${minecraft_version}"
+        destinationDirectory = file '../target'
+    }
+}
+
+artifacts {
+    archives shadowJar
+}
+
+def changeLogProvider = rootProject.providers.fileContents(
+        rootProject.layout.projectDirectory.file("CHANGELOG.md")
+).asText
+
+unifiedPublishing {
+    project {
+        changelog = changeLogProvider.present ? changeLogProvider.get() : "No changelog."
+        releaseType = "release"
+        gameVersions = [minecraft_version]
+        gameLoaders = ["fabric"]
+
+        mainPublication (isMojmap ? tasks.shadowJar : tasks.remapJar)
+
+        relations {
+            depends {
+                curseforge = "fabric-api"
+                modrinth = "fabric-api"
+            }
+        }
+
+        var cfToken = System.getenv("CF_TOKEN")
+        System.println("Curseforge token: ${cfToken != null}")
+        if (cfToken != null && System.getenv("GITHUB_REF")?.startsWith("refs/tags/")) {
+            curseforge {
+                token = cfToken
+                id = "274793"
+                displayName = "WhitelistSync-${project.version}-fabric-${minecraft_version}"
+            }
+        } else {
+            System.out.println("Curseforge publication skipped.")
+        }
+
+        var mrToken = System.getenv("MODRINTH_TOKEN")
+        System.println("Modrinth token: ${mrToken != null}")
+        if (mrToken != null && System.getenv("GITHUB_REF")?.startsWith("refs/tags/")) {
+            modrinth {
+                token = mrToken
+                id = "DcCsQ8S5"
+                displayName = "Whitelist Sync (Fabric ${minecraft_version})"
+                version = "${minecraft_version}-${project.version}"
+            }
+        } else {
+            System.out.println("Modrinth publication skipped.")
+        }
+    }
+}

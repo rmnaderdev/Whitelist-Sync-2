@@ -3,10 +3,36 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: whitelist-sync-2-arc-runner
+  # Same dynamic matrix as build.yml — publish one subproject per job to keep
+  # peak memory bounded (building all loader workspaces at once OOMs).
+  matrix:
+    runs-on: self-hosted
+    outputs:
+      projects: ${{ steps.gen.outputs.projects }}
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+
+      - name: generate project matrix
+        id: gen
+        run: |
+          projects=$(grep -oE "(fabric|neoforge)-[0-9][^']*" settings.gradle | sort -u)
+          json=$(printf '%s\n' $projects | sed 's/.*/"&"/' | paste -sd, -)
+          echo "projects=[$json]" >> "$GITHUB_OUTPUT"
+          echo "Matrix: [$json]"
+
+  publish:
+    needs: matrix
+    runs-on: self-hosted
+    strategy:
+      fail-fast: false
+      # Publish sequentially to avoid tripping CurseForge/Modrinth rate limits.
+      max-parallel: 1
+      matrix:
+        project: ${{ fromJson(needs.matrix.outputs.projects) }}
     steps:
       - name: checkout repository
         uses: actions/checkout@v4
@@ -14,18 +40,24 @@ jobs:
       - name: validate gradle wrapper
         uses: gradle/actions/wrapper-validation@v4
 
-      - name: Set up Java 21
+      - name: set up Java 21 + 25
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: |
+            21
+            25
+
+      - name: set up Gradle (with caching)
+        uses: gradle/actions/setup-gradle@v4
 
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
 
-      - name: Publish to Modrinth and CurseForge
+      - name: publish ${{ matrix.project }} to Modrinth and CurseForge
         env:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
           CF_TOKEN: ${{ secrets.CF_TOKEN }}
-        run: |
-          ./gradlew publishUnified --no-daemon --info --stacktrace
+        run: >-
+          ./gradlew :${{ matrix.project }}:publishUnified --info --stacktrace
+          -Porg.gradle.java.installations.fromEnv=JAVA_HOME_21_X64,JAVA_HOME_25_X64,JAVA_HOME_21_ARM64,JAVA_HOME_25_ARM64
