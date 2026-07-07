@@ -33,6 +33,7 @@ For issues with the mod please open an issue on [GitHub](https://github.com/rmna
 - ~~1.12.2~~ (no longer supported, may come back in the future)
 
 ## Supported Fabric Versions
+- 26.2
 - 26.1.2
 - 1.21.11
 - 1.21.10
@@ -48,6 +49,7 @@ For issues with the mod please open an issue on [GitHub](https://github.com/rmna
 - 1.20.1
 
 ## Supported NeoForge Versions
+- 26.2
 - 26.1.2
 - 1.21.11
 - 1.21.10
