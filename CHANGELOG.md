@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.9.0] - 2026-07-06
+- Added support for new Minecraft versions for NeoForge and Fabric:
+  - fabric-26.1.2
+  - fabric-26.2
+  - neoforge-26.1.2
+  - neoforge-26.2
+- Removed Forge subprojects — ForgeGradle is not compatible with Gradle 9.
+- Deduplicated multiversion sources and build scripts into shared Fabric/NeoForge build logic.
+- Reworked CI into a per-subproject matrix build on Java 21 + 25 to fix OOM and support MC 26.x.
+- Fixed NeoForge 26.2 coremod conflict by relocating the bundled Gson.
+
 ## [2.8.3] - 2025-12-14
 - Added support for new Minecraft versions for NeoForge and Fabric:
   - fabric-1.21.11

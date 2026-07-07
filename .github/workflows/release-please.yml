@@ -1,0 +1,24 @@
+name: release-please
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: self-hosted
+    steps:
+      # Use a PAT (RELEASE_PLEASE_TOKEN) so the release tag push can trigger
+      # publish.yml. Tags pushed with the default GITHUB_TOKEN do NOT trigger
+      # other workflows. Falls back to GITHUB_TOKEN if the PAT is unset (the
+      # release PR still works; the publish job just won't auto-run).
+      - uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json

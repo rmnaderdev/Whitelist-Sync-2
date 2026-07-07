@@ -20,6 +20,15 @@ plugins {
 
 rootProject.name = 'WhitelistSync2'
 
+// Single source of truth for the mod version — managed by release-please.
+// See version.txt / .release-please-manifest.json. Injected as the `mod_version`
+// project property before any build.gradle is evaluated, replacing the old
+// gradle.properties entry.
+def modVersion = new File(settingsDir, 'version.txt').text.trim()
+gradle.beforeProject { project ->
+    project.ext.mod_version = modVersion
+}
+
 include ':WhitelistSyncCore'
 
 include ':fabric-1.20.1'
