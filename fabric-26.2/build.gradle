@@ -1,0 +1,6 @@
+plugins {
+    id 'net.fabricmc.fabric-loom'
+    id 'me.shedaniel.unified-publishing'
+}
+
+apply from: "$rootDir/gradle/fabric.gradle"
