@@ -46,6 +46,12 @@ shadowJar {
     relocate('com.electronwill.nightconfig', "${shadeRelocateGroup}.com.electronwill.nightconfig")
     relocate('com.mysql', "${shadeRelocateGroup}.com.mysql")
 
+    // signalr drags in gson 2.8.5 transitively. Left unrelocated it bundles an old
+    // Gson into the mod jar that shadows the loader's newer Gson on the classpath,
+    // breaking NeoForge 26.2 coremods (they call fromJson(Reader, TypeToken), added
+    // in Gson 2.10). Relocate signalr's copy so it can't win the classpath.
+    relocate('com.google.gson', "${shadeRelocateGroup}.com.google.gson")
+
     // Do not relocate SQLite JDBC native loader classes. This breaks it.
     //    relocate('org.sqlite', "${shadeRelocateGroup}.org.sqlite") {
     //        exclude 'org.sqlite.SQLiteJDBCLoader*'
