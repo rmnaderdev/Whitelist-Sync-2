@@ -24,6 +24,8 @@ import java.net.ConnectException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 public class WebService implements BaseService {
@@ -516,6 +518,13 @@ public class WebService implements BaseService {
         ArrayList<WhitelistedPlayer> localWhitelistedPlayers
                 = WhitelistedPlayersFileReader.getWhitelistedPlayers();
 
+        Set<String> localUuids = new HashSet<>();
+        for (WhitelistedPlayer player : localWhitelistedPlayers) {
+            if (player.getUuid() != null) {
+                localUuids.add(player.getUuid());
+            }
+        }
+
         WhitelistEntry[] entries = getWhitelistEntries();
 
         for (WhitelistEntry player : entries) {
@@ -524,7 +533,7 @@ public class WebService implements BaseService {
             boolean whitelisted = player.getWhitelisted();
 
             if (whitelisted) {
-                if (localWhitelistedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid.toString()))) {
+                if (!localUuids.contains(uuid.toString())) {
                     try {
                         this.serverControl.addWhitelistPlayer(uuid, name);
                         Log.debug(LogMessages.AddedUserToWhitelist(name));
@@ -534,7 +543,7 @@ public class WebService implements BaseService {
                     }
                 }
             } else {
-                if (localWhitelistedPlayers.stream().anyMatch(o -> o.getUuid().equals(uuid.toString()))) {
+                if (localUuids.contains(uuid.toString())) {
                     this.serverControl.removeWhitelistPlayer(uuid, name);
                     Log.debug(LogMessages.RemovedUserToWhitelist(name));
                     records++;
@@ -561,6 +570,13 @@ public class WebService implements BaseService {
         ArrayList<OppedPlayer> localOppedPlayers
                 = OppedPlayersFileReader.getOppedPlayers();
 
+        Set<String> localUuids = new HashSet<>();
+        for (OppedPlayer player : localOppedPlayers) {
+            if (player.getUuid() != null) {
+                localUuids.add(player.getUuid());
+            }
+        }
+
         OpEntry[] entries = getOpEntries();
 
         for (OpEntry player : entries) {
@@ -569,7 +585,7 @@ public class WebService implements BaseService {
             boolean opped = player.getOpped();
 
             if (opped) {
-                if (localOppedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid.toString()))) {
+                if (!localUuids.contains(uuid.toString())) {
                     try {
                         this.serverControl.addOpPlayer(uuid, name);
                         Log.debug(LogMessages.OppedUser(name));
@@ -579,7 +595,7 @@ public class WebService implements BaseService {
                     }
                 }
             } else {
-                if (localOppedPlayers.stream().anyMatch(o -> o.getUuid().equals(uuid.toString()))) {
+                if (localUuids.contains(uuid.toString())) {
                     this.serverControl.removeOpPlayer(uuid, name);
                     Log.debug(LogMessages.DeopUser(name));
                     records++;
@@ -606,6 +622,13 @@ public class WebService implements BaseService {
         ArrayList<BannedPlayer> localBannedPlayers
                 = BannedPlayersFileReader.getBannedPlayers();
 
+        Set<String> localUuids = new HashSet<>();
+        for (BannedPlayer player : localBannedPlayers) {
+            if (player.getUuid() != null) {
+                localUuids.add(player.getUuid());
+            }
+        }
+
         BannedPlayerEntry[] entries = getBannedPlayerEntries();
 
         for (BannedPlayerEntry player : entries) {
@@ -613,7 +636,7 @@ public class WebService implements BaseService {
             String name = player.getName();
             String reason = player.getReason();
 
-            if (localBannedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid.toString()))) {
+            if (!localUuids.contains(uuid.toString())) {
                 try {
                     this.serverControl.addBannedPlayer(uuid, name, reason);
                     Log.debug(LogMessages.BannedPlayer(name));
@@ -643,10 +666,17 @@ public class WebService implements BaseService {
         ArrayList<BannedIp> localBannedIps
                 = BannedIpsFileReader.getBannedIps();
 
+        Set<String> localIps = new HashSet<>();
+        for (BannedIp bannedIp : localBannedIps) {
+            if (bannedIp.getIp() != null) {
+                localIps.add(bannedIp.getIp());
+            }
+        }
+
         BannedIpEntry[] entries = getBannedIpEntries();
 
         for (BannedIpEntry ip : entries) {
-            if (localBannedIps.stream().noneMatch(o -> o.getIp().equals(ip.getIp()))) {
+            if (!localIps.contains(ip.getIp())) {
                 try {
                     this.serverControl.addBannedIp(ip.getIp(), ip.getReason());
                     Log.debug(LogMessages.BannedIp(ip.getIp()));

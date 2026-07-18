@@ -13,6 +13,8 @@ import net.rmnad.core.models.WhitelistedPlayer;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -344,6 +346,13 @@ public class MySqlService implements BaseService {
         ArrayList<WhitelistedPlayer> localWhitelistedPlayers
                 = WhitelistedPlayersFileReader.getWhitelistedPlayers();
 
+        Set<String> localUuids = new HashSet<>();
+        for (WhitelistedPlayer player : localWhitelistedPlayers) {
+            if (player.getUuid() != null) {
+                localUuids.add(player.getUuid());
+            }
+        }
+
         String sql = "SELECT name, uuid, whitelisted FROM `" + databaseName + "`.`whitelist`";
 
         try {
@@ -357,7 +366,7 @@ public class MySqlService implements BaseService {
                     int whitelisted = rs.getInt("whitelisted");
 
                     if (whitelisted == 1) {
-                        if (localWhitelistedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid.toString()))) {
+                        if (!localUuids.contains(uuid.toString())) {
                             try {
                                 serverControl.addWhitelistPlayer(uuid, name);
                                 Log.debug(LogMessages.AddedUserToWhitelist(name));
@@ -367,7 +376,7 @@ public class MySqlService implements BaseService {
                             }
                         }
                     } else {
-                        if (localWhitelistedPlayers.stream().anyMatch(o -> o.getUuid().equals(uuid.toString()))) {
+                        if (localUuids.contains(uuid.toString())) {
                             serverControl.removeWhitelistPlayer(uuid, name);
                             Log.debug(LogMessages.RemovedUserToWhitelist(name));
                             records++;
@@ -401,6 +410,13 @@ public class MySqlService implements BaseService {
         ArrayList<OppedPlayer> localOppedPlayers
                 = OppedPlayersFileReader.getOppedPlayers();
 
+        Set<String> localUuids = new HashSet<>();
+        for (OppedPlayer player : localOppedPlayers) {
+            if (player.getUuid() != null) {
+                localUuids.add(player.getUuid());
+            }
+        }
+
         String sql = "SELECT uuid, name, isOp FROM `" + databaseName + "`.`op`";
 
         try {
@@ -414,7 +430,7 @@ public class MySqlService implements BaseService {
                     int opped = rs.getInt("isOp");
 
                     if (opped == 1) {
-                        if (localOppedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid.toString()))) {
+                        if (!localUuids.contains(uuid.toString())) {
                             try {
                                 serverControl.addOpPlayer(uuid, name);
                                 Log.debug(LogMessages.OppedUser(name));
@@ -424,7 +440,7 @@ public class MySqlService implements BaseService {
                             }
                         }
                     } else {
-                        if (localOppedPlayers.stream().anyMatch(o -> o.getUuid().equals(uuid.toString()))) {
+                        if (localUuids.contains(uuid.toString())) {
                             serverControl.removeOpPlayer(uuid, name);
                             Log.debug(LogMessages.DeopUser(name));
                             records++;

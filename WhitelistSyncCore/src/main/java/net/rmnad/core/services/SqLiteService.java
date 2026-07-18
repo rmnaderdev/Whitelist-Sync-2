@@ -14,6 +14,8 @@ import net.rmnad.core.models.WhitelistedPlayer;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -340,6 +342,13 @@ public class SqLiteService implements BaseService {
 
         ArrayList<WhitelistedPlayer> localWhitelistedPlayers = WhitelistedPlayersFileReader.getWhitelistedPlayers();
 
+        Set<String> localUuids = new HashSet<>();
+        for (WhitelistedPlayer player : localWhitelistedPlayers) {
+            if (player.getUuid() != null) {
+                localUuids.add(player.getUuid());
+            }
+        }
+
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
@@ -355,7 +364,7 @@ public class SqLiteService implements BaseService {
                 int whitelisted = rs.getInt("whitelisted");
 
                 if (whitelisted == 1) {
-                    if (localWhitelistedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid.toString()))) {
+                    if (!localUuids.contains(uuid.toString())) {
                         try {
                             this.serverControl.addWhitelistPlayer(uuid, name);
                             Log.debug(LogMessages.AddedUserToWhitelist(name));
@@ -365,7 +374,7 @@ public class SqLiteService implements BaseService {
                         }
                     }
                 } else {
-                    if (localWhitelistedPlayers.stream().anyMatch(o -> o.getUuid().equals(uuid.toString()))) {
+                    if (localUuids.contains(uuid.toString())) {
                         this.serverControl.removeWhitelistPlayer(uuid, name);
                         Log.debug(LogMessages.RemovedUserToWhitelist(name));
                         records++;
@@ -403,6 +412,13 @@ public class SqLiteService implements BaseService {
 
         ArrayList<OppedPlayer> localOppedPlayers = OppedPlayersFileReader.getOppedPlayers();
 
+        Set<String> localUuids = new HashSet<>();
+        for (OppedPlayer player : localOppedPlayers) {
+            if (player.getUuid() != null) {
+                localUuids.add(player.getUuid());
+            }
+        }
+
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
@@ -419,7 +435,7 @@ public class SqLiteService implements BaseService {
                 int opped = rs.getInt("isOp");
 
                 if (opped == 1) {
-                    if (localOppedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid.toString()))) {
+                    if (!localUuids.contains(uuid.toString())) {
                         try {
                             this.serverControl.addOpPlayer(uuid, name);
                             Log.debug(LogMessages.OppedUser(name));
@@ -429,7 +445,7 @@ public class SqLiteService implements BaseService {
                         }
                     }
                 } else {
-                    if (localOppedPlayers.stream().anyMatch(o -> o.getUuid().equals(uuid.toString()))) {
+                    if (localUuids.contains(uuid.toString())) {
                         this.serverControl.removeOpPlayer(uuid, name);
                         Log.debug(LogMessages.DeopUser(name));
                         records++;
