@@ -39,6 +39,10 @@ public class MySqlService implements BaseService {
         this.serverControl = serverControl;
     }
 
+    private Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(url, username, password);
+    }
+
     // Function used to initialize the database file
     @Override
     public boolean initializeDatabase() {
@@ -55,10 +59,8 @@ public class MySqlService implements BaseService {
 
 
         if (isSuccess) {
-            try {
-                Connection conn = DriverManager.getConnection(url, username, password);
+            try (Connection conn = getConnection()) {
                 Log.info("Connected to " + url + " successfully!");
-                conn.close();
             } catch (SQLException e) {
                 Log.error("Failed to connect to the mySQL database! Did you set one up in the config?");
                 Log.error(e.getMessage(), e);
@@ -68,18 +70,13 @@ public class MySqlService implements BaseService {
 
         if (isSuccess) {
             // Create database
-            try {
-                PreparedStatement stmt;
-
+            try (Connection conn = getConnection()) {
 
                 // Create database
                 String sql = "CREATE DATABASE IF NOT EXISTS `" + databaseName + "`;";
-
-                // Create statement
-                Connection conn = DriverManager.getConnection(url, username, password);
-                stmt = conn.prepareStatement(sql);
-                stmt.execute();
-                stmt.close();
+                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                    stmt.execute();
+                }
 
                 // Create whitelist table
                 sql = "CREATE TABLE IF NOT EXISTS `" + databaseName + "`.`whitelist` ("
@@ -88,9 +85,9 @@ public class MySqlService implements BaseService {
                         + "`whitelisted` TINYINT NOT NULL DEFAULT 1,"
                         + "PRIMARY KEY (`uuid`)"
                         + ")";
-                stmt = conn.prepareStatement(sql);
-                stmt.execute();
-                stmt.close();
+                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                    stmt.execute();
+                }
 
                 // Create opped players table if enabled
                 if (WhitelistSyncCore.CONFIG.syncOpList) {
@@ -100,9 +97,9 @@ public class MySqlService implements BaseService {
                             + "`isOp` TINYINT NOT NULL DEFAULT 1,"
                             + "PRIMARY KEY (`uuid`)"
                             + ")";
-                    stmt = conn.prepareStatement(sql);
-                    stmt.execute();
-                    stmt.close();
+                    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                        stmt.execute();
+                    }
 
 
                     // Execute migration
@@ -111,7 +108,6 @@ public class MySqlService implements BaseService {
                 }
 
                 Log.info("Setup MySQL database!");
-                conn.close();
             } catch (Exception e) {
                 Log.error("Error initializing database and database tables.");
                 Log.error(e.getMessage(), e);
@@ -128,17 +124,16 @@ public class MySqlService implements BaseService {
         // ArrayList for whitelisted players.
         ArrayList<WhitelistedPlayer> whitelistedPlayers = new ArrayList<>();
 
-        try {
-            // Keep track of records.
-            int records = 0;
+        // Keep track of records.
+        int records = 0;
 
-            // Connect to database.
-            Connection conn = DriverManager.getConnection(url, username, password);
+        String sql = "SELECT uuid, name FROM `" + databaseName + "`.`whitelist` WHERE whitelisted = true;";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
             long startTime = System.currentTimeMillis();
-
-            String sql = "SELECT uuid, name FROM `" + databaseName + "`.`whitelist` WHERE whitelisted = true;";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery();
 
             // Add queried results to arraylist.
             while (rs.next()) {
@@ -150,10 +145,6 @@ public class MySqlService implements BaseService {
             long timeTaken = System.currentTimeMillis() - startTime;
 
             Log.debug(LogMessages.SuccessGetWhitelistedPlayersFromDatabase(timeTaken, records));
-
-            rs.close();
-            stmt.close();
-            conn.close();
         } catch (SQLException e) {
             // Something is wrong...
             Log.error("Error querying whitelisted players from database!");
@@ -172,17 +163,16 @@ public class MySqlService implements BaseService {
             return oppedPlayers;
         }
 
-        try {
-            // Keep track of records.
-            int records = 0;
+        // Keep track of records.
+        int records = 0;
 
-            // Connect to database.
-            Connection conn = DriverManager.getConnection(url, username, password);
+        String sql = "SELECT uuid, name FROM `" + databaseName + "`.`op` WHERE isOp = true;";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
             long startTime = System.currentTimeMillis();
-
-            String sql = "SELECT uuid, name FROM `" + databaseName + "`.`op` WHERE isOp = true;";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery();
 
             // Add queried results to arraylist.
             while (rs.next()) {
@@ -197,10 +187,6 @@ public class MySqlService implements BaseService {
             // Time taken
             long timeTaken = System.currentTimeMillis() - startTime;
             Log.debug(LogMessages.SuccessGetOppedPlayersFromDatabase(timeTaken, records));
-
-            rs.close();
-            stmt.close();
-            conn.close();
         } catch (SQLException e) {
             Log.error("Error querying opped players from database!");
             Log.error(e.getMessage(), e);
@@ -231,18 +217,17 @@ public class MySqlService implements BaseService {
         ArrayList<WhitelistedPlayer> whitelistedPlayers
                 = WhitelistedPlayersFileReader.getWhitelistedPlayers();
 
-        try {
-            // Connect to database.
-            Connection conn = DriverManager.getConnection(url, username, password);
+        String sql = "INSERT IGNORE INTO `" + databaseName + "`.`whitelist`(uuid, name, whitelisted) VALUES (?, ?, true)";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             // Loop through local whitelist and insert into database.
             for (WhitelistedPlayer player : whitelistedPlayers) {
 
                 if (player.getUuid() != null && player.getName() != null) {
-                    PreparedStatement stmt = conn.prepareStatement("INSERT IGNORE INTO `" + databaseName + "`.`whitelist`(uuid, name, whitelisted) VALUES (?, ?, true)");
                     stmt.setString(1, player.getUuid());
                     stmt.setString(2, player.getName());
                     stmt.executeUpdate();
-                    stmt.close();
 
                     records++;
                 }
@@ -250,7 +235,6 @@ public class MySqlService implements BaseService {
             // Record time taken.
             long timeTaken = System.currentTimeMillis() - startTime;
             Log.debug(LogMessages.SuccessPushLocalWhitelistToDatabase(timeTaken, records));
-            conn.close();
 
             return true;
         } catch (SQLException e) {
@@ -275,18 +259,17 @@ public class MySqlService implements BaseService {
         ArrayList<OppedPlayer> oppedPlayers
                 = OppedPlayersFileReader.getOppedPlayers();
 
-        try {
-            // Connect to database.
-            Connection conn = DriverManager.getConnection(url, username, password);
+        String sql = "INSERT IGNORE INTO `" + databaseName + "`.`op`(uuid, name, isOp) VALUES (?, ?, true)";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             // Loop through local whitelist and insert into database.
             for (OppedPlayer player : oppedPlayers) {
 
                 if (player.getUuid() != null && player.getName() != null) {
-                    PreparedStatement stmt = conn.prepareStatement("INSERT IGNORE INTO `" + databaseName + "`.`op`(uuid, name, isOp) VALUES (?, ?, true)");
                     stmt.setString(1, player.getUuid());
                     stmt.setString(2, player.getName());
                     stmt.executeUpdate();
-                    stmt.close();
 
                     records++;
                 }
@@ -294,7 +277,6 @@ public class MySqlService implements BaseService {
             // Record time taken.
             long timeTaken = System.currentTimeMillis() - startTime;
             Log.debug(LogMessages.SuccessPushLocalOpsToDatabase(timeTaken, records));
-            conn.close();
 
             return true;
         } catch (SQLException e) {
@@ -318,19 +300,17 @@ public class MySqlService implements BaseService {
 
     @Override
     public boolean pullDatabaseWhitelistToLocal() {
-        try {
-            int records = 0;
-            long startTime = System.currentTimeMillis();
+        int records = 0;
+        long startTime = System.currentTimeMillis();
 
-            ArrayList<WhitelistedPlayer> localWhitelistedPlayers
-                    = WhitelistedPlayersFileReader.getWhitelistedPlayers();
+        ArrayList<WhitelistedPlayer> localWhitelistedPlayers
+                = WhitelistedPlayersFileReader.getWhitelistedPlayers();
 
-            // Open connection
-            Connection conn = DriverManager.getConnection(url, username, password);
+        String sql = "SELECT name, uuid, whitelisted FROM `" + databaseName + "`.`whitelist`";
 
-            String sql = "SELECT name, uuid, whitelisted FROM `" + databaseName + "`.`whitelist`";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery();
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 UUID uuid = UUID.fromString(rs.getString("uuid"));
@@ -359,9 +339,6 @@ public class MySqlService implements BaseService {
             long timeTaken = System.currentTimeMillis() - startTime;
             Log.debug(LogMessages.SuccessPullDatabaseWhitelistToLocal( timeTaken, records));
 
-            rs.close();
-            stmt.close();
-            conn.close();
             return true;
         } catch (SQLException e) {
             Log.error(LogMessages.ERROR_PullDatabaseWhitelistToLocal, e);
@@ -378,19 +355,17 @@ public class MySqlService implements BaseService {
         }
 
         // TODO: Compare level and bypassesPlayerLimit, sync if needed
-        try {
-            int records = 0;
-            long startTime = System.currentTimeMillis();
+        int records = 0;
+        long startTime = System.currentTimeMillis();
 
-            ArrayList<OppedPlayer> localOppedPlayers
-                    = OppedPlayersFileReader.getOppedPlayers();
+        ArrayList<OppedPlayer> localOppedPlayers
+                = OppedPlayersFileReader.getOppedPlayers();
 
-            // Open connection
-            Connection conn = DriverManager.getConnection(url, username, password);
+        String sql = "SELECT uuid, name, isOp FROM `" + databaseName + "`.`op`";
 
-            String sql = "SELECT uuid, name, isOp FROM `" + databaseName + "`.`op`";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery();
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 UUID uuid = UUID.fromString(rs.getString("uuid"));
@@ -419,9 +394,6 @@ public class MySqlService implements BaseService {
             long timeTaken = System.currentTimeMillis() - startTime;
             Log.debug(LogMessages.SuccessPullDatabaseOpsToLocal(timeTaken, records));
 
-            rs.close();
-            stmt.close();
-            conn.close();
             return true;
         } catch (SQLException e) {
             Log.error("Error querying opped players from database!");
@@ -447,12 +419,10 @@ public class MySqlService implements BaseService {
     public boolean addWhitelistPlayer(UUID uuid, String name) {
         long startTime = System.currentTimeMillis();
 
-        try {
-            // Open connection=
-            Connection conn = DriverManager.getConnection(url, username, password);
+        String sql = "REPLACE INTO `" + databaseName + "`.`whitelist`(uuid, name, whitelisted) VALUES (?, ?, true)";
 
-            String sql = "REPLACE INTO `" + databaseName + "`.`whitelist`(uuid, name, whitelisted) VALUES (?, ?, true)";
-            PreparedStatement stmt = conn.prepareStatement(sql);
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, uuid.toString());
             stmt.setString(2, name);
             stmt.executeUpdate();
@@ -460,8 +430,6 @@ public class MySqlService implements BaseService {
             // Time taken.
             long timeTaken = System.currentTimeMillis() - startTime;
             Log.debug("Added " + name + " to whitelist | Took " + timeTaken + "ms");
-            stmt.close();
-            conn.close();
             return true;
 
         } catch (SQLException e) {
@@ -480,12 +448,11 @@ public class MySqlService implements BaseService {
         }
 
         long startTime = System.currentTimeMillis();
-        try {
-            // Open connection=
-            Connection conn = DriverManager.getConnection(url, username, password);
 
-            String sql = "REPLACE INTO `" + databaseName + "`.`op`(uuid, name, isOp) VALUES (?, ?, true)";
-            PreparedStatement stmt = conn.prepareStatement(sql);
+        String sql = "REPLACE INTO `" + databaseName + "`.`op`(uuid, name, isOp) VALUES (?, ?, true)";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, uuid.toString());
             stmt.setString(2, name);
             stmt.executeUpdate();
@@ -493,8 +460,6 @@ public class MySqlService implements BaseService {
             // Time taken.
             long timeTaken = System.currentTimeMillis() - startTime;
             Log.debug("Database opped " + name + " | Took " + timeTaken + "ms");
-            stmt.close();
-            conn.close();
             return true;
 
         } catch (SQLException e) {
@@ -521,12 +486,10 @@ public class MySqlService implements BaseService {
     public boolean removeWhitelistPlayer(UUID uuid, String name) {
         long startTime = System.currentTimeMillis();
 
-        try {
-            // Open connection=
-            Connection conn = DriverManager.getConnection(url, username, password);
+        String sql = "REPLACE INTO `" + databaseName + "`.`whitelist`(uuid, name, whitelisted) VALUES (?, ?, false)";
 
-            String sql = "REPLACE INTO `" + databaseName + "`.`whitelist`(uuid, name, whitelisted) VALUES (?, ?, false)";
-            PreparedStatement stmt = conn.prepareStatement(sql);
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, uuid.toString());
             stmt.setString(2, name);
             stmt.executeUpdate();
@@ -534,8 +497,6 @@ public class MySqlService implements BaseService {
             // Time taken.
             long timeTaken = System.currentTimeMillis() - startTime;
             Log.debug("Removed " + name + " from whitelist | Took " + timeTaken + "ms");
-            stmt.close();
-            conn.close();
             return true;
 
         } catch (SQLException e) {
@@ -555,12 +516,10 @@ public class MySqlService implements BaseService {
 
         long startTime = System.currentTimeMillis();
 
-        try {
-            // Open connection=
-            Connection conn = DriverManager.getConnection(url, username, password);
+        String sql = "REPLACE INTO `" + databaseName + "`.`op`(uuid, name, isOp) VALUES (?, ?, false)";
 
-            String sql = "REPLACE INTO `" + databaseName + "`.`op`(uuid, name, isOp) VALUES (?, ?, false)";
-            PreparedStatement stmt = conn.prepareStatement(sql);
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, uuid.toString());
             stmt.setString(2, name);
             stmt.executeUpdate();
@@ -568,8 +527,6 @@ public class MySqlService implements BaseService {
             // Time taken.
             long timeTaken = System.currentTimeMillis() - startTime;
             Log.debug("Deopped " + name + " | Took " + timeTaken + "ms");
-            stmt.close();
-            conn.close();
             return true;
 
         } catch (SQLException e) {
