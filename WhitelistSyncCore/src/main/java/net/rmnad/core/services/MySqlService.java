@@ -135,11 +135,6 @@ public class MySqlService implements BaseService {
                     try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                         stmt.execute();
                     }
-
-
-                    // Execute migration
-                    // TODO: Handle migration for level and bypassesPlayerLimit in the future
-                    //migrateOpList(conn, databaseName);
                 }
 
                 // Create banned players table if enabled
@@ -1006,48 +1001,4 @@ public class MySqlService implements BaseService {
 
         return false;
     }
-
-    // TODO: Handle migration for level and bypassesPlayerLimit in the future
-//    private static void migrateOpList(Connection conn, String databaseName) throws SQLException {
-//        String sql;
-//        PreparedStatement stmt;
-//
-//        // Add new level field to op table if it doesn't exist
-//        sql = "SELECT COUNT(*) AS count " +
-//                "FROM INFORMATION_SCHEMA.COLUMNS " +
-//                "WHERE TABLE_SCHEMA = '" + databaseName + "' AND TABLE_NAME = 'op' AND COLUMN_NAME = 'level'";
-//        stmt = conn.prepareStatement(sql);
-//        ResultSet rs = stmt.executeQuery();
-//        rs.next();
-//
-//        if(rs.getInt("count") == 0) {
-//            sql = "ALTER TABLE " + databaseName + ".op ADD COLUMN level INTEGER NOT NULL DEFAULT 4";
-//            PreparedStatement stmt2 = conn.prepareStatement(sql);
-//            stmt2.execute();
-//            stmt2.close();
-//            Log.info("Added new op table \"level\" column. Existing entries get set to default level 4.");
-//        }
-//        rs.close();
-//        stmt.close();
-//
-//
-//        // Add new bypassesPlayerLimit field to op table if it doesn't exist
-//        sql =
-//                "SELECT COUNT(*) AS count " +
-//                        "FROM INFORMATION_SCHEMA.COLUMNS " +
-//                        "WHERE TABLE_SCHEMA = '" + databaseName + "' AND TABLE_NAME = 'op' AND COLUMN_NAME = 'bypassesPlayerLimit'";
-//        stmt = conn.prepareStatement(sql);
-//        ResultSet rs1 = stmt.executeQuery();
-//        rs1.next();
-//
-//        if(rs1.getInt("count") == 0) {
-//            sql = "ALTER TABLE " + databaseName + ".op ADD COLUMN bypassesPlayerLimit TINYINT NOT NULL DEFAULT 0";
-//            PreparedStatement stmt2 = conn.prepareStatement(sql);
-//            stmt2.execute();
-//            stmt2.close();
-//            Log.info("Added new op table \"bypassesPlayerLimit\" column. Existing entries get set to default bypassesPlayerLimit false.");
-//        }
-//        rs1.close();
-//        stmt.close();
-//    }
 }

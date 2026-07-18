@@ -123,10 +123,6 @@ public class SqLiteService implements BaseService {
                             + " isOp integer NOT NULL);";
                     stmt = conn.createStatement();
                     stmt.executeUpdate(sql);
-
-                    // Execute migration
-                    // TODO: Handle migration for level and bypassesPlayerLimit in the future
-                    //migrateOpList(conn);
                 }
 
                 if (WhitelistSyncCore.CONFIG.syncBannedPlayers) {
@@ -1027,43 +1023,4 @@ public class SqLiteService implements BaseService {
 
         return success;
     }
-
-    // TODO: Handle migration for level and bypassesPlayerLimit in the future
-//    private static void migrateOpList(Connection conn) throws SQLException {
-//        String sql;
-//        PreparedStatement stmt;
-//
-//        // Add new level field to op table if it doesn't exist
-//        sql = "SELECT COUNT(*) AS count FROM pragma_table_info('op') WHERE name='level'";
-//        stmt = conn.prepareStatement(sql);
-//        ResultSet rs = stmt.executeQuery();
-//        stmt.close();
-//        rs.next();
-//
-//        if(rs.getInt("count") == 0) {
-//            sql = "ALTER TABLE op ADD COLUMN level INTEGER NULL DEFAULT 4";
-//            stmt = conn.prepareStatement(sql);
-//            stmt.execute();
-//            stmt.close();
-//            Log.info("Added new op table \"level\" column. Existing entries get set to default level 4.");
-//        }
-//        rs.close();
-//
-//
-//        // Add new bypassesPlayerLimit field to op table if it doesn't exist
-//        sql = "SELECT COUNT(*) AS count FROM pragma_table_info('op') WHERE name='bypassesPlayerLimit'";
-//        stmt = conn.prepareStatement(sql);
-//        ResultSet rs1 = stmt.executeQuery();
-//        stmt.close();
-//        rs1.next();
-//
-//        if(rs1.getInt("count") == 0) {
-//            sql = "ALTER TABLE op ADD COLUMN bypassesPlayerLimit INTEGER NULL DEFAULT 0";
-//            stmt = conn.prepareStatement(sql);
-//            stmt.execute();
-//            stmt.close();
-//            Log.info("Added new op table \"bypassesPlayerLimit\" column. Existing entries get set to default bypassesPlayerLimit false.");
-//        }
-//        rs1.close();
-//    }
 }
