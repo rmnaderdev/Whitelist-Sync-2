@@ -15,6 +15,8 @@ public class WhitelistSyncConfig {
     public static final String SYNC_OP_LIST_KEY = "general.syncOpList";
     public static final String SYNC_TIMER_KEY = "general.syncTimer";
     public static final String VERBOSE_LOGGING_KEY = "general.verboseLogging";
+    public static final String SYNC_BANNED_PLAYERS_KEY = "general.syncBannedPlayers";
+    public static final String SYNC_BANNED_IPS_KEY = "general.syncBannedIps";
 
     public static final String MYSQL_DB_NAME_KEY = "mySQL.mysqlDbName";
     public static final String MYSQL_IP_KEY = "mySQL.mysqlIp";
@@ -42,6 +44,10 @@ public class WhitelistSyncConfig {
     public boolean syncOpList = false;
     public int syncTimer = 60;
     public boolean verboseLogging = false;
+    // Banned player / IP syncing for MYSQL and SQLITE modes. (WEB mode uses its
+    // own web.webSyncBannedPlayers / web.webSyncBannedIps settings.)
+    public boolean syncBannedPlayers = false;
+    public boolean syncBannedIps = false;
 
     // MYSQL Settings
     public String mysqlDbName = "WhitelistSync";
@@ -88,6 +94,8 @@ public class WhitelistSyncConfig {
         syncOpList = config.getOrElse(SYNC_OP_LIST_KEY, syncOpList);
         syncTimer = config.getOrElse(SYNC_TIMER_KEY, syncTimer);
         verboseLogging = config.getOrElse(VERBOSE_LOGGING_KEY, verboseLogging);
+        syncBannedPlayers = config.getOrElse(SYNC_BANNED_PLAYERS_KEY, syncBannedPlayers);
+        syncBannedIps = config.getOrElse(SYNC_BANNED_IPS_KEY, syncBannedIps);
 
         mysqlDbName = config.getOrElse(MYSQL_DB_NAME_KEY, mysqlDbName);
         mysqlIp = config.getOrElse(MYSQL_IP_KEY, mysqlIp);
@@ -111,6 +119,8 @@ public class WhitelistSyncConfig {
         spec.define(SYNC_OP_LIST_KEY, false);
         spec.define(SYNC_TIMER_KEY, 60);
         spec.define(VERBOSE_LOGGING_KEY, false);
+        spec.define(SYNC_BANNED_PLAYERS_KEY, false);
+        spec.define(SYNC_BANNED_IPS_KEY, false);
         spec.define(MYSQL_DB_NAME_KEY, "WhitelistSync");
         spec.define(MYSQL_IP_KEY, "localhost");
         spec.define(MYSQL_PORT_KEY, 3306);

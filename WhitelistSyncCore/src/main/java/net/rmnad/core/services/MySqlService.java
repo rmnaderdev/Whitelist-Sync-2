@@ -4,9 +4,12 @@ import io.reactivex.rxjava3.annotations.Nullable;
 import net.rmnad.core.Log;
 import net.rmnad.core.WhitelistSyncCore;
 import net.rmnad.core.callbacks.IServerControl;
+import net.rmnad.core.json.BannedIpsFileReader;
+import net.rmnad.core.json.BannedPlayersFileReader;
 import net.rmnad.core.json.OppedPlayersFileReader;
 import net.rmnad.core.json.WhitelistedPlayersFileReader;
 import net.rmnad.core.logging.LogMessages;
+import net.rmnad.core.models.BannedIp;
 import net.rmnad.core.models.BannedPlayer;
 import net.rmnad.core.models.OppedPlayer;
 import net.rmnad.core.models.WhitelistedPlayer;
@@ -139,6 +142,33 @@ public class MySqlService implements BaseService {
                     //migrateOpList(conn, databaseName);
                 }
 
+                // Create banned players table if enabled
+                if (WhitelistSyncCore.CONFIG.syncBannedPlayers) {
+                    sql = "CREATE TABLE IF NOT EXISTS `" + databaseName + "`.`bannedPlayers` ("
+                            + "`uuid` VARCHAR(60) NOT NULL,"
+                            + "`name` VARCHAR(20) NOT NULL,"
+                            + "`reason` TEXT,"
+                            + "`banned` TINYINT NOT NULL DEFAULT 1,"
+                            + "PRIMARY KEY (`uuid`)"
+                            + ")";
+                    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                        stmt.execute();
+                    }
+                }
+
+                // Create banned ips table if enabled
+                if (WhitelistSyncCore.CONFIG.syncBannedIps) {
+                    sql = "CREATE TABLE IF NOT EXISTS `" + databaseName + "`.`bannedIps` ("
+                            + "`ip` VARCHAR(45) NOT NULL,"
+                            + "`reason` TEXT,"
+                            + "`banned` TINYINT NOT NULL DEFAULT 1,"
+                            + "PRIMARY KEY (`ip`)"
+                            + ")";
+                    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                        stmt.execute();
+                    }
+                }
+
                 Log.info("Setup MySQL database!");
             } catch (SQLException e) {
                 Log.error("Failed to connect to the mySQL database! Did you set one up in the config?");
@@ -244,15 +274,87 @@ public class MySqlService implements BaseService {
     }
 
     @Override
-    public ArrayList<BannedPlayer> getBannedPlayersFromDatabase() {
-        Log.error(LogMessages.ALERT_BANNED_PLAYERS_SYNC_DISABLED);
-        return new ArrayList<>();
+    public synchronized ArrayList<BannedPlayer> getBannedPlayersFromDatabase() {
+        ArrayList<BannedPlayer> bannedPlayers = new ArrayList<>();
+
+        if (!WhitelistSyncCore.CONFIG.syncBannedPlayers) {
+            Log.error(LogMessages.ALERT_BANNED_PLAYERS_SYNC_DISABLED);
+            return bannedPlayers;
+        }
+
+        int records = 0;
+
+        String sql = "SELECT uuid, name, reason FROM `" + databaseName + "`.`bannedPlayers` WHERE banned = true;";
+
+        Connection conn;
+        try {
+            conn = getConnection();
+        } catch (SQLException e) {
+            Log.error("Error querying banned players from database!");
+            Log.error(e.getMessage(), e);
+            return bannedPlayers;
+        }
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            long startTime = System.currentTimeMillis();
+
+            while (rs.next()) {
+                bannedPlayers.add(new BannedPlayer(rs.getString("uuid"), rs.getString("name"), rs.getString("reason")));
+                records++;
+            }
+
+            long timeTaken = System.currentTimeMillis() - startTime;
+            Log.debug(LogMessages.SuccessGetBannedPlayersFromDatabase(timeTaken, records));
+        } catch (SQLException e) {
+            Log.error("Error querying banned players from database!");
+            Log.error(e.getMessage(), e);
+        }
+
+        return bannedPlayers;
     }
 
     @Override
-    public ArrayList<String> getBannedIpsFromDatabase() {
-        Log.error(LogMessages.ALERT_BANNED_IPS_SYNC_DISABLED);
-        return new ArrayList<>();
+    public synchronized ArrayList<String> getBannedIpsFromDatabase() {
+        ArrayList<String> bannedIps = new ArrayList<>();
+
+        if (!WhitelistSyncCore.CONFIG.syncBannedIps) {
+            Log.error(LogMessages.ALERT_BANNED_IPS_SYNC_DISABLED);
+            return bannedIps;
+        }
+
+        int records = 0;
+
+        String sql = "SELECT ip FROM `" + databaseName + "`.`bannedIps` WHERE banned = true;";
+
+        Connection conn;
+        try {
+            conn = getConnection();
+        } catch (SQLException e) {
+            Log.error("Error querying banned ips from database!");
+            Log.error(e.getMessage(), e);
+            return bannedIps;
+        }
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            long startTime = System.currentTimeMillis();
+
+            while (rs.next()) {
+                bannedIps.add(rs.getString("ip"));
+                records++;
+            }
+
+            long timeTaken = System.currentTimeMillis() - startTime;
+            Log.debug(LogMessages.SuccessGetBannedIpsFromDatabase(timeTaken, records));
+        } catch (SQLException e) {
+            Log.error("Error querying banned ips from database!");
+            Log.error(e.getMessage(), e);
+        }
+
+        return bannedIps;
     }
 
     @Override
@@ -339,14 +441,79 @@ public class MySqlService implements BaseService {
     }
 
     @Override
-    public boolean pushLocalBannedPlayersToDatabase() {
-        Log.error(LogMessages.ALERT_BANNED_PLAYERS_SYNC_DISABLED);
+    public synchronized boolean pushLocalBannedPlayersToDatabase() {
+        if (!WhitelistSyncCore.CONFIG.syncBannedPlayers) {
+            Log.error(LogMessages.ALERT_BANNED_PLAYERS_SYNC_DISABLED);
+            return false;
+        }
+
+        int records = 0;
+        long startTime = System.currentTimeMillis();
+
+        ArrayList<BannedPlayer> bannedPlayers = BannedPlayersFileReader.getBannedPlayers();
+
+        String sql = "INSERT IGNORE INTO `" + databaseName + "`.`bannedPlayers`(uuid, name, reason, banned) VALUES (?, ?, ?, true)";
+
+        try {
+            Connection conn = getConnection();
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                for (BannedPlayer player : bannedPlayers) {
+                    if (player.getUuid() != null && player.getName() != null) {
+                        stmt.setString(1, player.getUuid());
+                        stmt.setString(2, player.getName());
+                        stmt.setString(3, player.getReason());
+                        stmt.executeUpdate();
+
+                        records++;
+                    }
+                }
+            }
+            long timeTaken = System.currentTimeMillis() - startTime;
+            Log.debug(LogMessages.SuccessPushLocalBannedPlayersToDatabase(timeTaken, records));
+
+            return true;
+        } catch (SQLException e) {
+            Log.error(LogMessages.ERROR_PushLocalBannedPlayersToDatabase, e);
+        }
+
         return false;
     }
 
     @Override
-    public boolean pushLocalBannedIpsToDatabase() {
-        Log.error(LogMessages.ALERT_BANNED_IPS_SYNC_DISABLED);
+    public synchronized boolean pushLocalBannedIpsToDatabase() {
+        if (!WhitelistSyncCore.CONFIG.syncBannedIps) {
+            Log.error(LogMessages.ALERT_BANNED_IPS_SYNC_DISABLED);
+            return false;
+        }
+
+        int records = 0;
+        long startTime = System.currentTimeMillis();
+
+        ArrayList<BannedIp> bannedIps = BannedIpsFileReader.getBannedIps();
+
+        String sql = "INSERT IGNORE INTO `" + databaseName + "`.`bannedIps`(ip, reason, banned) VALUES (?, ?, true)";
+
+        try {
+            Connection conn = getConnection();
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                for (BannedIp ip : bannedIps) {
+                    if (ip.getIp() != null) {
+                        stmt.setString(1, ip.getIp());
+                        stmt.setString(2, ip.getReason());
+                        stmt.executeUpdate();
+
+                        records++;
+                    }
+                }
+            }
+            long timeTaken = System.currentTimeMillis() - startTime;
+            Log.debug(LogMessages.SuccessPushLocalBannedIpsToDatabase(timeTaken, records));
+
+            return true;
+        } catch (SQLException e) {
+            Log.error(LogMessages.ERROR_PushLocalBannedIpsToDatabase, e);
+        }
+
         return false;
     }
 
@@ -474,14 +641,127 @@ public class MySqlService implements BaseService {
     }
 
     @Override
-    public boolean pullDatabaseBannedPlayersToLocal() {
-        Log.error(LogMessages.ALERT_BANNED_PLAYERS_SYNC_DISABLED);
+    public synchronized boolean pullDatabaseBannedPlayersToLocal() {
+        if (!WhitelistSyncCore.CONFIG.syncBannedPlayers) {
+            Log.error(LogMessages.ALERT_BANNED_PLAYERS_SYNC_DISABLED);
+            return false;
+        }
+
+        int records = 0;
+        long startTime = System.currentTimeMillis();
+
+        ArrayList<BannedPlayer> localBannedPlayers = BannedPlayersFileReader.getBannedPlayers();
+
+        Set<String> localUuids = new HashSet<>();
+        for (BannedPlayer player : localBannedPlayers) {
+            if (player.getUuid() != null) {
+                localUuids.add(player.getUuid());
+            }
+        }
+
+        String sql = "SELECT uuid, name, reason, banned FROM `" + databaseName + "`.`bannedPlayers`";
+
+        try {
+            Connection conn = getConnection();
+            try (PreparedStatement stmt = conn.prepareStatement(sql);
+                 ResultSet rs = stmt.executeQuery()) {
+
+                while (rs.next()) {
+                    UUID uuid = UUID.fromString(rs.getString("uuid"));
+                    String name = rs.getString("name");
+                    String reason = rs.getString("reason");
+                    int banned = rs.getInt("banned");
+
+                    if (banned == 1) {
+                        if (!localUuids.contains(uuid.toString())) {
+                            try {
+                                serverControl.addBannedPlayer(uuid, name, reason);
+                                Log.debug(LogMessages.BannedPlayer(name));
+                                records++;
+                            } catch (NullPointerException e) {
+                                Log.error(e.getMessage(), e);
+                            }
+                        }
+                    } else {
+                        if (localUuids.contains(uuid.toString())) {
+                            serverControl.removeBannedPlayer(uuid, name);
+                            Log.debug("Unbanned player " + name + ".");
+                            records++;
+                        }
+                    }
+                }
+            }
+            long timeTaken = System.currentTimeMillis() - startTime;
+            Log.debug(LogMessages.SuccessPullDatabaseBannedPlayersToLocal(timeTaken, records));
+
+            return true;
+        } catch (SQLException e) {
+            Log.error("Error querying banned players from database!");
+            Log.error(e.getMessage(), e);
+        }
+
         return false;
     }
 
     @Override
-    public boolean pullDatabaseBannedIpsToLocal() {
-        Log.error(LogMessages.ALERT_BANNED_IPS_SYNC_DISABLED);
+    public synchronized boolean pullDatabaseBannedIpsToLocal() {
+        if (!WhitelistSyncCore.CONFIG.syncBannedIps) {
+            Log.error(LogMessages.ALERT_BANNED_IPS_SYNC_DISABLED);
+            return false;
+        }
+
+        int records = 0;
+        long startTime = System.currentTimeMillis();
+
+        ArrayList<BannedIp> localBannedIps = BannedIpsFileReader.getBannedIps();
+
+        Set<String> localIps = new HashSet<>();
+        for (BannedIp bannedIp : localBannedIps) {
+            if (bannedIp.getIp() != null) {
+                localIps.add(bannedIp.getIp());
+            }
+        }
+
+        String sql = "SELECT ip, reason, banned FROM `" + databaseName + "`.`bannedIps`";
+
+        try {
+            Connection conn = getConnection();
+            try (PreparedStatement stmt = conn.prepareStatement(sql);
+                 ResultSet rs = stmt.executeQuery()) {
+
+                while (rs.next()) {
+                    String ip = rs.getString("ip");
+                    String reason = rs.getString("reason");
+                    int banned = rs.getInt("banned");
+
+                    if (banned == 1) {
+                        if (!localIps.contains(ip)) {
+                            try {
+                                serverControl.addBannedIp(ip, reason);
+                                Log.debug(LogMessages.BannedIp(ip));
+                                records++;
+                            } catch (NullPointerException e) {
+                                Log.error(e.getMessage(), e);
+                            }
+                        }
+                    } else {
+                        if (localIps.contains(ip)) {
+                            serverControl.removeBannedIp(ip);
+                            Log.debug("Unbanned ip " + ip + ".");
+                            records++;
+                        }
+                    }
+                }
+            }
+            long timeTaken = System.currentTimeMillis() - startTime;
+            Log.debug(LogMessages.SuccessPullDatabaseBannedIpsToLocal(timeTaken, records));
+
+            return true;
+        } catch (SQLException e) {
+            Log.error("Error querying banned ips from database!");
+            Log.error(e.getMessage(), e);
+        }
+
         return false;
     }
 
@@ -545,14 +825,65 @@ public class MySqlService implements BaseService {
     }
 
     @Override
-    public boolean addBannedPlayer(UUID uuid, String name, @Nullable String reason) {
-        Log.error(LogMessages.ALERT_BANNED_PLAYERS_SYNC_DISABLED);
+    public synchronized boolean addBannedPlayer(UUID uuid, String name, @Nullable String reason) {
+        if (!WhitelistSyncCore.CONFIG.syncBannedPlayers) {
+            Log.error(LogMessages.ALERT_BANNED_PLAYERS_SYNC_DISABLED);
+            return false;
+        }
+
+        long startTime = System.currentTimeMillis();
+
+        String sql = "REPLACE INTO `" + databaseName + "`.`bannedPlayers`(uuid, name, reason, banned) VALUES (?, ?, ?, true)";
+
+        try {
+            Connection conn = getConnection();
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, uuid.toString());
+                stmt.setString(2, name);
+                stmt.setString(3, reason);
+                stmt.executeUpdate();
+            }
+
+            long timeTaken = System.currentTimeMillis() - startTime;
+            Log.debug("Banned " + name + " | Took " + timeTaken + "ms");
+            return true;
+
+        } catch (SQLException e) {
+            Log.error("Error banning " + name + " !");
+            Log.error(e.getMessage(), e);
+        }
+
         return false;
     }
 
     @Override
-    public boolean addBannedIp(String ip, @Nullable String reason) {
-        Log.error(LogMessages.ALERT_BANNED_IPS_SYNC_DISABLED);
+    public synchronized boolean addBannedIp(String ip, @Nullable String reason) {
+        if (!WhitelistSyncCore.CONFIG.syncBannedIps) {
+            Log.error(LogMessages.ALERT_BANNED_IPS_SYNC_DISABLED);
+            return false;
+        }
+
+        long startTime = System.currentTimeMillis();
+
+        String sql = "REPLACE INTO `" + databaseName + "`.`bannedIps`(ip, reason, banned) VALUES (?, ?, true)";
+
+        try {
+            Connection conn = getConnection();
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, ip);
+                stmt.setString(2, reason);
+                stmt.executeUpdate();
+            }
+
+            long timeTaken = System.currentTimeMillis() - startTime;
+            Log.debug("Banned " + ip + " | Took " + timeTaken + "ms");
+            return true;
+
+        } catch (SQLException e) {
+            Log.error("Error banning " + ip + " !");
+            Log.error(e.getMessage(), e);
+        }
+
         return false;
     }
 
@@ -616,14 +947,63 @@ public class MySqlService implements BaseService {
     }
 
     @Override
-    public boolean removeBannedPlayer(UUID uuid, String name) {
-        Log.error(LogMessages.ALERT_BANNED_PLAYERS_SYNC_DISABLED);
+    public synchronized boolean removeBannedPlayer(UUID uuid, String name) {
+        if (!WhitelistSyncCore.CONFIG.syncBannedPlayers) {
+            Log.error(LogMessages.ALERT_BANNED_PLAYERS_SYNC_DISABLED);
+            return false;
+        }
+
+        long startTime = System.currentTimeMillis();
+
+        String sql = "REPLACE INTO `" + databaseName + "`.`bannedPlayers`(uuid, name, reason, banned) VALUES (?, ?, NULL, false)";
+
+        try {
+            Connection conn = getConnection();
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, uuid.toString());
+                stmt.setString(2, name);
+                stmt.executeUpdate();
+            }
+
+            long timeTaken = System.currentTimeMillis() - startTime;
+            Log.debug("Unbanned " + name + " | Took " + timeTaken + "ms");
+            return true;
+
+        } catch (SQLException e) {
+            Log.error("Error unbanning " + name + ".");
+            Log.error(e.getMessage(), e);
+        }
+
         return false;
     }
 
     @Override
-    public boolean removeBannedIp(String ip) {
-        Log.error(LogMessages.ALERT_BANNED_IPS_SYNC_DISABLED);
+    public synchronized boolean removeBannedIp(String ip) {
+        if (!WhitelistSyncCore.CONFIG.syncBannedIps) {
+            Log.error(LogMessages.ALERT_BANNED_IPS_SYNC_DISABLED);
+            return false;
+        }
+
+        long startTime = System.currentTimeMillis();
+
+        String sql = "REPLACE INTO `" + databaseName + "`.`bannedIps`(ip, reason, banned) VALUES (?, NULL, false)";
+
+        try {
+            Connection conn = getConnection();
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, ip);
+                stmt.executeUpdate();
+            }
+
+            long timeTaken = System.currentTimeMillis() - startTime;
+            Log.debug("Unbanned " + ip + " | Took " + timeTaken + "ms");
+            return true;
+
+        } catch (SQLException e) {
+            Log.error("Error unbanning " + ip + ".");
+            Log.error(e.getMessage(), e);
+        }
+
         return false;
     }
 

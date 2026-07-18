@@ -24,10 +24,10 @@ public class LogMessages {
     public static String WARN_WhitelistSyncWebVersionCheckConnectException = "Failed to communicate with Whitelist Sync Web API to check version. ";
 
     public static String ALERT_OP_SYNC_DISABLED = "Op list syncing is currently disabled in your config. Please enable it and restart the server to use this feature.";
-    public static String ALERT_BANNED_PLAYERS_SYNC_DISABLED = "Banned players syncing is currently not active. Banned players and banned ip syncing is only available when using the WEB mode. " +
-            "Please ensure you are using the WEB database mode and that the webSyncBannedPlayers setting is set to true.";
-    public static String ALERT_BANNED_IPS_SYNC_DISABLED = "Banned ip syncing is currently not active. Banned players and banned ip syncing is only available when using the WEB mode. " +
-            "Please ensure you are using the WEB database mode and that the webSyncBannedIps setting is set to true.";
+    public static String ALERT_BANNED_PLAYERS_SYNC_DISABLED = "Banned players syncing is currently not active. " +
+            "Enable syncBannedPlayers (MYSQL/SQLITE) or webSyncBannedPlayers (WEB) in your config and restart the server to use this feature.";
+    public static String ALERT_BANNED_IPS_SYNC_DISABLED = "Banned ip syncing is currently not active. " +
+            "Enable syncBannedIps (MYSQL/SQLITE) or webSyncBannedIps (WEB) in your config and restart the server to use this feature.";
 
     public static void ShowModStartupHeaderMessage() {
         Log.info("----------------------------------------------");

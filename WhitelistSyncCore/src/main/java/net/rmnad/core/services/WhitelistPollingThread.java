@@ -42,6 +42,14 @@ public class WhitelistPollingThread extends Thread {
                 if (WhitelistSyncCore.CONFIG.syncOpList) {
                     service.pullDatabaseOpsToLocal();
                 }
+
+                if (WhitelistSyncCore.CONFIG.syncBannedPlayers) {
+                    service.pullDatabaseBannedPlayersToLocal();
+                }
+
+                if (WhitelistSyncCore.CONFIG.syncBannedIps) {
+                    service.pullDatabaseBannedIpsToLocal();
+                }
             } catch (Exception e) {
                 Log.error(LogMessages.ERROR_WHITELIST_SYNC_THREAD, e);
             }
