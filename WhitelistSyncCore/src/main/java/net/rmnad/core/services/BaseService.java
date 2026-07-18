@@ -47,4 +47,8 @@ public interface BaseService {
     public boolean removeBannedPlayer(UUID uuid, String name);
     public boolean removeBannedIp(String ip);
 
+    // Release any held resources (e.g. a pooled/persistent DB connection).
+    // No-op by default; DB-backed services override.
+    default void close() {}
+
 }

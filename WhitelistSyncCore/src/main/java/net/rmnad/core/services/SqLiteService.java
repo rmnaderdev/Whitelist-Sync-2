@@ -23,47 +23,65 @@ public class SqLiteService implements BaseService {
 
     private final String databasePath;
     private final IServerControl serverControl;
-    
+
+    // Single persistent connection, reused across sync operations instead of
+    // opening a fresh one per query. Guarded by the per-method synchronization
+    // below because a JDBC Connection is not thread-safe and both the polling
+    // thread and command thread reach these methods.
+    private Connection connection;
+
     public SqLiteService(IServerControl serverControl) {
         this.databasePath = WhitelistSyncCore.CONFIG.sqliteDatabasePath;
         this.serverControl = serverControl;
     }
 
+    // Returns the shared connection, (re)opening it if absent or no longer valid.
     public Connection getConnection() throws SQLException {
-        String url = "jdbc:sqlite:" + this.databasePath;
-        return DriverManager.getConnection(url);
+        if (connection == null || !connection.isValid(2)) {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException ignored) {}
+            }
+            String url = "jdbc:sqlite:" + this.databasePath;
+            connection = DriverManager.getConnection(url);
+        }
+        return connection;
     }
 
-    public void cleanup(Statement stmt, Connection conn) {
-        cleanup(null, stmt, conn);
+    @Override
+    public synchronized void close() {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException ignored) {}
+            connection = null;
+        }
     }
 
-    public void cleanup(ResultSet rs, Statement stmt, Connection conn) {
+    // Closes per-statement resources only. The connection is persistent and
+    // owned by this service (see close()), so it is deliberately left open.
+    public void cleanup(Statement stmt) {
+        cleanup(null, stmt);
+    }
+
+    public void cleanup(ResultSet rs, Statement stmt) {
         try {
             if(rs != null) {
                 rs.close();
-                rs = null;
             }
         } catch (SQLException ignored){}
 
         try {
             if(stmt != null) {
                 stmt.close();
-                stmt = null;
-            }
-        } catch (SQLException ignored){}
-
-        try {
-            if(conn != null) {
-                conn.close();
-                conn = null;
             }
         } catch (SQLException ignored){}
     }
 
     // Function used to initialize the database file
     @Override
-    public boolean initializeDatabase() {
+    public synchronized boolean initializeDatabase() {
         Log.info("Setting up the SQLite service...");
         boolean success = true;
 
@@ -76,10 +94,9 @@ public class SqLiteService implements BaseService {
         }
 
         if(success) {
-            Connection conn = null;
             Statement stmt = null;
             try {
-                conn = getConnection();
+                Connection conn = getConnection();
 
                 // If the conn is valid, everything below this will run
                 Log.info("Connected to SQLite database successfully!");
@@ -111,7 +128,7 @@ public class SqLiteService implements BaseService {
                 Log.error(e.getMessage(), e);
                 success = false;
             } finally {
-                cleanup(stmt, conn);
+                cleanup(stmt);
             }
         }
 
@@ -119,11 +136,10 @@ public class SqLiteService implements BaseService {
     }
 
     @Override
-    public ArrayList<WhitelistedPlayer> getWhitelistedPlayersFromDatabase() {
+    public synchronized ArrayList<WhitelistedPlayer> getWhitelistedPlayersFromDatabase() {
         // ArrayList for whitelisted players.
         ArrayList<WhitelistedPlayer> whitelistedPlayers = new ArrayList<>();
 
-        Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
@@ -131,7 +147,7 @@ public class SqLiteService implements BaseService {
             int records = 0;
 
             // Connect to database.
-            conn = getConnection();
+            Connection conn = getConnection();
             long startTime = System.currentTimeMillis();
 
             String sql = "SELECT uuid, name, whitelisted FROM whitelist WHERE whitelisted = 1;";
@@ -152,14 +168,14 @@ public class SqLiteService implements BaseService {
             Log.error("Error querying whitelisted players from database!");
             Log.error(e.getMessage(), e);
         } finally {
-            cleanup(rs, stmt, conn);
+            cleanup(rs, stmt);
         }
 
         return whitelistedPlayers;
     }
 
     @Override
-    public ArrayList<OppedPlayer> getOppedPlayersFromDatabase() {
+    public synchronized ArrayList<OppedPlayer> getOppedPlayersFromDatabase() {
         // ArrayList for opped players.
         ArrayList<OppedPlayer> oppedPlayers = new ArrayList<>();
 
@@ -168,7 +184,6 @@ public class SqLiteService implements BaseService {
             return oppedPlayers;
         }
 
-        Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
@@ -176,7 +191,7 @@ public class SqLiteService implements BaseService {
             int records = 0;
 
             // Connect to database.
-            conn = getConnection();
+            Connection conn = getConnection();
             long startTime = System.currentTimeMillis();
 
             String sql = "SELECT uuid, name FROM op WHERE isOp = 1;";
@@ -201,7 +216,7 @@ public class SqLiteService implements BaseService {
             Log.error("Error querying opped players from database!");
             Log.error(e.getMessage(), e);
         } finally {
-            cleanup(rs, stmt, conn);
+            cleanup(rs, stmt);
         }
 
         return oppedPlayers;
@@ -220,7 +235,7 @@ public class SqLiteService implements BaseService {
     }
 
     @Override
-    public boolean pushLocalWhitelistToDatabase() {
+    public synchronized boolean pushLocalWhitelistToDatabase() {
         // TODO: Start job on thread to avoid lag?
         // Keep track of records.
         int records = 0;
@@ -229,20 +244,18 @@ public class SqLiteService implements BaseService {
 
         ArrayList<WhitelistedPlayer> whitelistedPlayers = WhitelistedPlayersFileReader.getWhitelistedPlayers();
 
-        Connection conn = null;
         PreparedStatement stmt = null;
         try {
             // Connect to database.
-            conn = getConnection();
+            Connection conn = getConnection();
+            stmt = conn.prepareStatement("INSERT OR REPLACE INTO whitelist(uuid, name, whitelisted) VALUES (?, ?, 1)");
             // Loop through local whitelist and insert into database.
             for (WhitelistedPlayer player : whitelistedPlayers) {
 
                 if (player.getUuid() != null && player.getName() != null) {
-                    stmt = conn.prepareStatement("INSERT OR REPLACE INTO whitelist(uuid, name, whitelisted) VALUES (?, ?, 1)");
                     stmt.setString(1, player.getUuid());
                     stmt.setString(2, player.getName());
                     stmt.executeUpdate();
-                    stmt.close();
 
                     records++;
                 }
@@ -256,14 +269,14 @@ public class SqLiteService implements BaseService {
             Log.error(LogMessages.ERROR_PushLocalWhitelistToDatabase, e);
             success = false;
         } finally {
-            cleanup(stmt, conn);
+            cleanup(stmt);
         }
 
         return success;
     }
 
     @Override
-    public boolean pushLocalOpsToDatabase() {
+    public synchronized boolean pushLocalOpsToDatabase() {
         if (!WhitelistSyncCore.CONFIG.syncOpList) {
             Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return false;
@@ -277,20 +290,18 @@ public class SqLiteService implements BaseService {
 
         ArrayList<OppedPlayer> oppedPlayers = OppedPlayersFileReader.getOppedPlayers();
 
-        Connection conn = null;
         PreparedStatement stmt = null;
         try {
             // Connect to database.
-            conn = getConnection();
+            Connection conn = getConnection();
+            stmt = conn.prepareStatement("INSERT OR REPLACE INTO op(uuid, name, isOp) VALUES (?, ?, 1)");
             // Loop through local opped players and insert into database.
             for (OppedPlayer player : oppedPlayers) {
 
                 if (player.getUuid() != null && player.getName() != null) {
-                    stmt = conn.prepareStatement("INSERT OR REPLACE INTO op(uuid, name, isOp) VALUES (?, ?, 1)");
                     stmt.setString(1, player.getUuid());
                     stmt.setString(2, player.getName());
                     stmt.executeUpdate();
-                    stmt.close();
 
                     records++;
                 }
@@ -303,7 +314,7 @@ public class SqLiteService implements BaseService {
             Log.error(LogMessages.ERROR_PushLocalOpsToDatabase, e);
             success = false;
         } finally {
-            cleanup(stmt, conn);
+            cleanup(stmt);
         }
 
         return success;
@@ -322,18 +333,17 @@ public class SqLiteService implements BaseService {
     }
 
     @Override
-    public boolean pullDatabaseWhitelistToLocal() {
+    public synchronized boolean pullDatabaseWhitelistToLocal() {
         int records = 0;
         boolean success;
         long startTime = System.currentTimeMillis();
 
         ArrayList<WhitelistedPlayer> localWhitelistedPlayers = WhitelistedPlayersFileReader.getWhitelistedPlayers();
 
-        Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            conn = getConnection();
+            Connection conn = getConnection();
 
             String sql = "SELECT name, uuid, whitelisted FROM whitelist;";
             stmt = conn.prepareStatement(sql);
@@ -371,14 +381,14 @@ public class SqLiteService implements BaseService {
             Log.error(LogMessages.ERROR_PullDatabaseWhitelistToLocal, e);
             success = false;
         } finally {
-            cleanup(rs, stmt, conn);
+            cleanup(rs, stmt);
         }
 
         return success;
     }
 
     @Override
-    public boolean pullDatabaseOpsToLocal() {
+    public synchronized boolean pullDatabaseOpsToLocal() {
 
         // TODO: Compare level and bypassesPlayerLimit, sync if needed
         if (!WhitelistSyncCore.CONFIG.syncOpList) {
@@ -393,12 +403,11 @@ public class SqLiteService implements BaseService {
 
         ArrayList<OppedPlayer> localOppedPlayers = OppedPlayersFileReader.getOppedPlayers();
 
-        Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
-            conn = getConnection();
+            Connection conn = getConnection();
 
             String sql = "SELECT uuid, name, isOp FROM op;";
             stmt = conn.prepareStatement(sql);
@@ -436,7 +445,7 @@ public class SqLiteService implements BaseService {
             Log.error(e.getMessage(), e);
             success = false;
         } finally {
-            cleanup(rs, stmt, conn);
+            cleanup(rs, stmt);
         }
 
         return success;
@@ -455,13 +464,12 @@ public class SqLiteService implements BaseService {
     }
 
     @Override
-    public boolean addWhitelistPlayer(UUID uuid, String name) {
+    public synchronized boolean addWhitelistPlayer(UUID uuid, String name) {
         boolean success;
-        Connection conn = null;
         PreparedStatement stmt = null;
         try {
             // Open connection
-            conn = getConnection();
+            Connection conn = getConnection();
 
             // Start time.
             long startTime = System.currentTimeMillis();
@@ -482,25 +490,24 @@ public class SqLiteService implements BaseService {
             Log.error(e.getMessage(), e);
             success = false;
         } finally {
-            cleanup(stmt, conn);
+            cleanup(stmt);
         }
 
         return success;
     }
 
     @Override
-    public boolean addOppedPlayer(UUID uuid, String name) {
+    public synchronized boolean addOppedPlayer(UUID uuid, String name) {
         if (!WhitelistSyncCore.CONFIG.syncOpList) {
             Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return false;
         }
 
         boolean success;
-        Connection conn = null;
         PreparedStatement stmt = null;
         try {
             // Open connection
-            conn = getConnection();
+            Connection conn = getConnection();
 
             // Start time.
             long startTime = System.currentTimeMillis();
@@ -520,7 +527,7 @@ public class SqLiteService implements BaseService {
             Log.error(e.getMessage(), e);
             success = false;
         } finally {
-            cleanup(stmt, conn);
+            cleanup(stmt);
         }
 
         return success;
@@ -539,13 +546,12 @@ public class SqLiteService implements BaseService {
     }
 
     @Override
-    public boolean removeWhitelistPlayer(UUID uuid, String name) {
+    public synchronized boolean removeWhitelistPlayer(UUID uuid, String name) {
         boolean success;
-        Connection conn = null;
         PreparedStatement stmt = null;
         try {
             // Open connection
-            conn = getConnection();
+            Connection conn = getConnection();
 
             // Start time.
             long startTime = System.currentTimeMillis();
@@ -565,25 +571,24 @@ public class SqLiteService implements BaseService {
             Log.error(e.getMessage(), e);
             success = false;
         } finally {
-            cleanup(stmt, conn);
+            cleanup(stmt);
         }
 
         return success;
     }
 
     @Override
-    public boolean removeOppedPlayer(UUID uuid, String name) {
+    public synchronized boolean removeOppedPlayer(UUID uuid, String name) {
         if (!WhitelistSyncCore.CONFIG.syncOpList) {
             Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return false;
         }
 
         boolean success;
-        Connection conn = null;
         PreparedStatement stmt = null;
         try {
             // Open connection
-            conn = getConnection();
+            Connection conn = getConnection();
 
             // Start time.
             long startTime = System.currentTimeMillis();
@@ -603,7 +608,7 @@ public class SqLiteService implements BaseService {
             Log.error(e.getMessage(), e);
             success = false;
         } finally {
-            cleanup(stmt, conn);
+            cleanup(stmt);
         }
 
         return success;

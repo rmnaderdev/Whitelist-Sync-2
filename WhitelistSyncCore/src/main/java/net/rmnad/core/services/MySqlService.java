@@ -27,6 +27,12 @@ public class MySqlService implements BaseService {
 
     private final IServerControl serverControl;
 
+    // Single persistent connection, reused across sync operations instead of
+    // opening a fresh one per query. Guarded by the per-method synchronization
+    // below because a JDBC Connection is not thread-safe and both the polling
+    // thread and command thread reach these methods.
+    private Connection connection;
+
     public MySqlService(IServerControl serverControl) {
 
         String ip = WhitelistSyncCore.CONFIG.mysqlIp;
@@ -39,13 +45,34 @@ public class MySqlService implements BaseService {
         this.serverControl = serverControl;
     }
 
+    // Returns the shared connection, (re)opening it if absent or no longer valid.
+    // The validity check lets a connection dropped by the server (idle timeout,
+    // restart) heal on the next call.
     private Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(url, username, password);
+        if (connection == null || !connection.isValid(2)) {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException ignored) {}
+            }
+            connection = DriverManager.getConnection(url, username, password);
+        }
+        return connection;
+    }
+
+    @Override
+    public synchronized void close() {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException ignored) {}
+            connection = null;
+        }
     }
 
     // Function used to initialize the database file
     @Override
-    public boolean initializeDatabase() {
+    public synchronized boolean initializeDatabase() {
         Log.info("Setting up the MySQL service...");
         boolean isSuccess = true;
 
@@ -59,18 +86,9 @@ public class MySqlService implements BaseService {
 
 
         if (isSuccess) {
-            try (Connection conn = getConnection()) {
+            try {
+                Connection conn = getConnection();
                 Log.info("Connected to " + url + " successfully!");
-            } catch (SQLException e) {
-                Log.error("Failed to connect to the mySQL database! Did you set one up in the config?");
-                Log.error(e.getMessage(), e);
-                isSuccess = false;
-            }
-        }
-
-        if (isSuccess) {
-            // Create database
-            try (Connection conn = getConnection()) {
 
                 // Create database
                 String sql = "CREATE DATABASE IF NOT EXISTS `" + databaseName + "`;";
@@ -108,8 +126,8 @@ public class MySqlService implements BaseService {
                 }
 
                 Log.info("Setup MySQL database!");
-            } catch (Exception e) {
-                Log.error("Error initializing database and database tables.");
+            } catch (SQLException e) {
+                Log.error("Failed to connect to the mySQL database! Did you set one up in the config?");
                 Log.error(e.getMessage(), e);
                 isSuccess = false;
             }
@@ -120,7 +138,7 @@ public class MySqlService implements BaseService {
     }
 
     @Override
-    public ArrayList<WhitelistedPlayer> getWhitelistedPlayersFromDatabase() {
+    public synchronized ArrayList<WhitelistedPlayer> getWhitelistedPlayersFromDatabase() {
         // ArrayList for whitelisted players.
         ArrayList<WhitelistedPlayer> whitelistedPlayers = new ArrayList<>();
 
@@ -129,8 +147,16 @@ public class MySqlService implements BaseService {
 
         String sql = "SELECT uuid, name FROM `" + databaseName + "`.`whitelist` WHERE whitelisted = true;";
 
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
+        Connection conn;
+        try {
+            conn = getConnection();
+        } catch (SQLException e) {
+            Log.error("Error querying whitelisted players from database!");
+            Log.error(e.getMessage(), e);
+            return whitelistedPlayers;
+        }
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
             long startTime = System.currentTimeMillis();
@@ -154,7 +180,7 @@ public class MySqlService implements BaseService {
     }
 
     @Override
-    public ArrayList<OppedPlayer> getOppedPlayersFromDatabase() {
+    public synchronized ArrayList<OppedPlayer> getOppedPlayersFromDatabase() {
         // ArrayList for opped players.
         ArrayList<OppedPlayer> oppedPlayers = new ArrayList<>();
 
@@ -168,8 +194,16 @@ public class MySqlService implements BaseService {
 
         String sql = "SELECT uuid, name FROM `" + databaseName + "`.`op` WHERE isOp = true;";
 
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
+        Connection conn;
+        try {
+            conn = getConnection();
+        } catch (SQLException e) {
+            Log.error("Error querying opped players from database!");
+            Log.error(e.getMessage(), e);
+            return oppedPlayers;
+        }
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
             long startTime = System.currentTimeMillis();
@@ -208,7 +242,7 @@ public class MySqlService implements BaseService {
     }
 
     @Override
-    public boolean pushLocalWhitelistToDatabase() {
+    public synchronized boolean pushLocalWhitelistToDatabase() {
         // TODO: Start job on thread to avoid lag?
         // Keep track of records.
         int records = 0;
@@ -219,17 +253,19 @@ public class MySqlService implements BaseService {
 
         String sql = "INSERT IGNORE INTO `" + databaseName + "`.`whitelist`(uuid, name, whitelisted) VALUES (?, ?, true)";
 
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            // Loop through local whitelist and insert into database.
-            for (WhitelistedPlayer player : whitelistedPlayers) {
+        try {
+            Connection conn = getConnection();
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                // Loop through local whitelist and insert into database.
+                for (WhitelistedPlayer player : whitelistedPlayers) {
 
-                if (player.getUuid() != null && player.getName() != null) {
-                    stmt.setString(1, player.getUuid());
-                    stmt.setString(2, player.getName());
-                    stmt.executeUpdate();
+                    if (player.getUuid() != null && player.getName() != null) {
+                        stmt.setString(1, player.getUuid());
+                        stmt.setString(2, player.getName());
+                        stmt.executeUpdate();
 
-                    records++;
+                        records++;
+                    }
                 }
             }
             // Record time taken.
@@ -245,7 +281,7 @@ public class MySqlService implements BaseService {
     }
 
     @Override
-    public boolean pushLocalOpsToDatabase() {
+    public synchronized boolean pushLocalOpsToDatabase() {
         if (!WhitelistSyncCore.CONFIG.syncOpList) {
             Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return false;
@@ -261,17 +297,19 @@ public class MySqlService implements BaseService {
 
         String sql = "INSERT IGNORE INTO `" + databaseName + "`.`op`(uuid, name, isOp) VALUES (?, ?, true)";
 
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            // Loop through local whitelist and insert into database.
-            for (OppedPlayer player : oppedPlayers) {
+        try {
+            Connection conn = getConnection();
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                // Loop through local whitelist and insert into database.
+                for (OppedPlayer player : oppedPlayers) {
 
-                if (player.getUuid() != null && player.getName() != null) {
-                    stmt.setString(1, player.getUuid());
-                    stmt.setString(2, player.getName());
-                    stmt.executeUpdate();
+                    if (player.getUuid() != null && player.getName() != null) {
+                        stmt.setString(1, player.getUuid());
+                        stmt.setString(2, player.getName());
+                        stmt.executeUpdate();
 
-                    records++;
+                        records++;
+                    }
                 }
             }
             // Record time taken.
@@ -299,7 +337,7 @@ public class MySqlService implements BaseService {
     }
 
     @Override
-    public boolean pullDatabaseWhitelistToLocal() {
+    public synchronized boolean pullDatabaseWhitelistToLocal() {
         int records = 0;
         long startTime = System.currentTimeMillis();
 
@@ -308,33 +346,35 @@ public class MySqlService implements BaseService {
 
         String sql = "SELECT name, uuid, whitelisted FROM `" + databaseName + "`.`whitelist`";
 
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        try {
+            Connection conn = getConnection();
+            try (PreparedStatement stmt = conn.prepareStatement(sql);
+                 ResultSet rs = stmt.executeQuery()) {
 
-            while (rs.next()) {
-                UUID uuid = UUID.fromString(rs.getString("uuid"));
-                String name = rs.getString("name");
-                int whitelisted = rs.getInt("whitelisted");
+                while (rs.next()) {
+                    UUID uuid = UUID.fromString(rs.getString("uuid"));
+                    String name = rs.getString("name");
+                    int whitelisted = rs.getInt("whitelisted");
 
-                if (whitelisted == 1) {
-                    if (localWhitelistedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid.toString()))) {
-                        try {
-                            serverControl.addWhitelistPlayer(uuid, name);
-                            Log.debug(LogMessages.AddedUserToWhitelist(name));
+                    if (whitelisted == 1) {
+                        if (localWhitelistedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid.toString()))) {
+                            try {
+                                serverControl.addWhitelistPlayer(uuid, name);
+                                Log.debug(LogMessages.AddedUserToWhitelist(name));
+                                records++;
+                            } catch (NullPointerException e) {
+                                Log.error(e.getMessage(), e);
+                            }
+                        }
+                    } else {
+                        if (localWhitelistedPlayers.stream().anyMatch(o -> o.getUuid().equals(uuid.toString()))) {
+                            serverControl.removeWhitelistPlayer(uuid, name);
+                            Log.debug(LogMessages.RemovedUserToWhitelist(name));
                             records++;
-                        } catch (NullPointerException e) {
-                            Log.error(e.getMessage(), e);
                         }
                     }
-                } else {
-                    if (localWhitelistedPlayers.stream().anyMatch(o -> o.getUuid().equals(uuid.toString()))) {
-                        serverControl.removeWhitelistPlayer(uuid, name);
-                        Log.debug(LogMessages.RemovedUserToWhitelist(name));
-                        records++;
-                    }
-                }
 
+                }
             }
             long timeTaken = System.currentTimeMillis() - startTime;
             Log.debug(LogMessages.SuccessPullDatabaseWhitelistToLocal( timeTaken, records));
@@ -348,7 +388,7 @@ public class MySqlService implements BaseService {
     }
 
     @Override
-    public boolean pullDatabaseOpsToLocal() {
+    public synchronized boolean pullDatabaseOpsToLocal() {
         if (!WhitelistSyncCore.CONFIG.syncOpList) {
             Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return false;
@@ -363,33 +403,35 @@ public class MySqlService implements BaseService {
 
         String sql = "SELECT uuid, name, isOp FROM `" + databaseName + "`.`op`";
 
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        try {
+            Connection conn = getConnection();
+            try (PreparedStatement stmt = conn.prepareStatement(sql);
+                 ResultSet rs = stmt.executeQuery()) {
 
-            while (rs.next()) {
-                UUID uuid = UUID.fromString(rs.getString("uuid"));
-                String name = rs.getString("name");
-                int opped = rs.getInt("isOp");
+                while (rs.next()) {
+                    UUID uuid = UUID.fromString(rs.getString("uuid"));
+                    String name = rs.getString("name");
+                    int opped = rs.getInt("isOp");
 
-                if (opped == 1) {
-                    if (localOppedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid.toString()))) {
-                        try {
-                            serverControl.addOpPlayer(uuid, name);
-                            Log.debug(LogMessages.OppedUser(name));
+                    if (opped == 1) {
+                        if (localOppedPlayers.stream().noneMatch(o -> o.getUuid().equals(uuid.toString()))) {
+                            try {
+                                serverControl.addOpPlayer(uuid, name);
+                                Log.debug(LogMessages.OppedUser(name));
+                                records++;
+                            } catch (NullPointerException e) {
+                                Log.error(e.getMessage(), e);
+                            }
+                        }
+                    } else {
+                        if (localOppedPlayers.stream().anyMatch(o -> o.getUuid().equals(uuid.toString()))) {
+                            serverControl.removeOpPlayer(uuid, name);
+                            Log.debug(LogMessages.DeopUser(name));
                             records++;
-                        } catch (NullPointerException e) {
-                            Log.error(e.getMessage(), e);
                         }
                     }
-                } else {
-                    if (localOppedPlayers.stream().anyMatch(o -> o.getUuid().equals(uuid.toString()))) {
-                        serverControl.removeOpPlayer(uuid, name);
-                        Log.debug(LogMessages.DeopUser(name));
-                        records++;
-                    }
-                }
 
+                }
             }
             long timeTaken = System.currentTimeMillis() - startTime;
             Log.debug(LogMessages.SuccessPullDatabaseOpsToLocal(timeTaken, records));
@@ -416,16 +458,18 @@ public class MySqlService implements BaseService {
     }
 
     @Override
-    public boolean addWhitelistPlayer(UUID uuid, String name) {
+    public synchronized boolean addWhitelistPlayer(UUID uuid, String name) {
         long startTime = System.currentTimeMillis();
 
         String sql = "REPLACE INTO `" + databaseName + "`.`whitelist`(uuid, name, whitelisted) VALUES (?, ?, true)";
 
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, uuid.toString());
-            stmt.setString(2, name);
-            stmt.executeUpdate();
+        try {
+            Connection conn = getConnection();
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, uuid.toString());
+                stmt.setString(2, name);
+                stmt.executeUpdate();
+            }
 
             // Time taken.
             long timeTaken = System.currentTimeMillis() - startTime;
@@ -441,7 +485,7 @@ public class MySqlService implements BaseService {
     }
 
     @Override
-    public boolean addOppedPlayer(UUID uuid, String name) {
+    public synchronized boolean addOppedPlayer(UUID uuid, String name) {
         if (!WhitelistSyncCore.CONFIG.syncOpList) {
             Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return false;
@@ -451,11 +495,13 @@ public class MySqlService implements BaseService {
 
         String sql = "REPLACE INTO `" + databaseName + "`.`op`(uuid, name, isOp) VALUES (?, ?, true)";
 
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, uuid.toString());
-            stmt.setString(2, name);
-            stmt.executeUpdate();
+        try {
+            Connection conn = getConnection();
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, uuid.toString());
+                stmt.setString(2, name);
+                stmt.executeUpdate();
+            }
 
             // Time taken.
             long timeTaken = System.currentTimeMillis() - startTime;
@@ -483,16 +529,18 @@ public class MySqlService implements BaseService {
     }
 
     @Override
-    public boolean removeWhitelistPlayer(UUID uuid, String name) {
+    public synchronized boolean removeWhitelistPlayer(UUID uuid, String name) {
         long startTime = System.currentTimeMillis();
 
         String sql = "REPLACE INTO `" + databaseName + "`.`whitelist`(uuid, name, whitelisted) VALUES (?, ?, false)";
 
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, uuid.toString());
-            stmt.setString(2, name);
-            stmt.executeUpdate();
+        try {
+            Connection conn = getConnection();
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, uuid.toString());
+                stmt.setString(2, name);
+                stmt.executeUpdate();
+            }
 
             // Time taken.
             long timeTaken = System.currentTimeMillis() - startTime;
@@ -508,7 +556,7 @@ public class MySqlService implements BaseService {
     }
 
     @Override
-    public boolean removeOppedPlayer(UUID uuid, String name) {
+    public synchronized boolean removeOppedPlayer(UUID uuid, String name) {
         if (!WhitelistSyncCore.CONFIG.syncOpList) {
             Log.error(LogMessages.ALERT_OP_SYNC_DISABLED);
             return false;
@@ -518,11 +566,13 @@ public class MySqlService implements BaseService {
 
         String sql = "REPLACE INTO `" + databaseName + "`.`op`(uuid, name, isOp) VALUES (?, ?, false)";
 
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, uuid.toString());
-            stmt.setString(2, name);
-            stmt.executeUpdate();
+        try {
+            Connection conn = getConnection();
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, uuid.toString());
+                stmt.setString(2, name);
+                stmt.executeUpdate();
+            }
 
             // Time taken.
             long timeTaken = System.currentTimeMillis() - startTime;

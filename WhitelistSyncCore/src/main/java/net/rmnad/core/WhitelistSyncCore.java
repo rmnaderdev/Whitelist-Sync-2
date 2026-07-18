@@ -21,6 +21,14 @@ public class WhitelistSyncCore {
     }
 
     public static void SetupWhitelistSync(IServerControl serverControl) {
+        // Release any connection held by a service from a previous setup
+        // (e.g. integrated server world reload) and start from a clean slate.
+        if (whitelistService != null) {
+            whitelistService.close();
+            whitelistService = null;
+        }
+        errorOnSetup = false;
+
         currentServerControl = serverControl;
         Log.verbose = CONFIG.verboseLogging;
 
