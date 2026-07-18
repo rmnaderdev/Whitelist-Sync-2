@@ -107,13 +107,11 @@ public class WhitelistSyncCommands {
                     syncOps(context);
                 }
 
-                if (WhitelistSyncCore.whitelistService instanceof WebService
-                        && WhitelistSyncCore.CONFIG.webSyncBannedPlayers) {
+                if (WhitelistSyncCore.isBannedPlayerSyncEnabled()) {
                     syncBannedPlayers(context);
                 }
 
-                if (WhitelistSyncCore.whitelistService instanceof WebService
-                        && WhitelistSyncCore.CONFIG.webSyncBannedIps) {
+                if (WhitelistSyncCore.isBannedIpSyncEnabled()) {
                     syncBannedIps(context);
                 }
 
@@ -156,13 +154,11 @@ public class WhitelistSyncCommands {
                     pushOps(context);
                 }
 
-                if (WhitelistSyncCore.whitelistService instanceof WebService
-                        && WhitelistSyncCore.CONFIG.webSyncBannedPlayers) {
+                if (WhitelistSyncCore.isBannedPlayerSyncEnabled()) {
                     pushBannedPlayers(context);
                 }
 
-                if (WhitelistSyncCore.whitelistService instanceof WebService
-                        && WhitelistSyncCore.CONFIG.webSyncBannedIps) {
+                if (WhitelistSyncCore.isBannedIpSyncEnabled()) {
                     pushBannedIps(context);
                 }
 

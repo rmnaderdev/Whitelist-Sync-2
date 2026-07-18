@@ -22,6 +22,22 @@ public class WhitelistSyncCore {
         CONFIG.load();
     }
 
+    // Whether banned-player syncing is active for the currently selected mode.
+    // WEB mode uses the web.* flag; MYSQL/SQLITE use the general syncBanned* flag.
+    public static boolean isBannedPlayerSyncEnabled() {
+        if (whitelistService instanceof WebService) {
+            return CONFIG.webSyncBannedPlayers;
+        }
+        return CONFIG.syncBannedPlayers;
+    }
+
+    public static boolean isBannedIpSyncEnabled() {
+        if (whitelistService instanceof WebService) {
+            return CONFIG.webSyncBannedIps;
+        }
+        return CONFIG.syncBannedIps;
+    }
+
     public static void SetupWhitelistSync(IServerControl serverControl) {
         // Release any connection held by a service from a previous setup
         // (e.g. integrated server world reload) and start from a clean slate.

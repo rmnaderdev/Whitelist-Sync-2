@@ -103,7 +103,7 @@ public class CommandsListener {
             }
         }
         else if (command.startsWith("ban-ip ")) {
-            if (!WhitelistSyncCore.CONFIG.webSyncBannedIps || !(whitelistService instanceof WebService)) {
+            if (!WhitelistSyncCore.isBannedIpSyncEnabled()) {
                 return;
             }
 
@@ -134,7 +134,7 @@ public class CommandsListener {
             }
         }
         else if (command.startsWith("pardon-ip ")) {
-            if (!WhitelistSyncCore.CONFIG.webSyncBannedIps || !(whitelistService instanceof WebService)) {
+            if (!WhitelistSyncCore.isBannedIpSyncEnabled()) {
                 return;
             }
 
@@ -149,7 +149,7 @@ public class CommandsListener {
             }
         }
         else if (command.startsWith("ban ")) {
-            if (!WhitelistSyncCore.CONFIG.webSyncBannedPlayers || !(whitelistService instanceof WebService)) {
+            if (!WhitelistSyncCore.isBannedPlayerSyncEnabled()) {
                 return;
             }
 
@@ -174,7 +174,7 @@ public class CommandsListener {
             }
         }
         else if (command.startsWith("pardon ")) {
-            if (!WhitelistSyncCore.CONFIG.webSyncBannedPlayers || !(whitelistService instanceof WebService)) {
+            if (!WhitelistSyncCore.isBannedPlayerSyncEnabled()) {
                 return;
             }
 

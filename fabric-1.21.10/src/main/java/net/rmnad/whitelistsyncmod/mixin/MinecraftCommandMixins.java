@@ -107,7 +107,7 @@ public class MinecraftCommandMixins {
 
         @Inject(method = "ban", at = @At("HEAD"), cancellable = true)
         private static void injectBan(ServerCommandSource source, Collection<PlayerConfigEntry> targets, Text reason, CallbackInfoReturnable<Integer> cir) {
-            if (!WhitelistSyncCore.CONFIG.webSyncBannedPlayers || !(whitelistService instanceof WebService)) {
+            if (!WhitelistSyncCore.isBannedPlayerSyncEnabled()) {
                 return;
             }
 
@@ -131,7 +131,7 @@ public class MinecraftCommandMixins {
 
         @Inject(method = "pardon", at = @At("HEAD"), cancellable = true)
         private static void injectPardon(ServerCommandSource source, Collection<PlayerConfigEntry> targets, CallbackInfoReturnable<Integer> cir) {
-            if (!WhitelistSyncCore.CONFIG.webSyncBannedPlayers || !(whitelistService instanceof WebService)) {
+            if (!WhitelistSyncCore.isBannedPlayerSyncEnabled()) {
                 return;
             }
 
@@ -155,7 +155,7 @@ public class MinecraftCommandMixins {
 
         @Inject(method = "banIp", at = @At("HEAD"), cancellable = true)
         private static void injectBanIp(ServerCommandSource source, String targetIp, Text reason, CallbackInfoReturnable<Integer> cir) {
-            if (!WhitelistSyncCore.CONFIG.webSyncBannedIps || !(whitelistService instanceof WebService)) {
+            if (!WhitelistSyncCore.isBannedIpSyncEnabled()) {
                 return;
             }
 
@@ -175,7 +175,7 @@ public class MinecraftCommandMixins {
 
         @Inject(method = "pardonIp", at = @At("HEAD"), cancellable = true)
         private static void injectPardonIp(ServerCommandSource source, String target, CallbackInfoReturnable<Integer> cir) {
-            if (!WhitelistSyncCore.CONFIG.webSyncBannedIps || !(whitelistService instanceof WebService)) {
+            if (!WhitelistSyncCore.isBannedIpSyncEnabled()) {
                 return;
             }
 
