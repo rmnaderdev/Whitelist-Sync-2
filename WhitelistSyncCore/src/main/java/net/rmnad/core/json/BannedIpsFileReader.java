@@ -10,13 +10,13 @@ import okio.Path;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
  * Class to read json data from the server's banned-ips.json file
  */
 public class BannedIpsFileReader {
-    private static JsonParser parser = new JsonParser();
 
     public static ArrayList<BannedIp> getBannedIps() {
         Path serverRootPath = Path.get(".");
@@ -48,14 +48,16 @@ public class BannedIpsFileReader {
     }
 
     private static JsonArray getBannedIpsFromFile(Path serverRootPath) {
-        JsonArray bannedPlayers = null;
-        try {
+        JsonArray bannedPlayers = new JsonArray();
+        try (FileReader reader = new FileReader(serverRootPath + "/banned-ips.json")) {
             // Read data as Json array from server directory
-            bannedPlayers = (JsonArray) parser.parse(new FileReader(serverRootPath + "/banned-ips.json"));
+            bannedPlayers = JsonParser.parseReader(reader).getAsJsonArray();
         } catch (FileNotFoundException e) {
             Log.error("banned-ips.json file not found.", e);
-        } catch (JsonParseException e) {
+        } catch (JsonParseException | IllegalStateException e) {
             Log.error("banned-ips.json parse error.", e);
+        } catch (IOException e) {
+            Log.error("banned-ips.json read error.", e);
         }
 
         return bannedPlayers;

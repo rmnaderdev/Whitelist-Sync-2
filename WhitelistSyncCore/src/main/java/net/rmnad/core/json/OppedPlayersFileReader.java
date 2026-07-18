@@ -10,6 +10,7 @@ import okio.Path;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -17,8 +18,6 @@ import java.util.ArrayList;
  * Class to read json data from the server's ops.json file
  */
 public class OppedPlayersFileReader {
-    
-    private static JsonParser parser = new JsonParser();
 
     // Get Arraylist of opped players on server.
     public static ArrayList<OppedPlayer> getOppedPlayers() {
@@ -49,18 +48,20 @@ public class OppedPlayersFileReader {
     }
 
     private static JsonArray getOppedPlayersFromFile(Path serverRootPath) {
-        JsonArray oplist = null;
-        try {
+        JsonArray oplist = new JsonArray();
+        try (FileReader reader = new FileReader(serverRootPath + "/ops.json")) {
             // Read data as Json array from server directory
-            oplist = (JsonArray) parser.parse(new FileReader(serverRootPath + "/ops.json"));
-            
+            oplist = JsonParser.parseReader(reader).getAsJsonArray();
+
             Log.debug("getOppedPlayersFromFile returned an array of " + oplist.size() + " entries.");
         } catch (FileNotFoundException e) {
             Log.error("ops.json file not found.", e);
-        } catch (JsonParseException e) {
+        } catch (JsonParseException | IllegalStateException e) {
             Log.error("ops.json parse error.", e);
+        } catch (IOException e) {
+            Log.error("ops.json read error.", e);
         }
-        
+
         return oplist;
     }
     
