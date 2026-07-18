@@ -379,7 +379,7 @@ public class WebService implements BaseService {
                 if (response.isSuccessful()) {
                     // Record time taken.
                     long timeTaken = System.currentTimeMillis() - startTime;
-                    Log.debug(LogMessages.SuccessPushLocalWhitelistToDatabase(timeTaken, records));
+                    Log.debug(LogMessages.SuccessPushLocalOpsToDatabase(timeTaken, records));
                     return true;
                 } else {
                     HandleApiNonSuccess(response, "Error pushing local ops to database!");
