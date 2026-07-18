@@ -16,11 +16,17 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 /**
  * Service for MYSQL Databases
  */
 public class MySqlService implements BaseService {
+
+    // MySQL identifiers are interpolated into DDL/queries below (a prepared
+    // statement parameter cannot stand in for a schema name), so the database
+    // name is restricted to a safe character set to prevent SQL injection.
+    private static final Pattern VALID_DB_NAME = Pattern.compile("^[A-Za-z0-9_]{1,64}$");
 
     private final String databaseName;
     private final String url;
@@ -78,6 +84,11 @@ public class MySqlService implements BaseService {
     public synchronized boolean initializeDatabase() {
         Log.info("Setting up the MySQL service...");
         boolean isSuccess = true;
+
+        if (!VALID_DB_NAME.matcher(databaseName).matches()) {
+            Log.error("Invalid mysqlDbName '" + databaseName + "'. Only letters, digits and underscores are allowed (max 64 characters).");
+            return false;
+        }
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
