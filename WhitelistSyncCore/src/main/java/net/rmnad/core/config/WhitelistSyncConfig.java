@@ -9,7 +9,7 @@ import java.io.*;
 
 public class WhitelistSyncConfig {
 
-    public static FileConfig config;
+    private FileConfig config;
 
     public static final String DATABASE_MODE_KEY = "general.databaseMode";
     public static final String SYNC_OP_LIST_KEY = "general.syncOpList";

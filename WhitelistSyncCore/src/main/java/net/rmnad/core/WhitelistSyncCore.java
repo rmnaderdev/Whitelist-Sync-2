@@ -7,14 +7,16 @@ import net.rmnad.core.services.*;
 
 public class WhitelistSyncCore {
 
-    public static BaseService whitelistService;
-    public static IServerControl currentServerControl;
-    public static WhitelistPollingThread pollingThread;
-    public static WhitelistSocketThread socketThread;
+    // volatile: written on the server thread (setup/shutdown) and read from the
+    // sync threads and command handlers, so cross-thread visibility matters.
+    public static volatile BaseService whitelistService;
+    public static volatile IServerControl currentServerControl;
+    public static volatile WhitelistPollingThread pollingThread;
+    public static volatile WhitelistSocketThread socketThread;
 
     public static final WhitelistSyncConfig CONFIG = new WhitelistSyncConfig();
 
-    public static boolean errorOnSetup = false;
+    public static volatile boolean errorOnSetup = false;
 
     public static void LoadConfig() {
         CONFIG.load();
