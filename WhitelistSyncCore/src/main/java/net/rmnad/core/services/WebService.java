@@ -2,6 +2,7 @@ package net.rmnad.core.services;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.reactivex.rxjava3.annotations.Nullable;
 import net.rmnad.core.Log;
@@ -20,9 +21,8 @@ import net.rmnad.core.models.api.*;
 import okhttp3.*;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.ConnectException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -42,24 +42,67 @@ public class WebService implements BaseService {
         this.serverControl = serverControl;
     }
 
+    // --- Shared request/response plumbing -----------------------------------
+
+    // Base request builder with the URL and the three headers every endpoint needs.
+    private Request.Builder request(String path) {
+        return new Request.Builder()
+                .url(this.apiClientHelper.getApiHost() + path)
+                .addHeader("content-type", "application/json")
+                .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
+                .addHeader("server-uuid", serverUUID.toString());
+    }
+
+    private static RequestBody jsonBody(JsonElement json) {
+        return RequestBody.create(new Gson().toJson(json), MediaType.get("application/json"));
+    }
+
+    // GET an array of entries from the API, returning an empty array on any failure.
+    @SuppressWarnings("unchecked")
+    private <T> T[] getEntries(String path, Class<T[]> type, String label) {
+        try {
+            try (Response response = this.apiClientHelper.getClient().newCall(request(path).build()).execute()) {
+                Log.debug(label + " Response Code : " + response.code());
+
+                if (response.isSuccessful() && response.body() != null) {
+                    return new Gson().fromJson(response.body().string(), type);
+                }
+
+                Log.error("Failed to get " + label + " from API. Response Code: " + response.code());
+            }
+        } catch (ConnectException e) {
+            Log.warning(LogMessages.WARN_WhitelistSyncWebConnectException);
+        } catch (IOException e) {
+            Log.error("Error getting " + label + " from Web API.", e);
+        }
+
+        return (T[]) Array.newInstance(type.getComponentType(), 0);
+    }
+
+    // Execute a mutating request, returning whether the API reported success.
+    private boolean execute(Request request, String errorPrefix) {
+        try {
+            try (Response response = this.apiClientHelper.getClient().newCall(request).execute()) {
+                if (response.isSuccessful()) {
+                    return true;
+                }
+                HandleApiNonSuccess(response, errorPrefix);
+            }
+        } catch (ConnectException e) {
+            Log.warning(LogMessages.WARN_WhitelistSyncWebConnectException);
+        } catch (IOException e) {
+            Log.error(errorPrefix, e);
+        }
+        return false;
+    }
+
     private boolean isAuthenticated() {
         try {
-            OkHttpClient client = this.apiClientHelper.getClient();
-
-            Request request = new Request.Builder()
-                    .url(this.apiClientHelper.getApiHost() + "/api/authentication")
-                    .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
-                    .addHeader("server-uuid", serverUUID.toString())
-                    .build();
-
-            try (Response response = client.newCall(request).execute()) {
+            try (Response response = this.apiClientHelper.getClient().newCall(request("/api/authentication").build()).execute()) {
                 return response.isSuccessful();
             }
         } catch (ConnectException e) {
             Log.warning(LogMessages.WARN_WhitelistSyncWebConnectException);
-        }catch (NoSuchAlgorithmException | KeyManagementException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             Log.error("Error authenticating with Web API.", e);
         }
@@ -68,126 +111,19 @@ public class WebService implements BaseService {
     }
 
     private WhitelistEntry[] getWhitelistEntries() {
-        try {
-            OkHttpClient client = this.apiClientHelper.getClient();
-            Request request = new Request.Builder()
-                    .url(this.apiClientHelper.getApiHost() + "/api/whitelist")
-                    .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
-                    .addHeader("server-uuid", serverUUID.toString())
-                    .build();
-
-            try (Response response = client.newCall(request).execute()) {
-                Log.debug("getWhitelistEntries Response Code : " + response.code());
-
-                if (response.isSuccessful()) {
-                    Gson gson = new Gson();
-
-                    if (response.body() != null) {
-                        return gson.fromJson(response.body().string(), WhitelistEntry[].class);
-                    }
-                }
-
-                Log.error("Failed to get whitelist entries from API. Response Code: " + response.code());
-            }
-
-        } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            Log.error("Error authenticating with Web API.", e);
-        }
-
-        return new WhitelistEntry[0];
+        return getEntries("/api/whitelist", WhitelistEntry[].class, "getWhitelistEntries");
     }
 
     private OpEntry[] getOpEntries() {
-        try {
-            OkHttpClient client = this.apiClientHelper.getClient();
-            Request request = new Request.Builder()
-                    .url(this.apiClientHelper.getApiHost() + "/api/op")
-                    .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
-                    .addHeader("server-uuid", serverUUID.toString())
-                    .build();
-
-            try (Response response = client.newCall(request).execute()) {
-                Log.debug("getOpEntries Response Code : " + response.code());
-
-                if (response.isSuccessful() && response.body() != null) {
-                    Gson gson = new Gson();
-                    return gson.fromJson(response.body().string(), OpEntry[].class);
-                }
-
-                Log.error("Failed to get op entries from API. Response Code: " + response.code());
-            }
-
-        } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            Log.error("Error getting OP entries from Web API.", e);
-        }
-
-        return new OpEntry[0];
+        return getEntries("/api/op", OpEntry[].class, "getOpEntries");
     }
 
     private BannedPlayerEntry[] getBannedPlayerEntries() {
-        try {
-            OkHttpClient client = this.apiClientHelper.getClient();
-            Request request = new Request.Builder()
-                    .url(this.apiClientHelper.getApiHost() + "/api/bannedplayer")
-                    .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
-                    .addHeader("server-uuid", serverUUID.toString())
-                    .build();
-
-            try (Response response = client.newCall(request).execute()) {
-                Log.debug("getBannedPlayerEntries Response Code : " + response.code());
-
-                if (response.isSuccessful() && response.body() != null) {
-                    Gson gson = new Gson();
-                    return gson.fromJson(response.body().string(), BannedPlayerEntry[].class);
-                }
-
-                Log.error("Failed to get banned player entries from API. Response Code: " + response.code());
-            }
-
-        } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            Log.error("Error getting banned player entries from Web API.", e);
-        }
-
-        return new BannedPlayerEntry[0];
+        return getEntries("/api/bannedplayer", BannedPlayerEntry[].class, "getBannedPlayerEntries");
     }
 
     private BannedIpEntry[] getBannedIpEntries() {
-        try {
-            OkHttpClient client = this.apiClientHelper.getClient();
-            Request request = new Request.Builder()
-                    .url(this.apiClientHelper.getApiHost() + "/api/bannedip")
-                    .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
-                    .addHeader("server-uuid", serverUUID.toString())
-                    .build();
-
-            try (Response response = client.newCall(request).execute()) {
-                Log.debug("getBannedIpEntries Response Code : " + response.code());
-
-                if (response.isSuccessful() && response.body() != null) {
-                    Gson gson = new Gson();
-                    return gson.fromJson(response.body().string(), BannedIpEntry[].class);
-                }
-
-                Log.error("Failed to get banned ip entries from API. Response Code: " + response.code());
-            }
-
-        } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            Log.error("Error getting banned ip entries from Web API.", e);
-        }
-
-        return new BannedIpEntry[0];
+        return getEntries("/api/bannedip", BannedIpEntry[].class, "getBannedIpEntries");
     }
 
     @Override
@@ -294,45 +230,20 @@ public class WebService implements BaseService {
         ArrayList<WhitelistedPlayer> whitelistedPlayers
                 = WhitelistedPlayersFileReader.getWhitelistedPlayers();
 
-        try {
-            OkHttpClient client = this.apiClientHelper.getClient();
+        JsonArray jsonArray = new JsonArray();
+        for (WhitelistedPlayer player : whitelistedPlayers) {
+            JsonObject json = new JsonObject();
+            json.addProperty("uuid", player.getUuid());
+            json.addProperty("name", player.getName());
+            jsonArray.add(json);
+            records++;
+        }
 
-            // Set body of request
-            Gson gson = new Gson();
-            JsonArray jsonArray = new JsonArray();
-            for (WhitelistedPlayer player : whitelistedPlayers) {
-                JsonObject json = new JsonObject();
-                json.addProperty("uuid", player.getUuid());
-                json.addProperty("name", player.getName());
-                jsonArray.add(json);
-                records++;
-            }
-            String jsonBody = gson.toJson(jsonArray);
-            RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
-
-            Request request = new Request.Builder()
-                    .url(this.apiClientHelper.getApiHost() + "/api/whitelist/push")
-                    .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
-                    .addHeader("server-uuid", serverUUID.toString())
-                    .post(body)
-                    .build();
-
-            try (Response response = client.newCall(request).execute()) {
-
-                if (response.isSuccessful()) {
-                    // Record time taken.
-                    long timeTaken = System.currentTimeMillis() - startTime;
-                    Log.debug(LogMessages.SuccessPushLocalWhitelistToDatabase(timeTaken, records));
-                    return true;
-                } else {
-                    HandleApiNonSuccess(response, "Error pushing local whitelist to database!");
-                }
-            }
-        } catch (ConnectException e) {
-            Log.warning(LogMessages.WARN_WhitelistSyncWebConnectException);
-        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
-            Log.error(LogMessages.ERROR_PushLocalWhitelistToDatabase, e);
+        Request request = request("/api/whitelist/push").post(jsonBody(jsonArray)).build();
+        if (execute(request, "Error pushing local whitelist to database!")) {
+            long timeTaken = System.currentTimeMillis() - startTime;
+            Log.debug(LogMessages.SuccessPushLocalWhitelistToDatabase(timeTaken, records));
+            return true;
         }
 
         return false;
@@ -352,45 +263,20 @@ public class WebService implements BaseService {
         ArrayList<OppedPlayer> oppedPlayers
                 = OppedPlayersFileReader.getOppedPlayers();
 
-        try {
-            OkHttpClient client = this.apiClientHelper.getClient();
+        JsonArray jsonArray = new JsonArray();
+        for (OppedPlayer player : oppedPlayers) {
+            JsonObject json = new JsonObject();
+            json.addProperty("uuid", player.getUuid());
+            json.addProperty("name", player.getName());
+            jsonArray.add(json);
+            records++;
+        }
 
-            // Set body of request
-            Gson gson = new Gson();
-            JsonArray jsonArray = new JsonArray();
-            for (OppedPlayer player : oppedPlayers) {
-                JsonObject json = new JsonObject();
-                json.addProperty("uuid", player.getUuid());
-                json.addProperty("name", player.getName());
-                jsonArray.add(json);
-                records++;
-            }
-            String jsonBody = gson.toJson(jsonArray);
-            RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
-
-            Request request = new Request.Builder()
-                    .url(this.apiClientHelper.getApiHost() + "/api/op/push")
-                    .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
-                    .addHeader("server-uuid", serverUUID.toString())
-                    .post(body)
-                    .build();
-
-            try (Response response = client.newCall(request).execute()) {
-
-                if (response.isSuccessful()) {
-                    // Record time taken.
-                    long timeTaken = System.currentTimeMillis() - startTime;
-                    Log.debug(LogMessages.SuccessPushLocalOpsToDatabase(timeTaken, records));
-                    return true;
-                } else {
-                    HandleApiNonSuccess(response, "Error pushing local ops to database!");
-                }
-            }
-        } catch (ConnectException e) {
-            Log.warning(LogMessages.WARN_WhitelistSyncWebConnectException);
-        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
-            Log.error(LogMessages.ERROR_PushLocalOpsToDatabase, e);
+        Request request = request("/api/op/push").post(jsonBody(jsonArray)).build();
+        if (execute(request, "Error pushing local ops to database!")) {
+            long timeTaken = System.currentTimeMillis() - startTime;
+            Log.debug(LogMessages.SuccessPushLocalOpsToDatabase(timeTaken, records));
+            return true;
         }
 
         return false;
@@ -408,46 +294,21 @@ public class WebService implements BaseService {
         ArrayList<BannedPlayer> bannedPlayers
                 = BannedPlayersFileReader.getBannedPlayers();
 
-        try {
-            OkHttpClient client = this.apiClientHelper.getClient();
+        JsonArray jsonArray = new JsonArray();
+        for (BannedPlayer player : bannedPlayers) {
+            JsonObject json = new JsonObject();
+            json.addProperty("uuid", player.getUuid());
+            json.addProperty("name", player.getName());
+            json.addProperty("reason", player.getReason());
+            jsonArray.add(json);
+            records++;
+        }
 
-            // Set body of request
-            Gson gson = new Gson();
-            JsonArray jsonArray = new JsonArray();
-            for (BannedPlayer player : bannedPlayers) {
-                JsonObject json = new JsonObject();
-                json.addProperty("uuid", player.getUuid());
-                json.addProperty("name", player.getName());
-                json.addProperty("reason", player.getReason());
-                jsonArray.add(json);
-                records++;
-            }
-            String jsonBody = gson.toJson(jsonArray);
-            RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
-
-            Request request = new Request.Builder()
-                    .url(this.apiClientHelper.getApiHost() + "/api/bannedplayer/push")
-                    .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
-                    .addHeader("server-uuid", serverUUID.toString())
-                    .post(body)
-                    .build();
-
-            try (Response response = client.newCall(request).execute()) {
-
-                if (response.isSuccessful()) {
-                    // Record time taken.
-                    long timeTaken = System.currentTimeMillis() - startTime;
-                    Log.debug(LogMessages.SuccessPushLocalBannedPlayersToDatabase(timeTaken, records));
-                    return true;
-                } else {
-                    HandleApiNonSuccess(response, "Error pushing local banned players to database!");
-                }
-            }
-        } catch (ConnectException e) {
-            Log.warning(LogMessages.WARN_WhitelistSyncWebConnectException);
-        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
-            Log.error(LogMessages.ERROR_PushLocalBannedPlayersToDatabase, e);
+        Request request = request("/api/bannedplayer/push").post(jsonBody(jsonArray)).build();
+        if (execute(request, "Error pushing local banned players to database!")) {
+            long timeTaken = System.currentTimeMillis() - startTime;
+            Log.debug(LogMessages.SuccessPushLocalBannedPlayersToDatabase(timeTaken, records));
+            return true;
         }
 
         return false;
@@ -466,45 +327,20 @@ public class WebService implements BaseService {
         ArrayList<BannedIp> bannedIps
                 = BannedIpsFileReader.getBannedIps();
 
-        try {
-            OkHttpClient client = this.apiClientHelper.getClient();
+        JsonArray jsonArray = new JsonArray();
+        for (BannedIp ip : bannedIps) {
+            JsonObject json = new JsonObject();
+            json.addProperty("ip", ip.getIp());
+            json.addProperty("reason", ip.getReason());
+            jsonArray.add(json);
+            records++;
+        }
 
-            // Set body of request
-            Gson gson = new Gson();
-            JsonArray jsonArray = new JsonArray();
-            for (BannedIp ip : bannedIps) {
-                JsonObject json = new JsonObject();
-                json.addProperty("ip", ip.getIp());
-                json.addProperty("reason", ip.getReason());
-                jsonArray.add(json);
-                records++;
-            }
-            String jsonBody = gson.toJson(jsonArray);
-            RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
-
-            Request request = new Request.Builder()
-                    .url(this.apiClientHelper.getApiHost() + "/api/bannedip/push")
-                    .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
-                    .addHeader("server-uuid", serverUUID.toString())
-                    .post(body)
-                    .build();
-
-            try (Response response = client.newCall(request).execute()) {
-
-                if (response.isSuccessful()) {
-                    // Record time taken.
-                    long timeTaken = System.currentTimeMillis() - startTime;
-                    Log.debug(LogMessages.SuccessPushLocalBannedIpsToDatabase(timeTaken, records));
-                    return true;
-                } else {
-                    HandleApiNonSuccess(response, "Error pushing local banned ips to database!");
-                }
-            }
-        } catch (ConnectException e) {
-            Log.warning(LogMessages.WARN_WhitelistSyncWebConnectException);
-        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
-            Log.error(LogMessages.ERROR_PushLocalBannedIpsToDatabase, e);
+        Request request = request("/api/bannedip/push").post(jsonBody(jsonArray)).build();
+        if (execute(request, "Error pushing local banned ips to database!")) {
+            long timeTaken = System.currentTimeMillis() - startTime;
+            Log.debug(LogMessages.SuccessPushLocalBannedIpsToDatabase(timeTaken, records));
+            return true;
         }
 
         return false;
@@ -696,40 +532,16 @@ public class WebService implements BaseService {
     @Override
     public boolean addWhitelistPlayer(UUID uuid, String name) {
         long startTime = System.currentTimeMillis();
-        try {
-            // Set body of request
-            Gson gson = new Gson();
-            JsonObject json = new JsonObject();
-            json.addProperty("uuid", uuid.toString());
-            json.addProperty("name", name);
-            String jsonBody = gson.toJson(json);
-            RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
 
-            OkHttpClient client = this.apiClientHelper.getClient();
-            Request request = new Request.Builder()
-                    .url(this.apiClientHelper.getApiHost() + "/api/whitelist")
-                    .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
-                    .addHeader("server-uuid", serverUUID.toString())
-                    .post(body)
-                    .build();
+        JsonObject json = new JsonObject();
+        json.addProperty("uuid", uuid.toString());
+        json.addProperty("name", name);
 
-            try (Response response = client.newCall(request).execute()) {
-
-                if (response.isSuccessful()) {
-                    long timeTaken = System.currentTimeMillis() - startTime;
-                    Log.debug("Added " + name + " to whitelist | Took " + timeTaken + "ms");
-
-                    return true;
-                } else {
-                    HandleApiNonSuccess(response, "Error adding " + name + " to whitelist database!");
-                }
-            }
-
-        } catch (ConnectException e) {
-            Log.warning(LogMessages.WARN_WhitelistSyncWebConnectException);
-        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
-            Log.error("Error adding " + name + " to whitelist database!", e);
+        Request request = request("/api/whitelist").post(jsonBody(json)).build();
+        if (execute(request, "Error adding " + name + " to whitelist database!")) {
+            long timeTaken = System.currentTimeMillis() - startTime;
+            Log.debug("Added " + name + " to whitelist | Took " + timeTaken + "ms");
+            return true;
         }
 
         return false;
@@ -743,40 +555,16 @@ public class WebService implements BaseService {
         }
 
         long startTime = System.currentTimeMillis();
-        try {
-            OkHttpClient client = this.apiClientHelper.getClient();
-            Gson gson = new Gson();
-            JsonObject json = new JsonObject();
-            json.addProperty("uuid", uuid.toString());
-            json.addProperty("name", name);
-            String jsonBody = gson.toJson(json);
-            RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
 
-            Request request = new Request.Builder()
-                    .url(this.apiClientHelper.getApiHost() + "/api/op")
-                    .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
-                    .addHeader("server-uuid", serverUUID.toString())
-                    .post(body)
-                    .build();
+        JsonObject json = new JsonObject();
+        json.addProperty("uuid", uuid.toString());
+        json.addProperty("name", name);
 
-            try (Response response = client.newCall(request).execute()) {
-
-                if (response.isSuccessful()) {
-                    long timeTaken = System.currentTimeMillis() - startTime;
-                    Log.debug("Opped " + name + " | Took " + timeTaken + "ms");
-
-                    return true;
-                } else {
-                    HandleApiNonSuccess(response, "Error opping " + name + " in database!");
-                }
-            }
-
-        } catch (ConnectException e) {
-            Log.warning(LogMessages.WARN_WhitelistSyncWebConnectException);
-        }
-        catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
-            Log.error("Error opping " + name + " in database!", e);
+        Request request = request("/api/op").post(jsonBody(json)).build();
+        if (execute(request, "Error opping " + name + " in database!")) {
+            long timeTaken = System.currentTimeMillis() - startTime;
+            Log.debug("Opped " + name + " | Took " + timeTaken + "ms");
+            return true;
         }
 
         return false;
@@ -785,33 +573,12 @@ public class WebService implements BaseService {
     @Override
     public boolean removeWhitelistPlayer(UUID uuid, String name) {
         long startTime = System.currentTimeMillis();
-        try {
-            OkHttpClient client = this.apiClientHelper.getClient();
-            Request request = new Request.Builder()
-                    .url(this.apiClientHelper.getApiHost() + "/api/whitelist/" + uuid.toString())
-                    .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
-                    .addHeader("server-uuid", serverUUID.toString())
-                    .delete()
-                    .build();
 
-            try (Response response = client.newCall(request).execute()) {
-
-                if (response.isSuccessful()) {
-                    long timeTaken = System.currentTimeMillis() - startTime;
-                    Log.debug("Removed " + name + " from whitelist | Took " + timeTaken + "ms");
-
-                    return true;
-                } else {
-                    HandleApiNonSuccess(response, "Error removing " + name + " from whitelist database!");
-                }
-            }
-
-        } catch (ConnectException e) {
-            Log.warning(LogMessages.WARN_WhitelistSyncWebConnectException);
-        }
-        catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
-            Log.error("Error removing " + name + " from whitelist database!", e);
+        Request request = request("/api/whitelist/" + uuid.toString()).delete().build();
+        if (execute(request, "Error removing " + name + " from whitelist database!")) {
+            long timeTaken = System.currentTimeMillis() - startTime;
+            Log.debug("Removed " + name + " from whitelist | Took " + timeTaken + "ms");
+            return true;
         }
 
         return false;
@@ -825,32 +592,12 @@ public class WebService implements BaseService {
         }
 
         long startTime = System.currentTimeMillis();
-        try {
-            OkHttpClient client = this.apiClientHelper.getClient();
-            Request request = new Request.Builder()
-                    .url(this.apiClientHelper.getApiHost() + "/api/op/" + uuid.toString())
-                    .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
-                    .addHeader("server-uuid", serverUUID.toString())
-                    .delete()
-                    .build();
 
-            try (Response response = client.newCall(request).execute()) {
-
-                if (response.isSuccessful()) {
-                    long timeTaken = System.currentTimeMillis() - startTime;
-                    Log.debug("Deopped " + name + " | Took " + timeTaken + "ms");
-
-                    return true;
-                } else {
-                    HandleApiNonSuccess(response, "Error deopping " + name + " in database!");
-                }
-            }
-        } catch (ConnectException e) {
-            Log.warning(LogMessages.WARN_WhitelistSyncWebConnectException);
-        }
-        catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
-            Log.error("Error opping " + name + " in database!", e);
+        Request request = request("/api/op/" + uuid.toString()).delete().build();
+        if (execute(request, "Error deopping " + name + " in database!")) {
+            long timeTaken = System.currentTimeMillis() - startTime;
+            Log.debug("Deopped " + name + " | Took " + timeTaken + "ms");
+            return true;
         }
 
         return false;
@@ -864,41 +611,17 @@ public class WebService implements BaseService {
         }
 
         long startTime = System.currentTimeMillis();
-        try {
-            // Set body of request
-            Gson gson = new Gson();
-            JsonObject json = new JsonObject();
-            json.addProperty("uuid", uuid.toString());
-            json.addProperty("name", name);
-            json.addProperty("reason", reason);
-            String jsonBody = gson.toJson(json);
-            RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
 
-            OkHttpClient client = this.apiClientHelper.getClient();
-            Request request = new Request.Builder()
-                    .url(this.apiClientHelper.getApiHost() + "/api/bannedplayer")
-                    .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
-                    .addHeader("server-uuid", serverUUID.toString())
-                    .post(body)
-                    .build();
+        JsonObject json = new JsonObject();
+        json.addProperty("uuid", uuid.toString());
+        json.addProperty("name", name);
+        json.addProperty("reason", reason);
 
-            try (Response response = client.newCall(request).execute()) {
-
-                if (response.isSuccessful()) {
-                    long timeTaken = System.currentTimeMillis() - startTime;
-                    Log.debug("Banned " + name + " | Took " + timeTaken + "ms");
-
-                    return true;
-                } else {
-                    HandleApiNonSuccess(response, "Error banning " + name + " in database!");
-                }
-            }
-
-        } catch (ConnectException e) {
-            Log.warning(LogMessages.WARN_WhitelistSyncWebConnectException);
-        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
-            Log.error("Error banning " + name + " in database!", e);
+        Request request = request("/api/bannedplayer").post(jsonBody(json)).build();
+        if (execute(request, "Error banning " + name + " in database!")) {
+            long timeTaken = System.currentTimeMillis() - startTime;
+            Log.debug("Banned " + name + " | Took " + timeTaken + "ms");
+            return true;
         }
 
         return false;
@@ -912,40 +635,16 @@ public class WebService implements BaseService {
         }
 
         long startTime = System.currentTimeMillis();
-        try {
-            // Set body of request
-            Gson gson = new Gson();
-            JsonObject json = new JsonObject();
-            json.addProperty("ip", ip);
-            json.addProperty("reason", reason);
-            String jsonBody = gson.toJson(json);
-            RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
 
-            OkHttpClient client = this.apiClientHelper.getClient();
-            Request request = new Request.Builder()
-                    .url(this.apiClientHelper.getApiHost() + "/api/bannedip")
-                    .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
-                    .addHeader("server-uuid", serverUUID.toString())
-                    .post(body)
-                    .build();
+        JsonObject json = new JsonObject();
+        json.addProperty("ip", ip);
+        json.addProperty("reason", reason);
 
-            try (Response response = client.newCall(request).execute()) {
-
-                if (response.isSuccessful()) {
-                    long timeTaken = System.currentTimeMillis() - startTime;
-                    Log.debug("Banned " + ip + " | Took " + timeTaken + "ms");
-
-                    return true;
-                } else {
-                    HandleApiNonSuccess(response, "Error banning " + ip + " in database!");
-                }
-            }
-
-        } catch (ConnectException e) {
-            Log.warning(LogMessages.WARN_WhitelistSyncWebConnectException);
-        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
-            Log.error("Error banning " + ip + " in database!", e);
+        Request request = request("/api/bannedip").post(jsonBody(json)).build();
+        if (execute(request, "Error banning " + ip + " in database!")) {
+            long timeTaken = System.currentTimeMillis() - startTime;
+            Log.debug("Banned " + ip + " | Took " + timeTaken + "ms");
+            return true;
         }
 
         return false;
@@ -959,33 +658,12 @@ public class WebService implements BaseService {
         }
 
         long startTime = System.currentTimeMillis();
-        try {
-            OkHttpClient client = this.apiClientHelper.getClient();
-            Request request = new Request.Builder()
-                    .url(this.apiClientHelper.getApiHost() + "/api/bannedplayer/" + uuid.toString())
-                    .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
-                    .addHeader("server-uuid", serverUUID.toString())
-                    .delete()
-                    .build();
 
-            try (Response response = client.newCall(request).execute()) {
-
-                if (response.isSuccessful()) {
-                    long timeTaken = System.currentTimeMillis() - startTime;
-                    Log.debug("Unbanned " + name + " | Took " + timeTaken + "ms");
-
-                    return true;
-                } else {
-                    HandleApiNonSuccess(response, "Error unbanning " + name + " in database!");
-                }
-            }
-
-        } catch (ConnectException e) {
-            Log.warning(LogMessages.WARN_WhitelistSyncWebConnectException);
-        }
-        catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
-            Log.error("Error unbanning " + name + " in database!", e);
+        Request request = request("/api/bannedplayer/" + uuid.toString()).delete().build();
+        if (execute(request, "Error unbanning " + name + " in database!")) {
+            long timeTaken = System.currentTimeMillis() - startTime;
+            Log.debug("Unbanned " + name + " | Took " + timeTaken + "ms");
+            return true;
         }
 
         return false;
@@ -999,33 +677,12 @@ public class WebService implements BaseService {
         }
 
         long startTime = System.currentTimeMillis();
-        try {
-            OkHttpClient client = this.apiClientHelper.getClient();
-            Request request = new Request.Builder()
-                    .url(this.apiClientHelper.getApiHost() + "/api/bannedip/" + ip)
-                    .addHeader("content-type", "application/json")
-                    .addHeader("X-API-KEY", this.apiClientHelper.getApiKey())
-                    .addHeader("server-uuid", serverUUID.toString())
-                    .delete()
-                    .build();
 
-            try (Response response = client.newCall(request).execute()) {
-
-                if (response.isSuccessful()) {
-                    long timeTaken = System.currentTimeMillis() - startTime;
-                    Log.debug("Unbanned " + ip + " | Took " + timeTaken + "ms");
-
-                    return true;
-                } else {
-                    HandleApiNonSuccess(response, "Error unbanning " + ip + " in database!");
-                }
-            }
-
-        } catch (ConnectException e) {
-            Log.warning(LogMessages.WARN_WhitelistSyncWebConnectException);
-        }
-        catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
-            Log.error("Error unbanning " + ip + " in database!", e);
+        Request request = request("/api/bannedip/" + ip).delete().build();
+        if (execute(request, "Error unbanning " + ip + " in database!")) {
+            long timeTaken = System.currentTimeMillis() - startTime;
+            Log.debug("Unbanned " + ip + " | Took " + timeTaken + "ms");
+            return true;
         }
 
         return false;

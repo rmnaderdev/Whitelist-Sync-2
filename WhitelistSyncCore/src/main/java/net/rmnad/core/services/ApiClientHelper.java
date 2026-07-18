@@ -3,49 +3,32 @@ package net.rmnad.core.services;
 import okhttp3.OkHttpClient;
 
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
 
 public class ApiClientHelper {
 
     private final String apiHost;
     private final String apiKey;
+    private final OkHttpClient client;
 
     public ApiClientHelper(String apiHost, String apiKey) {
         this.apiHost = apiHost;
         this.apiKey = apiKey;
+        this.client = buildClient(apiHost);
     }
 
-    public OkHttpClient getClient() throws NoSuchAlgorithmException, KeyManagementException {
+    // Built once and reused. SSL setup exceptions are handled inside SslUtil so
+    // callers never have to deal with NoSuchAlgorithmException/KeyManagementException.
+    public OkHttpClient getClient() {
+        return client;
+    }
 
+    private static OkHttpClient buildClient(String apiHost) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
-        if (this.apiHost.contains("https://localhost")) {
-            X509TrustManager trustManager = new X509TrustManager() {
-                public X509Certificate[] getAcceptedIssuers() {
-                    return new X509Certificate[] {};
-                }
-
-                @Override
-                public void checkClientTrusted(X509Certificate[] arg0, String arg1) {
-                    // not implemented
-                }
-
-                @Override
-                public void checkServerTrusted(X509Certificate[] arg0, String arg1) {
-                    // not implemented
-                }
-            };
-
-            SSLContext sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(null, new TrustManager[] { trustManager }, null);
-
-
+        if (SslUtil.isLocalHost(apiHost)) {
+            SSLContext sslContext = SslUtil.trustAllContext();
             builder.hostnameVerifier((hostname, session) -> true)
-                    .sslSocketFactory(sslContext.getSocketFactory(), trustManager);
+                    .sslSocketFactory(sslContext.getSocketFactory(), SslUtil.TRUST_ALL);
         }
 
         return builder.build();

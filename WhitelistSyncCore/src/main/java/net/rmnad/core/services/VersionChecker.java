@@ -12,8 +12,6 @@ import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 
 import java.net.ConnectException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 
 public class VersionChecker {
 
@@ -40,8 +38,6 @@ public class VersionChecker {
             }
         } catch (ConnectException e) {
             Log.warning(LogMessages.WARN_WhitelistSyncWebVersionCheckConnectException);
-        }catch (NoSuchAlgorithmException | KeyManagementException e) {
-            throw new RuntimeException(e);
         } catch (Exception e) {
             Log.error("Error checking latest mod version.");
         }

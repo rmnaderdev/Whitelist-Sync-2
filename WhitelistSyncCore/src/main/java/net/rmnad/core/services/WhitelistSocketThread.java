@@ -9,10 +9,7 @@ import net.rmnad.core.models.api.BannedIpEntry;
 import net.rmnad.core.models.api.BannedPlayerEntry;
 import net.rmnad.core.models.api.OpEntry;
 import net.rmnad.core.models.api.WhitelistEntry;
-import javax.net.ssl.*;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
+import javax.net.ssl.SSLContext;
 import java.util.UUID;
 
 public class WhitelistSocketThread extends Thread {
@@ -37,7 +34,7 @@ public class WhitelistSocketThread extends Thread {
 
     @Override
     public void run() {
-        try {
+        {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -59,28 +56,11 @@ public class WhitelistSocketThread extends Thread {
                     .withTransport(TransportEnum.WEBSOCKETS)
                     .shouldSkipNegotiate(true);
 
-            if (this.service.apiClientHelper.getApiHost().startsWith("https://localhost")) {
-                X509TrustManager trustManager = new X509TrustManager() {
-                    public X509Certificate[] getAcceptedIssuers() {
-                        return new X509Certificate[] {};
-                    }
-
-                    @Override
-                    public void checkClientTrusted(X509Certificate[] arg0, String arg1) {
-                        // not implemented
-                    }
-
-                    @Override
-                    public void checkServerTrusted(X509Certificate[] arg0, String arg1) {
-                        // not implemented
-                    }
-                };
-
-                SSLContext sslContext = SSLContext.getInstance("TLS");
-                sslContext.init(null, new TrustManager[] { trustManager }, null);
+            if (SslUtil.isLocalHost(this.service.apiClientHelper.getApiHost())) {
+                SSLContext sslContext = SslUtil.trustAllContext();
 
                 hubConnectionBuilder = hubConnectionBuilder.setHttpClientBuilderCallback(httpClientBuilder -> httpClientBuilder
-                        .sslSocketFactory(sslContext.getSocketFactory(), trustManager)
+                        .sslSocketFactory(sslContext.getSocketFactory(), SslUtil.TRUST_ALL)
                         .hostnameVerifier((hostname, session) -> true));
             }
 
@@ -266,8 +246,6 @@ public class WhitelistSocketThread extends Thread {
             hubConnection.stop().blockingAwait();
             hubConnection.close();
             Log.info("WebSyncThread: Stopped");
-        } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            throw new RuntimeException(e);
         }
     }
 
