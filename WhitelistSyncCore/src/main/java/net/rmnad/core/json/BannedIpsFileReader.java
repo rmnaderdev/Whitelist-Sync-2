@@ -1,9 +1,9 @@
 package net.rmnad.core.json;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
 import net.rmnad.core.Log;
 import net.rmnad.core.models.BannedIp;
 import okio.Path;
@@ -51,7 +51,10 @@ public class BannedIpsFileReader {
         JsonArray bannedPlayers = new JsonArray();
         try (FileReader reader = new FileReader(serverRootPath + "/banned-ips.json")) {
             // Read data as Json array from server directory
-            bannedPlayers = JsonParser.parseReader(reader).getAsJsonArray();
+            JsonArray parsed = new Gson().fromJson(reader, JsonArray.class);
+            if (parsed != null) {
+                bannedPlayers = parsed;
+            }
         } catch (FileNotFoundException e) {
             Log.error("banned-ips.json file not found.", e);
         } catch (JsonParseException | IllegalStateException e) {

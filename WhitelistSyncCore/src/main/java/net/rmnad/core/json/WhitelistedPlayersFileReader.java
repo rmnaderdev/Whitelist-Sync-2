@@ -1,9 +1,9 @@
 package net.rmnad.core.json;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
 import net.rmnad.core.Log;
 import net.rmnad.core.models.WhitelistedPlayer;
 import okio.Path;
@@ -48,7 +48,10 @@ public class WhitelistedPlayersFileReader {
         JsonArray whitelist = new JsonArray();
         try (FileReader reader = new FileReader(serverRootPath + "/whitelist.json")) {
             // Read data as Json array from server directory
-            whitelist = JsonParser.parseReader(reader).getAsJsonArray();
+            JsonArray parsed = new Gson().fromJson(reader, JsonArray.class);
+            if (parsed != null) {
+                whitelist = parsed;
+            }
 
             Log.debug("getWhitelistedPlayersFromFile returned an array of " + whitelist.size() + " entries.");
         } catch (FileNotFoundException e) {
