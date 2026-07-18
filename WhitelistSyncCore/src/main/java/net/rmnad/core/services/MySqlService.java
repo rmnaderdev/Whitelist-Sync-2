@@ -40,7 +40,8 @@ public class MySqlService implements BaseService {
         String ip = WhitelistSyncCore.CONFIG.mysqlIp;
         int port = WhitelistSyncCore.CONFIG.mysqlPort;
         this.databaseName = WhitelistSyncCore.CONFIG.mysqlDbName;
-        this.url = "jdbc:mysql://" + ip + ":" + port + "/?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC";
+        this.url = "jdbc:mysql://" + ip + ":" + port + "/?allowPublicKeyRetrieval=true&useSSL="
+                + WhitelistSyncCore.CONFIG.mysqlUseSsl + "&serverTimezone=UTC";
         this.username = WhitelistSyncCore.CONFIG.mysqlUsername;
         this.password = WhitelistSyncCore.CONFIG.mysqlPassword;
 
