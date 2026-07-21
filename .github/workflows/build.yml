@@ -3,6 +3,11 @@ on:
   pull_request:
   workflow_dispatch:
 
+# Serialize overlapping runs so they don't share the Gradle cache/journal lock.
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   # Derive the list of loader subprojects from settings.gradle so new MC
   # versions are picked up automatically without editing this workflow.
@@ -29,6 +34,9 @@ jobs:
       # Build every version even if one fails, so a single broken module does
       # not hide the status of the rest.
       fail-fast: false
+      # One at a time: matrix jobs share GRADLE_USER_HOME on the self-hosted
+      # runner and would deadlock on the journal cache lock (and can OOM).
+      max-parallel: 1
       matrix:
         project: ${{ fromJson(needs.matrix.outputs.projects) }}
     steps:
