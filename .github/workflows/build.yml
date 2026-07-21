@@ -33,7 +33,7 @@ jobs:
     # Per-job Gradle home so concurrent matrix jobs don't share (and deadlock
     # on) the global journal cache lock in /gradle-cache.
     env:
-      GRADLE_USER_HOME: ${{ runner.temp }}/gradle-${{ matrix.project }}
+      GRADLE_USER_HOME: ${{ github.workspace }}/.gradle-${{ matrix.project }}
     strategy:
       # Build every version even if one fails, so a single broken module does
       # not hide the status of the rest.
