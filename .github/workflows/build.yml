@@ -30,13 +30,17 @@ jobs:
   build:
     needs: matrix
     runs-on: self-hosted
+    # Per-job Gradle home so concurrent matrix jobs don't share (and deadlock
+    # on) the global journal cache lock in /gradle-cache.
+    env:
+      GRADLE_USER_HOME: ${{ runner.temp }}/gradle-${{ matrix.project }}
     strategy:
       # Build every version even if one fails, so a single broken module does
       # not hide the status of the rest.
       fail-fast: false
-      # One at a time: matrix jobs share GRADLE_USER_HOME on the self-hosted
-      # runner and would deadlock on the journal cache lock (and can OOM).
-      max-parallel: 1
+      # Cap concurrency to bound RAM — building every workspace at once OOMs
+      # the runner (see publish.yml).
+      max-parallel: 3
       matrix:
         project: ${{ fromJson(needs.matrix.outputs.projects) }}
     steps:
