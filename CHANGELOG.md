@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.10.0](https://github.com/rmnaderdev/Whitelist-Sync-2/compare/v2.9.0...v2.10.0) (2026-07-21)
+
+
+### Features
+
+* add ban sync for mysql and sqlite ([a045ada](https://github.com/rmnaderdev/Whitelist-Sync-2/commit/a045ada35090bc8bfda495bd540f35dd4580d045))
+
+
+### Bug Fixes
+
+* Concurrency ([bfb44d2](https://github.com/rmnaderdev/Whitelist-Sync-2/commit/bfb44d260b50ec67a4ca33fe5b0c610c37136634))
+* gate bans by active mode not web only ([bb1f403](https://github.com/rmnaderdev/Whitelist-Sync-2/commit/bb1f4033f3d98495654380497f785c8a9e551b15))
+* Incorrect logging ([a3d7dd9](https://github.com/rmnaderdev/Whitelist-Sync-2/commit/a3d7dd925e32aed93707c586ecaa7a75f44d46c3))
+* json reader crash on shaded gson 2.8.5 ([7a4310f](https://github.com/rmnaderdev/Whitelist-Sync-2/commit/7a4310f5c3c5468c9a8ada0cb1b2cdaf7ed80714))
+* Removed hardcoded useSSL url parameter from mysql connection string. Make it configurable. ([0da98ef](https://github.com/rmnaderdev/Whitelist-Sync-2/commit/0da98eff4b913d2792f717b7bf1ac0ff8df4e3c2))
+* Unperforming O(n2) sync logic. Use hash set instead of scanning entire list each loop ([e2a0206](https://github.com/rmnaderdev/Whitelist-Sync-2/commit/e2a0206467a74d15824354568dc4347af54d266f))
+
 ## [2.9.0] - 2026-07-06
 - Added support for new Minecraft versions for NeoForge and Fabric:
   - fabric-26.1.2
