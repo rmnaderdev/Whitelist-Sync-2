@@ -48,8 +48,12 @@ jobs:
             21
             25
 
-      - name: set up Gradle (with caching)
+      # Runner persists the Gradle home on disk; skip the redundant (and slow
+      # to upload) GitHub Actions cache.
+      - name: set up Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-disabled: true
 
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew

@@ -30,10 +30,11 @@ jobs:
   build:
     needs: matrix
     runs-on: self-hosted
-    # Per-job Gradle home so concurrent matrix jobs don't share (and deadlock
-    # on) the global journal cache lock in /gradle-cache.
+    # Per-project Gradle home on the runner's persistent disk: isolates the
+    # journal cache (no shared lock) while staying warm between runs. Absolute
+    # path under the box's existing /gradle-cache, not the ephemeral workspace.
     env:
-      GRADLE_USER_HOME: ${{ github.workspace }}/.gradle-${{ matrix.project }}
+      GRADLE_USER_HOME: /gradle-cache/${{ matrix.project }}
     strategy:
       # Build every version even if one fails, so a single broken module does
       # not hide the status of the rest.
@@ -60,8 +61,13 @@ jobs:
             21
             25
 
-      - name: set up Gradle (with caching)
+      # Self-hosted runner persists the Gradle home on disk, so the GitHub
+      # Actions cache is redundant — and uploading multi-GB tarballs over the
+      # runner's slow link stalls the job. Disable it.
+      - name: set up Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-disabled: true
 
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
