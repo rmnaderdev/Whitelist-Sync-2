@@ -30,18 +30,15 @@ jobs:
   build:
     needs: matrix
     runs-on: self-hosted
-    # Per-project Gradle home on the runner's persistent disk: isolates the
-    # journal cache (no shared lock) while staying warm between runs. Absolute
-    # path under the box's existing /gradle-cache, not the ephemeral workspace.
-    env:
-      GRADLE_USER_HOME: /gradle-cache/${{ matrix.project }}
     strategy:
       # Build every version even if one fails, so a single broken module does
       # not hide the status of the rest.
       fail-fast: false
-      # Cap concurrency to bound RAM — building every workspace at once OOMs
-      # the runner (see publish.yml).
-      max-parallel: 3
+      # Serial: all matrix jobs share the one /gradle-cache on this box. Running
+      # them in parallel either deadlocks on the journal lock (shared home) or
+      # duplicates the multi-GB cache per project and fills the disk (isolated
+      # home). Serial keeps the cache warm, small, and lock-free.
+      max-parallel: 1
       matrix:
         project: ${{ fromJson(needs.matrix.outputs.projects) }}
     steps:
