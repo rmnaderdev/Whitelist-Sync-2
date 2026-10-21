@@ -25,6 +25,14 @@ public class WhitelistSyncConfig {
     public static final String MYSQL_PASSWORD_KEY = "mySQL.mysqlPassword";
     public static final String MYSQL_USE_SSL_KEY = "mySQL.mysqlUseSsl";
 
+    public static final String POSTGRES_DB_NAME_KEY = "postgresql.postgresDbName";
+    public static final String POSTGRES_SCHEMA_KEY = "postgresql.postgresSchema";
+    public static final String POSTGRES_IP_KEY = "postgresql.postgresIp";
+    public static final String POSTGRES_PORT_KEY = "postgresql.postgresPort";
+    public static final String POSTGRES_USERNAME_KEY = "postgresql.postgresUsername";
+    public static final String POSTGRES_PASSWORD_KEY = "postgresql.postgresPassword";
+    public static final String POSTGRES_USE_SSL_KEY = "postgresql.postgresUseSsl";
+
     public static final String SQLITE_DATABASE_PATH_KEY = "sqlite.sqliteDatabasePath";
 
     public static final String WEB_API_HOST_KEY = "web.webApiHost";
@@ -35,6 +43,7 @@ public class WhitelistSyncConfig {
 
     public enum DatabaseMode {
         MYSQL,
+        POSTGRESQL,
         SQLITE,
         WEB
     }
@@ -56,6 +65,15 @@ public class WhitelistSyncConfig {
     public String mysqlUsername = "root";
     public String mysqlPassword = "password";
     public boolean mysqlUseSsl = false;
+
+    // POSTGRESQL Settings
+    public String postgresDbName = "WhitelistSync";
+    public String postgresSchema = "public";
+    public String postgresIp = "localhost";
+    public int postgresPort = 5432;
+    public String postgresUsername = "postgres";
+    public String postgresPassword = "password";
+    public boolean postgresUseSsl = false;
 
     // SQLITE Settings
     public String sqliteDatabasePath = "./whitelistSync.db";
@@ -104,6 +122,14 @@ public class WhitelistSyncConfig {
         mysqlPassword = config.getOrElse(MYSQL_PASSWORD_KEY, mysqlPassword);
         mysqlUseSsl = config.getOrElse(MYSQL_USE_SSL_KEY, mysqlUseSsl);
 
+        postgresDbName = config.getOrElse(POSTGRES_DB_NAME_KEY, postgresDbName);
+        postgresSchema = config.getOrElse(POSTGRES_SCHEMA_KEY, postgresSchema);
+        postgresIp = config.getOrElse(POSTGRES_IP_KEY, postgresIp);
+        postgresPort = config.getOrElse(POSTGRES_PORT_KEY, postgresPort);
+        postgresUsername = config.getOrElse(POSTGRES_USERNAME_KEY, postgresUsername);
+        postgresPassword = config.getOrElse(POSTGRES_PASSWORD_KEY, postgresPassword);
+        postgresUseSsl = config.getOrElse(POSTGRES_USE_SSL_KEY, postgresUseSsl);
+
         sqliteDatabasePath = config.getOrElse(SQLITE_DATABASE_PATH_KEY, sqliteDatabasePath);
 
         webApiHost = config.getOrElse(WEB_API_HOST_KEY, webApiHost);
@@ -127,6 +153,13 @@ public class WhitelistSyncConfig {
         spec.define(MYSQL_USERNAME_KEY, "root");
         spec.define(MYSQL_PASSWORD_KEY, "password");
         spec.define(MYSQL_USE_SSL_KEY, false);
+        spec.define(POSTGRES_DB_NAME_KEY, "WhitelistSync");
+        spec.define(POSTGRES_SCHEMA_KEY, "public");
+        spec.define(POSTGRES_IP_KEY, "localhost");
+        spec.define(POSTGRES_PORT_KEY, 5432);
+        spec.define(POSTGRES_USERNAME_KEY, "postgres");
+        spec.define(POSTGRES_PASSWORD_KEY, "password");
+        spec.define(POSTGRES_USE_SSL_KEY, false);
         spec.define(SQLITE_DATABASE_PATH_KEY, "./whitelistSync.db");
         spec.define(WEB_API_HOST_KEY, "https://whitelistsync.com/");
         spec.define(WEB_API_KEY_KEY, "");

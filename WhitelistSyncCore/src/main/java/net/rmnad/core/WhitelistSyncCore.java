@@ -61,6 +61,9 @@ public class WhitelistSyncCore {
             case MYSQL:
                 whitelistService = new MySqlService(currentServerControl);
                 break;
+            case POSTGRESQL:
+                whitelistService = new PostgreSqlService(currentServerControl);
+                break;
             case WEB:
                 whitelistService = new WebService(currentServerControl);
                 break;

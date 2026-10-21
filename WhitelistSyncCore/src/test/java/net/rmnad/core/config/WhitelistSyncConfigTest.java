@@ -20,6 +20,8 @@ class WhitelistSyncConfigTest {
         assertFalse(config.syncBannedIps);
         assertFalse(config.mysqlUseSsl);
         assertEquals(3306, config.mysqlPort);
+        assertEquals(5432, config.postgresPort);
+        assertEquals("public", config.postgresSchema);
     }
 
     @Test

@@ -4,7 +4,7 @@ Introducing Whitelist Sync!
 ===========================
 
 
-### A mod that allows you to sync the whitelists, ops list, banned players (Web only), and banned IPs (Web only) from multiple Minecraft servers together using one MySQL db, SQLite db, or the NEW [Whitelist Sync Web](https://whitelistsync.com/getting-started) service!
+### A mod that allows you to sync the whitelists, ops list, banned players (Web only), and banned IPs (Web only) from multiple Minecraft servers together using one MySQL db, PostgreSQL db, SQLite db, or the NEW [Whitelist Sync Web](https://whitelistsync.com/getting-started) service!
 This mod listens for whitelist, op, ban, and ban-ip changes (using the normal Minecraft commands) on all of your servers and will update all other forge servers connected to the same database.
 
 ## Whitelist Sync Web
@@ -85,6 +85,11 @@ For issues with the mod please open an issue on [GitHub](https://github.com/rmna
 - Run server and make sure the database connects. **Note:** Mod will make its own database and table for you or connect to an existing one.
 - Push your existing whitelist to the server (/wl copyServerToDatabase) or pull changes from your database (/wl sync).
 - Enjoy!
+
+#### For PostgreSQL database (Requires self-hosted PostgreSQL database):
+- Set `databaseMode = "POSTGRESQL"` and fill in the `[postgresql]` section of the config (IP, port, database name, schema, username, password).
+- **Note:** The database itself must already exist. The mod creates the schema and tables for you.
+- Push your existing whitelist to the database (/wl copyServerToDatabase) or pull changes (/wl sync).
 
 ## Commands
 - /wl sync [whitelist|ops|banned-players|banned-ips] | Refreshes local synced data from database.

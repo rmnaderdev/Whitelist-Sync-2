@@ -6,7 +6,7 @@ syncTimer = 60
 #Option on whether to sync the server's op list to the database.
 syncOpList = false
 #Mode for the database. To use the WEB service, go to https://whitelistsync.com/ for instructions.
-#Allowed Values: MYSQL, SQLITE, WEB
+#Allowed Values: MYSQL, POSTGRESQL, SQLITE, WEB
 databaseMode = "SQLITE"
 #Enable verbose logging.
 verboseLogging = false
@@ -23,6 +23,23 @@ mysqlPassword = "password"
 #Port for your mySQL server.
 #Range: 1 ~ 65535
 mysqlPort = 3306
+#PostgreSQL configuration (To enable PostgreSQL, refer to the mode setting in the general configuration). The database must already exist.
+[postgresql]
+#IP for your PostgreSQL server.
+postgresIp = "localhost"
+#Username for your PostgreSQL server.
+postgresUsername = "postgres"
+#Name for your PostgreSQL database (must already exist, no spaces!).
+postgresDbName = "WhitelistSync"
+#Schema to create the tables in (letters, digits and underscores only).
+postgresSchema = "public"
+#Password for your PostgreSQL server.
+postgresPassword = "password"
+#Port for your PostgreSQL server.
+#Range: 1 ~ 65535
+postgresPort = 5432
+#Require SSL for the PostgreSQL connection.
+postgresUseSsl = false
 #Sqlite configuration (To enable Sqlite, refer to the mode setting in the general configuration).
 [sqlite]
 #Insert System Path for your SQLite database file. This should be the same for all your servers you want to sync!
