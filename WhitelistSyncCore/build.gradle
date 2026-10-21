@@ -16,7 +16,8 @@ configurations {
 
 dependencies {
     compileOnly "com.google.code.gson:gson:2.8.9"
-    compileOnly "org.apache.maven:maven-artifact:3.6.3"
+    // Fabric does not ship maven-artifact (NeoForge does), so bundle and relocate it.
+    shade 'org.apache.maven:maven-artifact:3.6.3'
     shade 'com.squareup.okhttp3:okhttp:[4.12.0,5.0)'
     shade 'com.microsoft.signalr:signalr:7.0.0'
     shade 'com.electronwill.night-config:toml:3.6.0'
@@ -53,6 +54,8 @@ shadowJar {
     relocate('org.slf4j', "${shadeRelocateGroup}.org.slf4j")
     relocate('com.electronwill.nightconfig', "${shadeRelocateGroup}.com.electronwill.nightconfig")
     relocate('com.mysql', "${shadeRelocateGroup}.com.mysql")
+    relocate('org.apache.maven', "${shadeRelocateGroup}.org.apache.maven")
+    relocate('org.apache.commons.lang3', "${shadeRelocateGroup}.org.apache.commons.lang3")
 
     // signalr drags in gson 2.8.5 transitively. Left unrelocated it bundles an old
     // Gson into the mod jar that shadows the loader's newer Gson on the classpath,

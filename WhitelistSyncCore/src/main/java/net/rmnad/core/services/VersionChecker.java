@@ -60,8 +60,6 @@ public class VersionChecker {
     }
 
     public void checkVersion(String currentModVersionStr, String currentMinecraftVersionStr) {
-        ModVersionInfo versionInfo = this.getLatestVersion();
-
         // Parse the version strings
         ArtifactVersion currentModVersion = new DefaultArtifactVersion(currentModVersionStr);
         ArtifactVersion currentMinecraftVersion = new DefaultArtifactVersion(currentMinecraftVersionStr);
