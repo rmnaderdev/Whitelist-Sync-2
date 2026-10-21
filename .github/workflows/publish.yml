@@ -19,7 +19,7 @@ jobs:
       - name: generate project matrix
         id: gen
         run: |
-          projects=$(grep -oE "(fabric|neoforge)-[0-9][^']*" settings.gradle | sort -u)
+          projects=$(awk -F= '/^[a-z]+=/{n=split($2,v,","); for(i=1;i<=n;i++) print $1"-"v[i]}' versions.properties)
           json=$(printf '%s\n' $projects | sed 's/.*/"&"/' | paste -sd, -)
           echo "projects=[$json]" >> "$GITHUB_OUTPUT"
           echo "Matrix: [$json]"
@@ -63,5 +63,5 @@ jobs:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
           CF_TOKEN: ${{ secrets.CF_TOKEN }}
         run: >-
-          ./gradlew :${{ matrix.project }}:publishUnified --info --stacktrace
+          ./gradlew :${{ matrix.project }}:publishUnified -Pmc=${{ matrix.project }} --info --stacktrace
           -Porg.gradle.java.installations.fromEnv=JAVA_HOME_21_X64,JAVA_HOME_25_X64,JAVA_HOME_21_ARM64,JAVA_HOME_25_ARM64

@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Derive the list of loader subprojects from settings.gradle so new MC
+  # Derive the list of loader subprojects from versions.properties so new MC
   # versions are picked up automatically without editing this workflow.
   matrix:
     runs-on: self-hosted
@@ -22,7 +22,7 @@ jobs:
       - name: generate project matrix
         id: gen
         run: |
-          projects=$(grep -oE "(fabric|neoforge)-[0-9][^']*" settings.gradle | sort -u)
+          projects=$(awk -F= '/^[a-z]+=/{n=split($2,v,","); for(i=1;i<=n;i++) print $1"-"v[i]}' versions.properties)
           json=$(printf '%s\n' $projects | sed 's/.*/"&"/' | paste -sd, -)
           echo "projects=[$json]" >> "$GITHUB_OUTPUT"
           echo "Matrix: [$json]"
@@ -71,5 +71,5 @@ jobs:
 
       - name: build ${{ matrix.project }}
         run: >-
-          ./gradlew :${{ matrix.project }}:build
+          ./gradlew :${{ matrix.project }}:build -Pmc=${{ matrix.project }}
           -Porg.gradle.java.installations.fromEnv=JAVA_HOME_21_X64,JAVA_HOME_25_X64,JAVA_HOME_21_ARM64,JAVA_HOME_25_ARM64
