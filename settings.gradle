@@ -31,29 +31,44 @@ gradle.beforeProject { project ->
 
 include ':WhitelistSyncCore'
 
-include ':fabric-1.20.1'
-include ':fabric-1.21'
-include ':fabric-1.21.1'
-include ':fabric-1.21.2'
-include ':fabric-1.21.3'
-include ':fabric-1.21.4'
-include ':fabric-1.21.5'
-include ':fabric-1.21.6'
-include ':fabric-1.21.7'
-include ':fabric-1.21.8'
-include ':fabric-1.21.10'
-include ':fabric-1.21.11'
-include ':fabric-26.1.2'
-include ':fabric-26.2'
+// Only the selected loader/Minecraft modules are included, so IDE import and Gradle
+// configuration don't resolve/decompile every Minecraft version.
+// Selector (first match wins): -Pmc=... on the command line, `mc=...` in local.properties
+// (gitignored; use this for IntelliJ), otherwise "latest".
+//   latest                     newest version of each loader (default)
+//   all                        every version in versions.properties (what CI/release use)
+//   1.21.8,26.2                these versions, for every loader that has them
+//   fabric-1.21.8,neoforge-26.2  exact modules
+def versionsFile = new Properties()
+new File(settingsDir, 'versions.properties').withInputStream { versionsFile.load(it) }
 
-include ':neoforge-1.21'
-include ':neoforge-1.21.1'
-include ':neoforge-1.21.3'
-include ':neoforge-1.21.4'
-include ':neoforge-1.21.5'
-include ':neoforge-1.21.8'
-include ':neoforge-1.21.9'
-include ':neoforge-1.21.10'
-include ':neoforge-1.21.11'
-include ':neoforge-26.1.2'
-include ':neoforge-26.2'
+def localProps = new Properties()
+def localFile = new File(settingsDir, 'local.properties')
+if (localFile.exists()) {
+    localFile.withInputStream { localProps.load(it) }
+}
+
+def selector = (settings.providers.gradleProperty('mc').getOrNull() ?: localProps.getProperty('mc') ?: 'latest').trim()
+def tokens = selector.split(',').collect { it.trim() }.findAll { !it.isEmpty() }
+
+def selectedModules = []
+['fabric', 'neoforge'].each { loader ->
+    def versions = versionsFile.getProperty(loader).split(',').collect { it.trim() }
+    versions.each { v ->
+        def module = "${loader}-${v}".toString()
+        def selected = tokens.any { t ->
+            t == 'all' || t == module || t == v || (t == 'latest' && v == versions.last())
+        }
+        if (selected) {
+            selectedModules << module
+        }
+    }
+}
+
+if (selectedModules.isEmpty()) {
+    throw new GradleException("mc='${selector}' matched no modules. See versions.properties for valid versions.")
+}
+
+selectedModules.each { include ":${it}" }
+println "Whitelist Sync 2 modules: ${selectedModules.join(', ')}  (mc=${selector})"
+

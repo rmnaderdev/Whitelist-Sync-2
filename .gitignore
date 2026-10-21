@@ -28,3 +28,5 @@ target/
 
 config/whitelistsync2-common.toml
 /whitelistsync2-common.toml
+# local dev module selection (mc=...)
+local.properties
