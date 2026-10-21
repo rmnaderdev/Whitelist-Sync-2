@@ -105,8 +105,8 @@ public class ServerControl implements IServerControl {
 
             if (modInfo.isPresent() && minecraftInfo.isPresent()) {
                 versionChecker.checkVersion(
-                        modInfo.get().getModInfo().getVersion(),
-                        minecraftInfo.get().getModInfo().getVersion());
+                        modInfo.get().getModInfo().getVersion().toString(),
+                        minecraftInfo.get().getModInfo().getVersion().toString());
             }
         } catch (Exception ignore) {}
     }
