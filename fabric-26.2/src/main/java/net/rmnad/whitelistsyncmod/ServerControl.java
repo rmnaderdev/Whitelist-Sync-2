@@ -4,9 +4,11 @@ import net.minecraft.server.*;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.permissions.LevelBasedPermissionSet;
 import net.minecraft.server.players.*;
+import net.fabricmc.loader.api.FabricLoader;
 import net.rmnad.core.Log;
 import net.rmnad.core.callbacks.IServerControl;
 import net.rmnad.core.logging.LogMessages;
+import net.rmnad.core.services.VersionChecker;
 
 import java.util.List;
 import java.util.UUID;
@@ -90,19 +92,17 @@ public class ServerControl implements IServerControl {
 
     @Override
     public void versionCheck() {
-        // TODO: Implement version check
-//        var modInfo = FabricLoader.getInstance().getModContainer(WhitelistSync2.MODID);
-//
-//        var minecraftInfo = FabricLoader.getInstance().getModContainer("minecraft");
-//
-//        try {
-//            // If this fails, let the server continue to start up.
-//            VersionChecker versionChecker = new VersionChecker();
-//            if (modInfo.isPresent() && minecraftInfo.isPresent()) {
-//                versionChecker.checkVersion(
-//                        modInfo.get().getMetadata().getVersion().getFriendlyString(),
-//                        minecraftInfo.get().getMetadata().getVersion().getFriendlyString());
-//            }
-//        } catch (Exception ignore) {}
+        var modInfo = FabricLoader.getInstance().getModContainer(WhitelistSync2.MODID);
+        var minecraftInfo = FabricLoader.getInstance().getModContainer("minecraft");
+
+        try {
+            // If this fails, let the server continue to start up.
+            VersionChecker versionChecker = new VersionChecker();
+            if (modInfo.isPresent() && minecraftInfo.isPresent()) {
+                versionChecker.checkVersion(
+                        modInfo.get().getMetadata().getVersion().getFriendlyString(),
+                        minecraftInfo.get().getMetadata().getVersion().getFriendlyString());
+            }
+        } catch (Exception ignore) {}
     }
 }
