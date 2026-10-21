@@ -31,6 +31,49 @@ clean {
     delete "target"
 }
 
+// Scaffolds a new loader module by copying an existing one and registering it in versions.properties.
+//   ./gradlew addMinecraftVersion -PnewLoader=fabric -PnewMc=1.21.12 -PfromMc=1.21.11
+// Only minecraft_version* is rewritten; the remaining version-specific values and any API
+// changes must be reconciled by hand (see .github/skills/add-minecraft-version/SKILL.md).
+tasks.register('addMinecraftVersion') {
+    group = 'whitelistsync'
+    description = 'Scaffold a new <loader>-<mc> module from an existing one (-PnewLoader, -PnewMc, -PfromMc).'
+    doLast {
+        def loader = project.findProperty('newLoader')
+        def newMc = project.findProperty('newMc')
+        def fromMc = project.findProperty('fromMc')
+        if (!(loader in ['fabric', 'neoforge']) || !newMc || !fromMc) {
+            throw new GradleException('Usage: ./gradlew addMinecraftVersion -PnewLoader=<fabric|neoforge> -PnewMc=<version> -PfromMc=<existing version>')
+        }
+        def src = file("${loader}-${fromMc}")
+        def dest = file("${loader}-${newMc}")
+        if (!src.isDirectory()) throw new GradleException("Source module ${src.name} does not exist")
+        if (dest.exists()) throw new GradleException("${dest.name} already exists")
+
+        copy {
+            from src
+            into dest
+            exclude 'build/**', 'run/**', '.gradle/**'
+        }
+
+        def props = new File(dest, 'gradle.properties')
+        props.text = props.text.replaceAll(/(?m)^(minecraft_version|minecraft_version_range|parchment_minecraft_version)=.*$/) { all, key ->
+            key == 'minecraft_version_range' ? "${key}=[${newMc}]" : "${key}=${newMc}"
+        }
+
+        def versionsFile = file('versions.properties')
+        def lines = versionsFile.readLines().collect { line ->
+            line.startsWith("${loader}=") ? "${line},${newMc}" : line
+        }
+        versionsFile.text = lines.join('\n') + '\n'
+
+        println "Created ${dest.name} (copied from ${src.name}) and added ${newMc} to versions.properties."
+        println "TODO in ${dest.name}/gradle.properties: update loader/yarn/neo/fabric-api/parchment versions."
+        println "TODO: fix per-version sources for API changes, then build with ./gradlew :${dest.name}:build -Pmc=${loader}-${newMc}"
+        println "TODO: add ${newMc} to the README supported-versions list."
+    }
+}
+
 tasks.register('copyConfigToRun', Copy) {
     def fileToCopy = file('whitelistsync2-common.toml') // Specify the file to copy
     subprojects.findAll { subproject ->
