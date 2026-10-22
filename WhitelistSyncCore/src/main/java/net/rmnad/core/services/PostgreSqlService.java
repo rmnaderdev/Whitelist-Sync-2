@@ -540,9 +540,9 @@ public class PostgreSqlService implements BaseService {
                 while (rs.next()) {
                     UUID uuid = UUID.fromString(rs.getString("uuid"));
                     String name = rs.getString("name");
-                    int whitelisted = rs.getInt("whitelisted");
+                    boolean whitelisted = rs.getBoolean("whitelisted");
 
-                    if (whitelisted == 1) {
+                    if (whitelisted) {
                         if (!localUuids.contains(uuid.toString())) {
                             try {
                                 serverControl.addWhitelistPlayer(uuid, name);
@@ -604,9 +604,9 @@ public class PostgreSqlService implements BaseService {
                 while (rs.next()) {
                     UUID uuid = UUID.fromString(rs.getString("uuid"));
                     String name = rs.getString("name");
-                    int opped = rs.getInt("isOp");
+                    boolean opped = rs.getBoolean("isOp");
 
-                    if (opped == 1) {
+                    if (opped) {
                         if (!localUuids.contains(uuid.toString())) {
                             try {
                                 serverControl.addOpPlayer(uuid, name);
@@ -668,9 +668,9 @@ public class PostgreSqlService implements BaseService {
                     UUID uuid = UUID.fromString(rs.getString("uuid"));
                     String name = rs.getString("name");
                     String reason = rs.getString("reason");
-                    int banned = rs.getInt("banned");
+                    boolean banned = rs.getBoolean("banned");
 
-                    if (banned == 1) {
+                    if (banned) {
                         if (!localUuids.contains(uuid.toString())) {
                             try {
                                 serverControl.addBannedPlayer(uuid, name, reason);
@@ -730,9 +730,9 @@ public class PostgreSqlService implements BaseService {
                 while (rs.next()) {
                     String ip = rs.getString("ip");
                     String reason = rs.getString("reason");
-                    int banned = rs.getInt("banned");
+                    boolean banned = rs.getBoolean("banned");
 
-                    if (banned == 1) {
+                    if (banned) {
                         if (!localIps.contains(ip)) {
                             try {
                                 serverControl.addBannedIp(ip, reason);
