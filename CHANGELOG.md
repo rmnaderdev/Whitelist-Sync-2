@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.1](https://github.com/rmnaderdev/Whitelist-Sync-2/compare/v2.10.0...v2.10.1) (2026-10-22)
+
+
+### Bug Fixes
+
+* curseforge publish requiring game version ([5a4e342](https://github.com/rmnaderdev/Whitelist-Sync-2/commit/5a4e3422fb09ae72e7dfda108a1a2376388a9160))
+
 ## [2.10.0](https://github.com/rmnaderdev/Whitelist-Sync-2/compare/v2.9.0...v2.10.0) (2026-10-22)
 
 
