@@ -24,10 +24,26 @@ jobs:
           echo "projects=[$json]" >> "$GITHUB_OUTPUT"
           echo "Matrix: [$json]"
 
+  # Fail fast if either API token is missing or rejected, before building/publishing.
+  verify-tokens:
+    runs-on: self-hosted
+    steps:
+      - name: verify CurseForge and Modrinth tokens
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          CF_TOKEN: ${{ secrets.CF_TOKEN }}
+        run: |
+          fail=0
+          cf=$(curl -s -o /dev/null -w "%{http_code}" -H "X-Api-Token: $CF_TOKEN" https://minecraft.curseforge.com/api/game/versions)
+          if [ "$cf" != "200" ]; then echo "::error::CurseForge token check failed (HTTP $cf)"; fail=1; fi
+          mr=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: $MODRINTH_TOKEN" https://api.modrinth.com/v2/user)
+          if [ "$mr" != "200" ]; then echo "::error::Modrinth token check failed (HTTP $mr)"; fail=1; fi
+          exit $fail
+
   # Build every project first (no tokens). The publish job only starts if ALL
   # builds succeed, so a failed build never leaves partial releases behind.
   build:
-    needs: matrix
+    needs: [matrix, verify-tokens]
     runs-on: self-hosted
     strategy:
       fail-fast: false
