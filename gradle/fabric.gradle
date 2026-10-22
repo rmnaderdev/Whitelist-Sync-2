@@ -133,6 +133,8 @@ unifiedPublishing {
             curseforge {
                 token = cfToken
                 id = "274793"
+                // CurseForge requires an environment tag alongside game versions; this mod is server-only
+                gameVersions = [minecraft_version, "Server"]
                 displayName = "WhitelistSync-${project.version}-fabric-${minecraft_version}"
             }
         } else {
