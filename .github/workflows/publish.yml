@@ -9,7 +9,7 @@ jobs:
   # Same dynamic matrix as build.yml — publish one subproject per job to keep
   # peak memory bounded (building all loader workspaces at once OOMs).
   matrix:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     outputs:
       projects: ${{ steps.gen.outputs.projects }}
     steps:
@@ -26,7 +26,7 @@ jobs:
 
   # Fail fast if either API token is missing or rejected, before building/publishing.
   verify-tokens:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: verify CurseForge and Modrinth tokens
         env:
@@ -44,7 +44,7 @@ jobs:
   # builds succeed, so a failed build never leaves partial releases behind.
   build:
     needs: [matrix, verify-tokens]
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -79,7 +79,7 @@ jobs:
 
   publish:
     needs: [matrix, build]
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       # Publish sequentially to avoid tripping CurseForge/Modrinth rate limits.

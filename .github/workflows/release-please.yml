@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   release-please:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       # Use a PAT (RELEASE_PLEASE_TOKEN) so the release tag push can trigger
       # publish.yml. Tags pushed with the default GITHUB_TOKEN do NOT trigger

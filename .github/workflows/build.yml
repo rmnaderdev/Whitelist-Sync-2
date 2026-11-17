@@ -12,7 +12,7 @@ jobs:
   # Derive the list of loader subprojects from versions.properties so new MC
   # versions are picked up automatically without editing this workflow.
   matrix:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     outputs:
       projects: ${{ steps.gen.outputs.projects }}
     steps:
@@ -29,7 +29,7 @@ jobs:
 
   build:
     needs: matrix
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     strategy:
       # Build every version even if one fails, so a single broken module does
       # not hide the status of the rest.
